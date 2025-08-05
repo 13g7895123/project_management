@@ -48,6 +48,10 @@ if [ "${DB_CONNECTION:-}" = "mysql" ]; then
     php artisan migrate --force
 fi
 
+# Test nginx configuration
+echo "Testing Nginx configuration..."
+nginx -t
+
 # Start the application
-echo "Starting Laravel application..."
+echo "Starting Laravel application with Nginx + PHP-FPM..."
 exec "$@"

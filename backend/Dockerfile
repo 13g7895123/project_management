@@ -59,29 +59,15 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Configure Nginx
 COPY nginx.conf /etc/nginx/sites-available/default
-RUN rm /etc/nginx/sites-enabled/default
+RUN rm -f /etc/nginx/sites-enabled/default
 RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 
-# Create supervisor config
-RUN echo '[supervisord]' > /etc/supervisor/conf.d/laravel.conf && \
-    echo 'nodaemon=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo '' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo '[program:nginx]' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'command=nginx -g "daemon off;"' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'autostart=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'autorestart=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'redirect_stderr=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'stdout_logfile=/var/log/nginx.log' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo '' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo '[program:php-fpm]' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'command=php-fpm' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'autostart=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'autorestart=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'redirect_stderr=true' >> /etc/supervisor/conf.d/laravel.conf && \
-    echo 'stdout_logfile=/var/log/php-fpm.log' >> /etc/supervisor/conf.d/laravel.conf
+# Configure Supervisor
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+RUN mkdir -p /var/log/supervisor
 
 # Expose port 8000
 EXPOSE 8000
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["sh", "-c", "cd /var/www/html && php artisan serve --host=0.0.0.0 --port=8000"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
