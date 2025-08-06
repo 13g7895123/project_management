@@ -57,6 +57,12 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Configure PHP-FPM
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+RUN mkdir -p /var/run/php /var/lib/php/sessions /var/lib/php/wsdlcache
+RUN chown -R www-data:www-data /var/run/php /var/lib/php
+RUN chmod 755 /var/lib/php/sessions /var/lib/php/wsdlcache
+
 # Configure Nginx
 COPY nginx.conf /etc/nginx/sites-available/default
 RUN rm -f /etc/nginx/sites-enabled/default

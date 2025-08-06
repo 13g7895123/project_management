@@ -18,6 +18,10 @@ mkdir -p storage/framework/sessions
 mkdir -p storage/framework/views
 mkdir -p bootstrap/cache
 
+# Ensure PHP-FPM socket directory exists
+mkdir -p /var/run/php
+chown www-data:www-data /var/run/php
+
 # Set permissions
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
