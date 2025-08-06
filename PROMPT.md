@@ -27,3 +27,7 @@
 12. 可以幫我後端的部份加上nginx嗎，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
 13. 我在vps上面使用後，nginx顯示502，請幫我確認直到後端可以正常執行，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
 14. 幫我分別整理frontend與backend的根目錄，希望專案可以放在src資料夾中，其餘非專案項目保留在根目錄，並同時更新有使用到的Dockerfile與docker-compose.yml，確保可以正常運行，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
+15. 改完後端出現這個錯誤"No application encryption key has been specified."，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
+16. 幫我為這個前端寫一個可以執行的docker-compose檔案，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
+17. 請幫我把前端所有使用到的api，整理進composables中統一管理
+18. 後端路徑請直接使用/api即可

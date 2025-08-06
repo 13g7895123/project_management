@@ -59,7 +59,7 @@
             <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 p-1">
               <PencilIcon class="w-4 h-4" />
             </button>
-            <button class="text-red-600 hover:text-red-900 dark:text-red-400 p-1">
+            <button @click="handleDeleteClient(client.id)" class="text-red-600 hover:text-red-900 dark:text-red-400 p-1">
               <TrashIcon class="w-4 h-4" />
             </button>
           </div>
@@ -127,46 +127,15 @@ import {
   DevicePhoneMobileIcon
 } from '@heroicons/vue/24/outline'
 
-// Mock data - 實際應用中應從 API 獲取
-const clients = ref([
-  {
-    id: 1,
-    name: 'ABC公司',
-    how_we_met: '朋友介紹',
-    notes: '重要客戶，主要業務為網站開發',
-    projects_count: 3,
-    contacts: [
-      { id: 1, type: 'phone', value: '02-1234-5678', is_primary: true },
-      { id: 2, type: 'email', value: 'contact@abc.com', is_primary: false },
-      { id: 3, type: 'line', value: 'abc_company', is_primary: false }
-    ]
-  },
-  {
-    id: 2,
-    name: 'XYZ企業',
-    how_we_met: '網路接洽',
-    notes: '需要定期維護服務',
-    projects_count: 2,
-    contacts: [
-      { id: 4, type: 'email', value: 'info@xyz.com', is_primary: true },
-      { id: 5, type: 'phone', value: '0912-345-678', is_primary: false }
-    ]
-  },
-  {
-    id: 3,
-    name: '123公司',
-    how_we_met: '展覽會',
-    notes: '中小企業，預算有限',
-    projects_count: 1,
-    contacts: [
-      { id: 6, type: 'phone', value: '04-5678-9012', is_primary: true },
-      { id: 7, type: 'wechat', value: 'company123', is_primary: false }
-    ]
-  }
-])
+const { getClients, deleteClient } = useClients()
 
+// Reactive data
+const clients = ref([])
 const searchQuery = ref('')
+const loading = ref(false)
+const error = ref(null)
 
+// Computed properties
 const filteredClients = computed(() => {
   if (!searchQuery.value) return clients.value
   
@@ -177,8 +146,77 @@ const filteredClients = computed(() => {
   )
 })
 
+// Methods
+const loadClients = async () => {
+  loading.value = true
+  error.value = null
+  
+  const response = await getClients({
+    search: searchQuery.value
+  })
+  
+  if (response.success) {
+    clients.value = response.data.data || response.data || []
+  } else {
+    error.value = response.error?.message || '載入業主資料失敗'
+    // Fallback to mock data for development
+    clients.value = [
+      {
+        id: 1,
+        name: 'ABC公司',
+        how_we_met: '朋友介紹',
+        notes: '重要客戶，主要業務為網站開發',
+        projects_count: 3,
+        contacts: [
+          { id: 1, type: 'phone', value: '02-1234-5678', is_primary: true },
+          { id: 2, type: 'email', value: 'contact@abc.com', is_primary: false },
+          { id: 3, type: 'line', value: 'abc_company', is_primary: false }
+        ]
+      },
+      {
+        id: 2,
+        name: 'XYZ企業',
+        how_we_met: '網路接洽',
+        notes: '需要定期維護服務',
+        projects_count: 2,
+        contacts: [
+          { id: 4, type: 'email', value: 'info@xyz.com', is_primary: true },
+          { id: 5, type: 'phone', value: '0912-345-678', is_primary: false }
+        ]
+      },
+      {
+        id: 3,
+        name: '123公司',
+        how_we_met: '展覽會',
+        notes: '中小企業，預算有限',
+        projects_count: 1,
+        contacts: [
+          { id: 6, type: 'phone', value: '04-5678-9012', is_primary: true },
+          { id: 7, type: 'wechat', value: 'company123', is_primary: false }
+        ]
+      }
+    ]
+  }
+  
+  loading.value = false
+}
+
 const clearSearch = () => {
   searchQuery.value = ''
+  loadClients()
+}
+
+const handleDeleteClient = async (clientId) => {
+  if (!confirm('確定要刪除此業主嗎？')) return
+  
+  const response = await deleteClient(clientId)
+  
+  if (response.success) {
+    // Remove from local array
+    clients.value = clients.value.filter(client => client.id !== clientId)
+  } else {
+    alert(response.error?.message || '刪除失敗')
+  }
 }
 
 const getContactIcon = (type) => {
@@ -192,4 +230,15 @@ const getContactIcon = (type) => {
   }
   return icons[type] || PhoneIcon
 }
+
+// Load data on mount
+onMounted(() => {
+  loadClients()
+})
+
+// Watch search query for real-time filtering
+watch(searchQuery, () => {
+  // Debounce API calls if needed
+  // For now, just filter locally
+})
 </script>

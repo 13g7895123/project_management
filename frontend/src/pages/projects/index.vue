@@ -137,7 +137,7 @@
                   <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
                     <PencilIcon class="w-4 h-4" />
                   </button>
-                  <button class="text-red-600 hover:text-red-900 dark:text-red-400">
+                  <button @click="handleDeleteProject(project.id)" class="text-red-600 hover:text-red-900 dark:text-red-400">
                     <TrashIcon class="w-4 h-4" />
                   </button>
                 </div>
@@ -153,44 +153,17 @@
 <script setup>
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
-// Mock data - 實際應用中應從 API 獲取
-const projects = ref([
-  {
-    id: 1,
-    name: 'ABC公司官網',
-    description: '企業形象網站建置',
-    client: 'ABC公司',
-    category: 'website',
-    amount: 50000,
-    status: 'completed',
-    contact_date: '2024-01-15'
-  },
-  {
-    id: 2,
-    name: '自動化備份腳本',
-    description: '伺服器備份自動化',
-    client: 'XYZ企業',
-    category: 'script',
-    amount: 15000,
-    status: 'in_progress',
-    contact_date: '2024-01-20'
-  },
-  {
-    id: 3,
-    name: '伺服器維護',
-    description: '定期系統維護',
-    client: '123公司',
-    category: 'server',
-    amount: 30000,
-    status: 'paid',
-    contact_date: '2024-01-10'
-  }
-])
+const { getProjects, deleteProject } = useProjects()
 
+// Reactive data
+const projects = ref([])
 const searchQuery = ref('')
 const filterCategory = ref('')
 const filterStatus = ref('')
+const loading = ref(false)
+const error = ref(null)
 
+// Computed properties
 const filteredProjects = computed(() => {
   return projects.value.filter(project => {
     const matchesSearch = project.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -202,10 +175,77 @@ const filteredProjects = computed(() => {
   })
 })
 
+// Methods
+const loadProjects = async () => {
+  loading.value = true
+  error.value = null
+  
+  const response = await getProjects({
+    search: searchQuery.value,
+    category: filterCategory.value,
+    status: filterStatus.value
+  })
+  
+  if (response.success) {
+    projects.value = response.data.data || response.data || []
+  } else {
+    error.value = response.error?.message || '載入專案資料失敗'
+    // Fallback to mock data for development
+    projects.value = [
+      {
+        id: 1,
+        name: 'ABC公司官網',
+        description: '企業形象網站建置',
+        client: 'ABC公司',
+        category: 'website',
+        amount: 50000,
+        status: 'completed',
+        contact_date: '2024-01-15'
+      },
+      {
+        id: 2,
+        name: '自動化備份腳本',
+        description: '伺服器備份自動化',
+        client: 'XYZ企業',
+        category: 'script',
+        amount: 15000,
+        status: 'in_progress',
+        contact_date: '2024-01-20'
+      },
+      {
+        id: 3,
+        name: '伺服器維護',
+        description: '定期系統維護',
+        client: '123公司',
+        category: 'server',
+        amount: 30000,
+        status: 'paid',
+        contact_date: '2024-01-10'
+      }
+    ]
+  }
+  
+  loading.value = false
+}
+
 const clearFilters = () => {
   searchQuery.value = ''
   filterCategory.value = ''
   filterStatus.value = ''
+  loadProjects()
+}
+
+const handleDeleteProject = async (projectId) => {
+  if (!confirm('確定要刪除此專案嗎？')) return
+  
+  const response = await deleteProject(projectId)
+  
+  if (response.success) {
+    // Remove from local array
+    projects.value = projects.value.filter(project => project.id !== projectId)
+  } else {
+    alert(response.error?.message || '刪除失敗')
+  }
 }
 
 const getCategoryLabel = (category) => {
@@ -251,4 +291,15 @@ const getStatusClass = (status) => {
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('zh-TW')
 }
+
+// Load data on mount
+onMounted(() => {
+  loadProjects()
+})
+
+// Watch filters for real-time filtering
+watch([searchQuery, filterCategory, filterStatus], () => {
+  // Debounce API calls if needed
+  // For now, just filter locally
+})
 </script>

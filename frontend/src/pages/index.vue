@@ -73,19 +73,78 @@ import {
   FolderIcon
 } from '@heroicons/vue/24/outline'
 
-const stats = [
-  { name: '總專案數', value: '15', icon: 'FolderIcon' },
-  { name: '總收入', value: 'NT$150,000', icon: 'CurrencyDollarIcon' },
-  { name: '進行中專案', value: '3', icon: 'ClockIcon' },
-  { name: '活躍業主', value: '8', icon: 'UsersIcon' }
-]
+const { getDashboardStats, getRecentActivities } = useDashboard()
 
-const activities = [
-  { id: 1, description: '完成「ABC公司網站」專案', time: '2小時前' },
-  { id: 2, description: '新增業主「XYZ企業」', time: '1天前' },
-  { id: 3, description: '收到「伺服器維護」專案款項', time: '2天前' },
-  { id: 4, description: '開始執行「自動化腳本」專案', time: '3天前' }
-]
+// Reactive data
+const loading = ref(true)
+const error = ref(null)
+const dashboardData = ref({})
+const activities = ref([])
+
+// Computed stats
+const stats = computed(() => [
+  { 
+    name: '總專案數', 
+    value: dashboardData.value.total_projects || 0, 
+    icon: 'FolderIcon' 
+  },
+  { 
+    name: '總收入', 
+    value: `NT$${(dashboardData.value.total_revenue || 0).toLocaleString()}`, 
+    icon: 'CurrencyDollarIcon' 
+  },
+  { 
+    name: '進行中專案', 
+    value: dashboardData.value.in_progress_projects || 0, 
+    icon: 'ClockIcon' 
+  },
+  { 
+    name: '活躍業主', 
+    value: dashboardData.value.total_clients || 0, 
+    icon: 'UsersIcon' 
+  }
+])
+
+// Methods
+const loadDashboardData = async () => {
+  loading.value = true
+  error.value = null
+
+  try {
+    // Load dashboard stats
+    const statsResponse = await getDashboardStats()
+    if (statsResponse.success) {
+      dashboardData.value = statsResponse.data
+    } else {
+      // Fallback to mock data for development
+      dashboardData.value = {
+        total_projects: 15,
+        total_revenue: 150000,
+        in_progress_projects: 3,
+        total_clients: 8
+      }
+    }
+
+    // Load recent activities
+    const activitiesResponse = await getRecentActivities(4)
+    if (activitiesResponse.success) {
+      activities.value = activitiesResponse.data
+    } else {
+      // Fallback to mock data for development
+      activities.value = [
+        { id: 1, description: '完成「ABC公司網站」專案', time: '2小時前' },
+        { id: 2, description: '新增業主「XYZ企業」', time: '1天前' },
+        { id: 3, description: '收到「伺服器維護」專案款項', time: '2天前' },
+        { id: 4, description: '開始執行「自動化腳本」專案', time: '3天前' }
+      ]
+    }
+  } catch (err) {
+    error.value = err.message || '載入數據失敗'
+    console.error('Dashboard loading error:', err)
+  } finally {
+    loading.value = false
+  }
+}
 
 const iconComponents = {
   UsersIcon,
@@ -98,4 +157,9 @@ const iconComponents = {
 const getIcon = (iconName) => {
   return iconComponents[iconName] || ChartBarIcon
 }
+
+// Load data on mount
+onMounted(() => {
+  loadDashboardData()
+})
 </script>

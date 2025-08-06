@@ -6,6 +6,13 @@ export default defineNuxtConfig({
     '@pinia/nuxt'
   ],
   css: ['~/assets/css/main.css'],
+  runtimeConfig: {
+    // Private keys (only available on server-side)
+    // Public keys (exposed to client-side)
+    public: {
+      apiBaseUrl: process.env.BACKEND_API_URL || '/api'
+    }
+  },
   colorMode: {
     preference: 'system',
     fallback: 'light',
