@@ -1,0 +1,49 @@
+# Dependencies
+src/node_modules
+src/.nuxt
+src/dist
+src/.output
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temporary folders
+tmp
+temp
+
+# Cache
+.cache

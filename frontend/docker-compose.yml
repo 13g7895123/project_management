@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+    volumes:
+      # Mount source code for development (comment out for production)
+      - ./src:/app/src:ro
+    networks:
+      - frontend-network
+    restart: unless-stopped
+
+  # Development service (alternative to production build)
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    ports:
+      - "${FRONTEND_DEV_PORT:-3001}:3000"
+    environment:
+      - NODE_ENV=development
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+    volumes:
+      - ./src:/app:rw
+      - /app/node_modules
+    networks:
+      - frontend-network
+    restart: unless-stopped
+    profiles:
+      - dev
+
+networks:
+  frontend-network:
+    driver: bridge
