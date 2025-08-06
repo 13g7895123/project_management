@@ -15,7 +15,10 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(docker-compose:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(php:*)",
+      "Bash(nginx:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

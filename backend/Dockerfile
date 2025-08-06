@@ -32,13 +32,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copy composer files first for better Docker layer caching
-COPY composer.json composer.lock ./
+COPY src/composer.json src/composer.lock ./
 
 # Install composer dependencies
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
 # Copy application code
-COPY --chown=www-data:www-data . /var/www/html
+COPY --chown=www-data:www-data src/ /var/www/html
 
 # Complete composer setup
 RUN composer dump-autoload --no-dev --optimize

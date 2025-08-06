@@ -25,3 +25,5 @@
 10. 目前後端專案好了，幫我確保PORT有吃到.env最上面的設定
 11. 我把這個專案clone到vps上面，但app無法啟用，似乎是沒有composer-install的緣故，幫我修復
 12. 可以幫我後端的部份加上nginx嗎，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
+13. 我在vps上面使用後，nginx顯示502，請幫我確認直到後端可以正常執行，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
+14. 幫我分別整理frontend與backend的根目錄，希望專案可以放在src資料夾中，其餘非專案項目保留在根目錄，並同時更新有使用到的Dockerfile與docker-compose.yml，確保可以正常運行，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
