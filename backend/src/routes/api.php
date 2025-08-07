@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,16 @@ Route::get('test', function () {
         'timestamp' => now(),
         'app_name' => config('app.name')
     ]);
+});
+
+// Profile routes (authenticated)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('profile', [ProfileController::class, 'show']);
+    Route::put('profile', [ProfileController::class, 'update']);
+    Route::post('profile/avatar', [ProfileController::class, 'uploadAvatar']);
+    Route::delete('profile/avatar', [ProfileController::class, 'removeAvatar']);
+    Route::put('profile/password', [ProfileController::class, 'changePassword']);
+    Route::delete('profile', [ProfileController::class, 'deleteAccount']);
 });
 
 // Public routes (for development - add auth middleware as needed)

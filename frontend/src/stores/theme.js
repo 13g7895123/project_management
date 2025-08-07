@@ -1,6 +1,5 @@
 export const useThemeStore = defineStore('theme', () => {
   const primaryColor = ref('#6366f1')
-  const isDark = ref(false) // Default to light mode
   
   // Generate color variations from primary color
   const generateColorVariations = (baseColor) => {
@@ -44,6 +43,9 @@ export const useThemeStore = defineStore('theme', () => {
     
     // Only manipulate DOM on client side
     if (process.client) {
+      // Add transition class temporarily
+      document.documentElement.classList.add('theme-transition')
+      
       // Set the main primary color
       document.documentElement.style.setProperty('--primary-color', color)
       
@@ -55,38 +57,23 @@ export const useThemeStore = defineStore('theme', () => {
       
       // Store in localStorage for persistence
       localStorage.setItem('admin-template-primary-color', color)
-    }
-  }
-  
-  const toggleTheme = () => {
-    isDark.value = !isDark.value
-    updateThemeClass()
-  }
-  
-  const updateThemeClass = () => {
-    if (process.client) {
-      if (isDark.value) {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
-      // Store theme preference
-      localStorage.setItem('admin-template-theme', isDark.value ? 'dark' : 'light')
-    }
-  }
-  
-  // Initialize theme on client side
-  const initializeTheme = () => {
-    if (process.client) {
-      // Initialize theme mode (default to light)
-      const savedTheme = localStorage.getItem('admin-template-theme')
-      if (savedTheme === 'dark') {
-        isDark.value = true
-      } else {
-        isDark.value = false // Always default to light mode
-      }
-      updateThemeClass()
       
+      // Force style recalculation and then remove transition class
+      setTimeout(() => {
+        document.body.offsetHeight // Force reflow
+        document.documentElement.classList.remove('theme-transition')
+      }, 200)
+      
+      // Trigger a custom event for other components to listen to
+      window.dispatchEvent(new CustomEvent('primary-color-changed', { 
+        detail: { color, variations } 
+      }))
+    }
+  }
+  
+  // Initialize primary color on client side
+  const initializePrimaryColor = () => {
+    if (process.client) {
       // Initialize primary color
       const savedColor = localStorage.getItem('admin-template-primary-color')
       if (savedColor) {
@@ -100,10 +87,7 @@ export const useThemeStore = defineStore('theme', () => {
   
   return {
     primaryColor,
-    isDark,
     setPrimaryColor,
-    toggleTheme,
-    updateThemeClass,
-    initializeTheme
+    initializePrimaryColor
   }
 })

@@ -47,3 +47,11 @@
 32. 我在後端沒有看到/clients這支api，前端卻呼叫了，後端是laravel專案，請幫我重新確認並修復，包含該專案的所有api，請backend agent與frontend agent溝通並解決這個問題，完成後執行第20點
 33. 後端改完後，麻煩frontend agent確認前端是否都有使用對應的api，如果有缺請後端補上，完成後執行第20點
 34. 請幫我重新確認一次，我後端連/client都沒看到，到底是在檢查個屁，請frontend-ui-specialist agent與backend-architecture-reviewer agent重新確認一次，完成後執行第20點
+35. 完成以下功能
+    - 請frontend-ui-specialist agent實作/profile這個頁面沒有功能
+    - 請uiux agent設計404的頁面，並請frontend-ui-specialist agent實作
+    - 請frontend-ui-specialist agent確認主題設定的顏色應用後沒有反應
+    - 執行第20點
+36. 完成以下功能
+    - 後臺請加入身分驗證，沒有登入的不能使用
+    - 執行第20點

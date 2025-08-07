@@ -36,7 +36,8 @@ export default defineNuxtConfig({
     componentName: 'ColorScheme',
     classPrefix: '',
     classSuffix: '',
-    storageKey: 'nuxt-color-mode'
+    storageKey: 'nuxt-color-mode',
+    dataValue: 'theme' // This sets data-theme attribute
   },
   // Disable problematic nuxt-icon server bundle
   icon: {

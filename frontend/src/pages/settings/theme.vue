@@ -41,7 +41,7 @@
             class="w-12 h-12 rounded-lg border-2 transition-transform duration-200 hover:scale-110"
             :style="{ backgroundColor: color.value }"
             :class="[
-              themeStore.primaryColor === color.value
+              primaryColor === color.value
                 ? 'border-gray-900 dark:border-white'
                 : 'border-gray-300 dark:border-gray-600'
             ]"
@@ -87,7 +87,7 @@
           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div 
               class="h-2 rounded-full"
-              :style="{ backgroundColor: themeStore.primaryColor, width: '60%' }"
+              :style="{ backgroundColor: primaryColor, width: '60%' }"
             ></div>
           </div>
         </div>
@@ -103,10 +103,9 @@ import {
   ComputerDesktopIcon
 } from '@heroicons/vue/24/outline'
 
-const colorMode = useColorMode()
-const themeStore = useThemeStore()
+const { colorMode, setPrimaryColor: setThemePrimaryColor, primaryColor } = useTheme()
 
-const customColor = ref('#6366f1')
+const customColor = ref(primaryColor.value)
 
 const themeModes = [
   { value: 'light', label: '淺色模式', icon: SunIcon },
@@ -134,6 +133,15 @@ const setThemeMode = (mode) => {
 }
 
 const setPrimaryColor = (color) => {
-  themeStore.setPrimaryColor(color)
+  customColor.value = color
+  setThemePrimaryColor(color)
 }
+
+// Watch for color mode changes to ensure reactivity
+watch(() => colorMode.preference, () => {
+  // Force component re-render to reflect theme changes
+  nextTick(() => {
+    document.body.offsetHeight
+  })
+})
 </script>

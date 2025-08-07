@@ -296,6 +296,12 @@ const formatDate = (dateString) => {
 
 // Load data on mount
 onMounted(() => {
+  // Check for search parameter from URL (e.g., from 404 page)
+  const route = useRoute()
+  if (route.query.q) {
+    searchQuery.value = route.query.q
+  }
+  
   loadProjects()
 })
 

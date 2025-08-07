@@ -205,9 +205,9 @@
           class="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
         >
           <img
-            src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff"
-            alt="User Avatar"
-            class="w-8 h-8 rounded-full"
+            :src="user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=6366f1&color=fff`"
+            :alt="user?.name || 'User Avatar'"
+            class="w-8 h-8 rounded-full object-cover"
           />
           <ChevronDownIcon class="w-4 h-4 hidden sm:block" />
         </button>
@@ -310,8 +310,7 @@ const { toggleMobileSidebar } = sidebarStore
 const notificationsStore = useNotificationsStore()
 const { recentNotifications, unreadCount, markAsRead, markAllAsRead, clearReadNotifications } = notificationsStore
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
+const { isDark, toggleTheme: handleToggleTheme } = useTheme()
 
 // Breadcrumb logic
 const pageTitle = computed(() => {
@@ -321,6 +320,7 @@ const pageTitle = computed(() => {
     '/dashboard/analytics': t('nav.analytics'),
     '/dashboard/crm': t('nav.crm'),
     '/dashboard/ecommerce': t('nav.ecommerce'),
+    '/profile': t('common.profile'),
     '/settings': t('nav.settings'),
     '/settings/general': t('nav.general_settings'),
     '/settings/theme': t('nav.theme_settings'),
@@ -329,7 +329,11 @@ const pageTitle = computed(() => {
     '/help': t('nav.help_center'),
     '/help/faq': t('nav.faq'),
     '/help/support': t('nav.support'),
-    '/help/docs': t('nav.docs')
+    '/help/docs': t('nav.docs'),
+    '/clients': '業主管理',
+    '/clients/create': '新增業主',
+    '/projects': '專案管理',
+    '/projects/create': '新增專案'
   }
   return titles[route.path] || 'Page'
 })
@@ -349,6 +353,7 @@ const breadcrumbItems = computed(() => {
       '/dashboard/analytics': t('nav.analytics'),
       '/dashboard/crm': t('nav.crm'),
       '/dashboard/ecommerce': t('nav.ecommerce'),
+      '/profile': t('common.profile'),
       '/settings': t('nav.settings'),
       '/settings/general': t('nav.general_settings'),
       '/settings/theme': t('nav.theme_settings'),
@@ -357,7 +362,11 @@ const breadcrumbItems = computed(() => {
       '/help': t('nav.help_center'),
       '/help/faq': t('nav.faq'),
       '/help/support': t('nav.support'),
-      '/help/docs': t('nav.docs')
+      '/help/docs': t('nav.docs'),
+      '/clients': '業主管理',
+      '/clients/create': '新增業主',
+      '/projects': '專案管理',
+      '/projects/create': '新增專案'
     }
     
     const title = segmentTitles[currentPath] || pathSegments[i]
@@ -405,9 +414,6 @@ const selectLanguage = (lang) => {
   showLanguage.value = false
 }
 
-const handleToggleTheme = () => {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-}
 
 const toggleNotifications = () => {
   showNotifications.value = !showNotifications.value
@@ -426,6 +432,7 @@ const closeUserMenu = () => {
 }
 
 const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 
 const logout = () => {
   authStore.logout()
