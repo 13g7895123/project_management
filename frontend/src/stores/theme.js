@@ -1,6 +1,6 @@
 export const useThemeStore = defineStore('theme', () => {
   const primaryColor = ref('#6366f1')
-  const isDark = ref(false)
+  const isDark = ref(false) // Default to light mode
   
   // Generate color variations from primary color
   const generateColorVariations = (baseColor) => {
@@ -60,11 +60,34 @@ export const useThemeStore = defineStore('theme', () => {
   
   const toggleTheme = () => {
     isDark.value = !isDark.value
+    updateThemeClass()
+  }
+  
+  const updateThemeClass = () => {
+    if (process.client) {
+      if (isDark.value) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+      // Store theme preference
+      localStorage.setItem('admin-template-theme', isDark.value ? 'dark' : 'light')
+    }
   }
   
   // Initialize theme on client side
   const initializeTheme = () => {
     if (process.client) {
+      // Initialize theme mode (default to light)
+      const savedTheme = localStorage.getItem('admin-template-theme')
+      if (savedTheme === 'dark') {
+        isDark.value = true
+      } else {
+        isDark.value = false // Always default to light mode
+      }
+      updateThemeClass()
+      
+      // Initialize primary color
       const savedColor = localStorage.getItem('admin-template-primary-color')
       if (savedColor) {
         setPrimaryColor(savedColor)
@@ -80,6 +103,7 @@ export const useThemeStore = defineStore('theme', () => {
     isDark,
     setPrimaryColor,
     toggleTheme,
+    updateThemeClass,
     initializeTheme
   }
 })

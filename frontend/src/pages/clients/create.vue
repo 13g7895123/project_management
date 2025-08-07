@@ -82,7 +82,6 @@
               v-for="(contact, index) in form.contacts"
               :key="contact?.id || `contact-${index}`"
               class="flex items-end space-x-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg"
-              v-if="contact"
             >
               <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -173,7 +172,7 @@
 <script setup>
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
-const form = ref({
+const form = reactive({
   name: '',
   how_we_met: '',
   notes: '',
@@ -184,28 +183,30 @@ const isSubmitting = ref(false)
 let contactIdCounter = 1
 
 const addContact = () => {
-  form.value.contacts.push({
+  const newContact = {
     id: contactIdCounter++,
     type: 'phone',
     value: '',
-    is_primary: form.value.contacts.length === 0
-  })
+    is_primary: form.contacts.length === 0
+  }
+  form.contacts.push(newContact)
+  console.log('Added contact:', newContact, 'Total contacts:', form.contacts.length)
 }
 
 const removeContact = (index) => {
-  const wasPrimary = form.value.contacts[index].is_primary
-  form.value.contacts.splice(index, 1)
+  const wasPrimary = form.contacts[index].is_primary
+  form.contacts.splice(index, 1)
   
   // 如果刪除的是主要聯繫方式，將第一個設為主要
-  if (wasPrimary && form.value.contacts.length > 0) {
-    form.value.contacts[0].is_primary = true
+  if (wasPrimary && form.contacts.length > 0) {
+    form.contacts[0].is_primary = true
   }
 }
 
 const updatePrimaryContact = (index) => {
-  if (form.value.contacts[index].is_primary) {
+  if (form.contacts[index].is_primary) {
     // 將其他聯繫方式設為非主要
-    form.value.contacts.forEach((contact, i) => {
+    form.contacts.forEach((contact, i) => {
       if (i !== index) {
         contact.is_primary = false
       }
@@ -233,13 +234,13 @@ const submitForm = async () => {
     isSubmitting.value = true
     
     // 驗證表單
-    if (!form.value.name.trim()) {
+    if (!form.name.trim()) {
       alert('請輸入業主稱呼')
       return
     }
     
     // 呼叫 API 來儲存業主資料
-    const response = await createClient(form.value)
+    const response = await createClient(form)
     
     if (response.success) {
       // 成功後導向業主列表

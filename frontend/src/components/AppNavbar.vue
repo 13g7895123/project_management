@@ -99,7 +99,7 @@
 
       <!-- Theme toggle -->
       <button
-        @click="toggleTheme"
+        @click="handleToggleTheme"
         class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
       >
         <SunIcon v-if="isDark" class="w-5 h-5" />
@@ -405,7 +405,7 @@ const selectLanguage = (lang) => {
   showLanguage.value = false
 }
 
-const toggleTheme = () => {
+const handleToggleTheme = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
