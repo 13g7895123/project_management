@@ -26,5 +26,6 @@ jobs:
             cd /home/jarvis/project/project_management/frontend
             git pull
             docker compose down
+            docker compose build
             docker compose up -d
           EOF
