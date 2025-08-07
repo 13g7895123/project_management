@@ -49,13 +49,14 @@
         <div class="space-y-4">
           <div
             v-for="activity in activities"
-            :key="activity.id"
+            :key="activity?.id || 'empty'"
             class="flex items-start space-x-3"
+            v-if="activity"
           >
             <div class="w-2 h-2 mt-2 bg-primary-500 rounded-full"></div>
             <div class="flex-1">
-              <p class="text-sm text-gray-900 dark:text-white">{{ activity.description }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ activity.time }}</p>
+              <p class="text-sm text-gray-900 dark:text-white">{{ activity?.description || '無描述' }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ activity?.time || '未知時間' }}</p>
             </div>
           </div>
         </div>

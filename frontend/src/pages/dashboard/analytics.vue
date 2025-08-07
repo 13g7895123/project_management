@@ -63,15 +63,16 @@
       <div class="space-y-3" v-if="activities.length > 0">
         <div
           v-for="activity in activities"
-          :key="activity.id"
+          :key="activity?.id || 'empty'"
           class="flex items-center space-x-3 py-2"
+          v-if="activity"
         >
           <div class="flex-shrink-0">
             <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm text-gray-900 dark:text-white">{{ activity.description }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(activity.created_at) }}</p>
+            <p class="text-sm text-gray-900 dark:text-white">{{ activity?.description || '無描述' }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(activity?.created_at) }}</p>
           </div>
         </div>
       </div>
@@ -161,6 +162,7 @@ const loadDashboardData = async () => {
 }
 
 const formatDate = (dateString) => {
+  if (!dateString) return '未設定'
   return new Date(dateString).toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'short',

@@ -53,10 +53,10 @@
               <!-- User Info -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <img :src="user.avatar" :alt="user.name" class="w-10 h-10 rounded-full" />
+                  <img :src="user?.avatar || ''" :alt="user?.name || ''" class="w-10 h-10 rounded-full" />
                   <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</div>
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user?.name || '未知用戶' }}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ user?.email || '未設定Email' }}</div>
                   </div>
                 </div>
               </td>
@@ -66,11 +66,11 @@
                 <span 
                   class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
                   :class="{
-                    'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400': user.role === 'admin',
-                    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400': user.role === 'user'
+                    'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400': user?.role === 'admin',
+                    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400': user?.role === 'user'
                   }"
                 >
-                  {{ t(`auth.role_${user.role}`) }}
+                  {{ t(`auth.role_${user?.role || 'user'}`) }}
                 </span>
               </td>
 
@@ -79,17 +79,17 @@
                 <span 
                   class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
                   :class="{
-                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': user.status === 'active',
-                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': user.status === 'inactive'
+                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': user?.status === 'active',
+                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': user?.status === 'inactive'
                   }"
                 >
-                  {{ t(`auth.status_${user.status}`) }}
+                  {{ t(`auth.status_${user?.status || 'inactive'}`) }}
                 </span>
               </td>
 
               <!-- Last Login -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                {{ formatDate(user.lastLogin) }}
+                {{ formatDate(user?.lastLogin) }}
               </td>
 
               <!-- Actions -->
@@ -97,11 +97,12 @@
                 <div class="flex items-center space-x-2">
                   <!-- Toggle Status -->
                   <button
-                    v-if="user.id !== authStore.user?.id"
+                    v-if="user?.id !== authStore.user?.id"
                     @click="toggleStatus(user)"
                     class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition-colors duration-200"
+                    :disabled="!user?.id"
                   >
-                    {{ user.status === 'active' ? t('auth.deactivate') : t('auth.activate') }}
+                    {{ user?.status === 'active' ? t('auth.deactivate') : t('auth.activate') }}
                   </button>
                   
                   <!-- Edit -->
@@ -114,9 +115,10 @@
                   
                   <!-- Delete -->
                   <button
-                    v-if="user.id !== authStore.user?.id"
+                    v-if="user?.id !== authStore.user?.id"
                     @click="deleteUser(user)"
                     class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors duration-200"
+                    :disabled="!user?.id"
                   >
                     {{ t('common.delete') }}
                   </button>
@@ -242,17 +244,24 @@ const filteredUsers = computed(() => {
 
 // Format date for display
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('zh-TW', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  if (!date) return '-'
+  try {
+    return new Date(date).toLocaleDateString('zh-TW', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch (error) {
+    console.error('Invalid date:', date)
+    return '-'
+  }
 }
 
 // Toggle user status
 const toggleStatus = (user) => {
+  if (!user?.id) return
   try {
     authStore.toggleUserStatus(user.id)
   } catch (error) {
@@ -262,12 +271,14 @@ const toggleStatus = (user) => {
 
 // Edit user
 const editUser = (user) => {
+  if (!user) return
   editForm.value = { ...user }
   showEditModal.value = true
 }
 
 // Save user changes
 const saveUser = () => {
+  if (!editForm.value?.id) return
   try {
     authStore.updateUser(editForm.value.id, {
       name: editForm.value.name,
@@ -282,6 +293,7 @@ const saveUser = () => {
 
 // Delete user
 const deleteUser = (user) => {
+  if (!user?.id) return
   if (confirm(t('auth.confirm_delete_user'))) {
     try {
       authStore.deleteUser(user.id)

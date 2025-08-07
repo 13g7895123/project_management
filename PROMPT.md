@@ -38,3 +38,4 @@
 23. 前端使用的一堆api都顯示404，請backend agennt與frontend agent溝通一下，確認是哪邊的問題，並修正完全，目前先以/projects/create這個頁面用到的先處理，完成後執行第20點
 24. 幫我同步確認其他頁面有沒有這個問題，完成後執行第20點
 25. 幫我請uiux agent重新設計一下登入頁面，目前的好醜，完成後執行第20點
+26. 我在/client裡面出現這個錯誤，"Cannot read properties of null (reading 'id')"，其他頁面也有，幫我修復一下，完成後執行第20點

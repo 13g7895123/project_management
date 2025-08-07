@@ -96,48 +96,49 @@
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             <tr
               v-for="project in filteredProjects"
-              :key="project.id"
+              :key="project?.id || 'empty'"
               class="hover:bg-gray-50 dark:hover:bg-gray-700"
+              v-if="project"
             >
               <td class="px-6 py-4 whitespace-nowrap">
                 <div>
                   <div class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ project.name }}
+                    {{ project?.name || '未知專案' }}
                   </div>
                   <div class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ project.description }}
+                    {{ project?.description || '無描述' }}
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                {{ project.client }}
+                {{ project?.client || '未知業主' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  :class="getCategoryClass(project.category)"
+                  :class="getCategoryClass(project?.category)"
                 >
-                  {{ getCategoryLabel(project.category) }}
+                  {{ getCategoryLabel(project?.category) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                NT${{ project.amount.toLocaleString() }}
+                NT${{ (project?.amount || 0).toLocaleString() }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  :class="getStatusClass(project.status)"
+                  :class="getStatusClass(project?.status)"
                 >
-                  {{ getStatusLabel(project.status) }}
+                  {{ getStatusLabel(project?.status) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                {{ formatDate(project.contact_date) }}
+                {{ formatDate(project?.contact_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
                   <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
                     <PencilIcon class="w-4 h-4" />
                   </button>
-                  <button @click="handleDeleteProject(project.id)" class="text-red-600 hover:text-red-900 dark:text-red-400">
+                  <button @click="handleDeleteProject(project?.id)" class="text-red-600 hover:text-red-900 dark:text-red-400" :disabled="!project?.id">
                     <TrashIcon class="w-4 h-4" />
                   </button>
                 </div>
@@ -289,6 +290,7 @@ const getStatusClass = (status) => {
 }
 
 const formatDate = (dateString) => {
+  if (!dateString) return '未設定'
   return new Date(dateString).toLocaleDateString('zh-TW')
 }
 

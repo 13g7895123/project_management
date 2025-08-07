@@ -42,24 +42,25 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="client in filteredClients"
-        :key="client.id"
+        :key="client?.id || 'empty'"
         class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6 hover:shadow-md transition-shadow duration-200"
+        v-if="client"
       >
         <!-- Client Header -->
         <div class="flex justify-between items-start mb-4">
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ client.name }}
+              {{ client?.name || '未知業主' }}
             </h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              認識於 {{ client.how_we_met }}
+              認識於 {{ client?.how_we_met || '未記錄' }}
             </p>
           </div>
           <div class="flex space-x-2">
             <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 p-1">
               <PencilIcon class="w-4 h-4" />
             </button>
-            <button @click="handleDeleteClient(client.id)" class="text-red-600 hover:text-red-900 dark:text-red-400 p-1">
+            <button @click="handleDeleteClient(client?.id)" class="text-red-600 hover:text-red-900 dark:text-red-400 p-1" :disabled="!client?.id">
               <TrashIcon class="w-4 h-4" />
             </button>
           </div>
@@ -70,14 +71,15 @@
           <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">聯繫方式</h4>
           <div class="space-y-1">
             <div
-              v-for="contact in client.contacts"
-              :key="contact.id"
+              v-for="contact in (client?.contacts || [])"
+              :key="contact?.id || 'empty'"
               class="flex items-center space-x-2 text-sm"
+              v-if="contact"
             >
-              <component :is="getContactIcon(contact.type)" class="w-4 h-4 text-gray-400" />
-              <span class="text-gray-600 dark:text-gray-300">{{ contact.type }}:</span>
-              <span class="text-gray-900 dark:text-white">{{ contact.value }}</span>
-              <span v-if="contact.is_primary" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+              <component :is="getContactIcon(contact?.type)" class="w-4 h-4 text-gray-400" />
+              <span class="text-gray-600 dark:text-gray-300">{{ contact?.type || '未知' }}:</span>
+              <span class="text-gray-900 dark:text-white">{{ contact?.value || '未填寫' }}</span>
+              <span v-if="contact?.is_primary" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
                 主要
               </span>
             </div>
@@ -87,7 +89,7 @@
         <!-- Projects Count -->
         <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
           <span class="text-sm text-gray-500 dark:text-gray-400">
-            相關專案: {{ client.projects_count }} 個
+            相關專案: {{ client?.projects_count || 0 }} 個
           </span>
           <button class="text-sm text-primary-600 hover:text-primary-900 dark:text-primary-400">
             查看專案
@@ -95,7 +97,7 @@
         </div>
 
         <!-- Notes -->
-        <div v-if="client.notes" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div v-if="client?.notes" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">備註</h4>
           <p class="text-sm text-gray-600 dark:text-gray-300">{{ client.notes }}</p>
         </div>

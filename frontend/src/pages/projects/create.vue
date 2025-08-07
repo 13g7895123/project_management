@@ -86,8 +86,8 @@
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="">請選擇業主</option>
-                <option v-for="client in clients" :key="client.id" :value="client.id">
-                  {{ client.name }}
+                <option v-for="client in clients" :key="client?.id || 'empty'" :value="client?.id">
+                  {{ client?.name || '未知業主' }}
                 </option>
               </select>
             </div>
@@ -352,7 +352,7 @@ const fakeDataTemplates = [
 // 填入假資料功能
 const fillFakeData = () => {
   const randomTemplate = fakeDataTemplates[Math.floor(Math.random() * fakeDataTemplates.length)]
-  const randomClient = clients.value.length > 0 ? clients.value[Math.floor(Math.random() * clients.value.length)] : null
+  const randomClient = clients.value && clients.value.length > 0 ? clients.value[Math.floor(Math.random() * clients.value.length)] : null
   
   // 產生隨機日期
   const today = new Date()
@@ -364,7 +364,7 @@ const fillFakeData = () => {
   // 填入表單資料
   form.value = {
     name: randomTemplate.name,
-    client_id: randomClient ? randomClient.id : '',
+    client_id: randomClient?.id || '',
     description: randomTemplate.description,
     category: randomTemplate.category,
     amount: randomTemplate.amount,

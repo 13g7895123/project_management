@@ -80,8 +80,9 @@
           <div class="space-y-4">
             <div
               v-for="(contact, index) in form.contacts"
-              :key="contact.id"
+              :key="contact?.id || `contact-${index}`"
               class="flex items-end space-x-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg"
+              v-if="contact"
             >
               <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>

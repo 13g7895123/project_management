@@ -1,90 +1,152 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <!-- Logo & Title -->
-      <div class="text-center">
-        <h2 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+  <!-- Modern gradient background with subtle pattern -->
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Subtle background pattern -->
+    <div class="absolute inset-0 opacity-5 dark:opacity-10">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.15) 1px, transparent 0); background-size: 20px 20px;"></div>
+    </div>
+    
+    <!-- Main login container -->
+    <div class="relative z-10 w-full max-w-md space-y-8">
+      <!-- Brand logo and header card -->
+      <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/50 p-8 text-center transform hover:scale-[1.02] transition-all duration-300">
+        <!-- Logo placeholder - you can replace with actual logo -->
+        <div class="mx-auto w-16 h-16 bg-gradient-to-tr from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
           {{ t('auth.login_title') }}
-        </h2>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        </h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
           {{ t('auth.login_subtitle') }}
         </p>
       </div>
 
-      <!-- Login Form -->
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-        <div class="space-y-4">
-          <!-- Username/Email -->
-          <div>
-            <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {{ t('auth.username_email') }}
-            </label>
-            <input
-              id="username"
-              v-model="form.username"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-              :placeholder="t('auth.username_email_placeholder')"
-            />
+      <!-- Login form card -->
+      <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/50 p-8 transform hover:shadow-2xl transition-all duration-300">
+        <form class="space-y-6" @submit.prevent="handleLogin">
+          <!-- Form fields -->
+          <div class="space-y-5">
+            <!-- Username/Email with icon -->
+            <div class="group">
+              <label for="username" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                {{ t('auth.username_email') }}
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <input
+                  id="username"
+                  v-model="form.username"
+                  type="text"
+                  required
+                  class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-slate-700/50 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                  :placeholder="t('auth.username_email_placeholder')"
+                />
+              </div>
+            </div>
+
+            <!-- Password with icon -->
+            <div class="group">
+              <label for="password" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                {{ t('auth.password') }}
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <input
+                  id="password"
+                  v-model="form.password"
+                  type="password"
+                  required
+                  class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-slate-700/50 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                  :placeholder="t('auth.password_placeholder')"
+                />
+              </div>
+            </div>
           </div>
 
-          <!-- Password -->
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {{ t('auth.password') }}
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              required
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-              :placeholder="t('auth.password_placeholder')"
-            />
+          <!-- Error Message with enhanced styling -->
+          <div v-if="error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-4 backdrop-blur-sm">
+            <div class="flex items-center">
+              <svg class="h-5 w-5 text-red-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-sm text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
+            </div>
           </div>
-        </div>
 
-        <!-- Error Message -->
-        <div v-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <p class="text-sm text-red-700 dark:text-red-400">{{ error }}</p>
-        </div>
-
-        <!-- Demo Accounts Info -->
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">{{ t('auth.demo_accounts') }}</h4>
-          <div class="space-y-1 text-xs text-blue-700 dark:text-blue-400">
-            <p><strong>{{ t('auth.admin_account') }}:</strong> admin / admin123</p>
-            <p><strong>{{ t('auth.user_account') }}:</strong> user1 / user123</p>
+          <!-- Demo Accounts with enhanced styling -->
+          <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-xl p-5 backdrop-blur-sm">
+            <div class="flex items-center mb-3">
+              <svg class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300">{{ t('auth.demo_accounts') }}</h4>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.admin_account') }}:</span>
+                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">admin / admin123</code>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.user_account') }}:</span>
+                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">user1 / user123</code>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          :disabled="loading"
-          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-        >
-          <span v-if="!loading">{{ t('auth.login') }}</span>
-          <span v-else class="flex items-center">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            {{ t('auth.logging_in') }}
-          </span>
-        </button>
+          <!-- Enhanced Submit Button -->
+          <button
+            type="submit"
+            :disabled="loading"
+            class="group relative w-full flex justify-center py-3.5 px-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] transition-all duration-200"
+          >
+            <span v-if="!loading" class="flex items-center">
+              {{ t('auth.login') }}
+              <svg class="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+            <span v-else class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ t('auth.logging_in') }}
+            </span>
+          </button>
 
-        <!-- Register Link -->
-        <div class="text-center">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ t('auth.no_account') }}
-            <NuxtLink to="/auth/register" class="font-medium text-primary-500 hover:text-primary-600 transition-colors duration-200">
-              {{ t('auth.register') }}
-            </NuxtLink>
-          </p>
-        </div>
-      </form>
+          <!-- Register Link with enhanced styling -->
+          <div class="text-center pt-4 border-t border-gray-200 dark:border-slate-600">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ t('auth.no_account') }}
+              <NuxtLink 
+                to="/auth/register" 
+                class="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200 underline-offset-4 hover:underline"
+              >
+                {{ t('auth.register') }}
+              </NuxtLink>
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer info -->
+      <div class="text-center">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Professional Project Management for Freelancers
+        </p>
+      </div>
     </div>
   </div>
 </template>
