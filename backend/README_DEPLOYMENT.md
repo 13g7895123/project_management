@@ -43,6 +43,61 @@ docker-compose -f docker-compose.prod.yml exec app php artisan route:cache
 docker-compose -f docker-compose.prod.yml exec app php artisan view:cache
 ```
 
+## 資料庫管理
+
+### 互動式資料庫設定
+```bash
+# 運行互動式資料庫設定腳本
+./setup-database.sh
+```
+
+這個腳本提供以下選項：
+1. 僅運行 migrations（安全 - 不會刪除資料）
+2. 運行 migrations 並填充範例資料
+3. 全新安裝（⚠️ 警告：會刪除所有資料）
+4. 僅檢查狀態
+5. 退出
+
+### Laravel 資料庫 Command
+
+新的自訂 command `db:setup` 提供靈活的資料庫管理：
+
+```bash
+# 基本設定（會詢問確認）
+php artisan db:setup
+
+# 強制執行（生產環境）
+php artisan db:setup --force
+
+# 包含範例資料
+php artisan db:setup --seed
+
+# 全新安裝（刪除所有資料表重建）
+php artisan db:setup --fresh --seed
+
+# 在 Docker 容器中執行
+docker-compose -f docker-compose.prod.yml exec app php artisan db:setup --force --seed
+```
+
+### 手動資料庫操作
+
+```bash
+# 檢查 migration 狀態
+php artisan migrate:status
+
+# 運行 migrations
+php artisan migrate --force
+
+# 重置資料庫並重新 migrate
+php artisan migrate:fresh --force
+
+# 填充範例資料
+php artisan db:seed --force
+
+# 只填充特定 seeder
+php artisan db:seed --class=ProjectManagementSeeder --force
+```
+
 ## API 測試
 
 ### 健康檢查
@@ -84,12 +139,35 @@ curl -X POST https://project.mercylife.cc/api/clients \
 
 ## 故障排除
 
+### 資料庫是空的，沒有資料表
+
+**症狀**：API 回傳資料庫連接錯誤，或 `/api/health` 顯示資料表不存在
+
+**解決方法**：
+```bash
+# 1. 使用互動式腳本
+./setup-database.sh
+
+# 2. 或直接運行 Laravel command
+docker-compose -f docker-compose.prod.yml exec app php artisan db:setup --force --seed
+
+# 3. 檢查資料庫狀態
+docker-compose -f docker-compose.prod.yml exec app php artisan db:setup --force
+```
+
+**預期結果**：
+- ✅ users: 1 records
+- ✅ clients: 3 records  
+- ✅ contact_methods: 6 records
+- ✅ projects: 3 records
+
 ### 路由找不到錯誤 "The route clients could not be found"
 
 可能原因：
-1. **Nginx 代理配置**：確保 `/api` 請求正確代理到後端服務
-2. **資料庫連接**：檢查 MySQL 服務是否正常運行
-3. **應用程式未啟動**：檢查 Laravel 應用容器狀態
+1. **資料庫未設定**：使用上方的資料庫設定方法
+2. **Nginx 代理配置**：確保 `/api` 請求正確代理到後端服務
+3. **資料庫連接**：檢查 MySQL 服務是否正常運行
+4. **應用程式未啟動**：檢查 Laravel 應用容器狀態
 
 檢查步驟：
 ```bash

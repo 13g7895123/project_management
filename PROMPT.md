@@ -43,3 +43,4 @@
 28. 幫我加入api的基礎路由為https://project.mercylife.cc/api/，完成後執行第20點
 29. 請確保最後的路由是第28點的資訊，我目前看到的正式環境還是吃docker環境的domain，完成後執行第20點
 30. 後端打了這支api "https://project.mercylife.cc/api/clients"，但她卻報了這個錯誤 "The route clients could not be found."，請後端agent幫我修復他，後端domain與前端是一樣的，只有/api proxy後端服務，完成後執行第20點
+31. 我現在看mysql資料庫都是空的，完全沒有資料表，可以在建置的時候，幫我確認是否要更新資料表嗎，透過laravel的command方式，完成後執行第20點

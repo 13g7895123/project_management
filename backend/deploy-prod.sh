@@ -37,9 +37,9 @@ docker-compose -f docker-compose.prod.yml up -d
 echo "⏳ Waiting for MySQL to be ready..."
 sleep 30
 
-# Run migrations
-echo "🗄️ Running database migrations..."
-docker-compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
+# Set up database with interactive confirmation
+echo "🗄️ Setting up database..."
+docker-compose -f docker-compose.prod.yml exec -T app php artisan db:setup --force --seed
 
 # Optimize Laravel
 echo "⚡ Optimizing Laravel..."
