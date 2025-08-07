@@ -247,4 +247,150 @@ class ClientController extends Controller
             'message' => '業主專案列表獲取成功'
         ]);
     }
+
+    /**
+     * 獲取業主統計資訊
+     */
+    public function stats(Client $client): JsonResponse
+    {
+        // 確保業主屬於當前用戶 (skip check in development if not authenticated)
+        if (auth()->check() && $client->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => '無權限存取此業主統計'
+            ], 403);
+        }
+
+        try {
+            $stats = [
+                'total_projects' => $client->projects()->count(),
+                'completed_projects' => $client->projects()->where('status', 'completed')->count(),
+                'active_projects' => $client->projects()->whereIn('status', ['pending', 'in_progress'])->count(),
+                'total_revenue' => $client->projects()->where('status', 'completed')->sum('amount'),
+                'pending_revenue' => $client->projects()->whereIn('status', ['pending', 'in_progress'])->sum('amount'),
+                'avg_project_value' => $client->projects()->avg('amount'),
+                'contact_methods_count' => $client->contactMethods()->count(),
+                'first_project_date' => $client->projects()->oldest()->first()?->contact_date,
+                'last_project_date' => $client->projects()->latest()->first()?->contact_date,
+                'projects_by_status' => $client->projects()
+                    ->selectRaw('status, count(*) as count')
+                    ->groupBy('status')
+                    ->pluck('count', 'status'),
+                'projects_by_category' => $client->projects()
+                    ->selectRaw('category, count(*) as count, sum(amount) as revenue')
+                    ->groupBy('category')
+                    ->get()
+                    ->keyBy('category')
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+                'message' => '業主統計獲取成功'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '獲取業主統計失敗: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * 新增聯繫方式
+     */
+    public function addContact(Client $client, Request $request): JsonResponse
+    {
+        // 確保業主屬於當前用戶
+        if (auth()->check() && $client->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => '無權限修改此業主'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'type' => 'required|string|in:phone,mobile,email,line,wechat,telegram,other',
+            'value' => 'required|string|max:255',
+            'is_primary' => 'boolean',
+        ]);
+
+        // 如果設為主要聯繫方式，將其他設為非主要
+        if ($validated['is_primary'] ?? false) {
+            $client->contactMethods()->update(['is_primary' => false]);
+        }
+
+        $contact = $client->contactMethods()->create($validated);
+
+        return response()->json([
+            'success' => true,
+            'data' => $contact,
+            'message' => '聯繫方式新增成功'
+        ], 201);
+    }
+
+    /**
+     * 更新聯繫方式
+     */
+    public function updateContact(Client $client, $contactId, Request $request): JsonResponse
+    {
+        // 確保業主屬於當前用戶
+        if (auth()->check() && $client->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => '無權限修改此業主'
+            ], 403);
+        }
+
+        $contact = $client->contactMethods()->findOrFail($contactId);
+
+        $validated = $request->validate([
+            'type' => 'required|string|in:phone,mobile,email,line,wechat,telegram,other',
+            'value' => 'required|string|max:255',
+            'is_primary' => 'boolean',
+        ]);
+
+        // 如果設為主要聯繫方式，將其他設為非主要
+        if ($validated['is_primary'] ?? false) {
+            $client->contactMethods()->where('id', '!=', $contactId)->update(['is_primary' => false]);
+        }
+
+        $contact->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'data' => $contact,
+            'message' => '聯繫方式更新成功'
+        ]);
+    }
+
+    /**
+     * 刪除聯繫方式
+     */
+    public function deleteContact(Client $client, $contactId): JsonResponse
+    {
+        // 確保業主屬於當前用戶
+        if (auth()->check() && $client->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => '無權限修改此業主'
+            ], 403);
+        }
+
+        $contact = $client->contactMethods()->findOrFail($contactId);
+        $wasPrimary = $contact->is_primary;
+        
+        $contact->delete();
+
+        // 如果刪除的是主要聯繫方式，將第一個設為主要
+        if ($wasPrimary) {
+            $client->contactMethods()->first()?->update(['is_primary' => true]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => '聯繫方式刪除成功'
+        ]);
+    }
 }

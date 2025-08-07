@@ -69,19 +69,37 @@ Route::get('test', function () {
 Route::group(['prefix' => '/'], function () {
     // Clients routes
     Route::get('clients/{client}/projects', [ClientController::class, 'projects']);
+    Route::get('clients/{client}/stats', [ClientController::class, 'stats']);
+    Route::post('clients/{client}/contacts', [ClientController::class, 'addContact']);
+    Route::put('clients/{client}/contacts/{contact}', [ClientController::class, 'updateContact']);
+    Route::delete('clients/{client}/contacts/{contact}', [ClientController::class, 'deleteContact']);
     Route::apiResource('clients', ClientController::class);
 
-    // Projects routes - stats route must come before resource routes
+    // Projects routes - specific routes must come before resource routes
     Route::get('projects/stats', [ProjectController::class, 'stats']);
+    Route::get('projects/category/{category}', [ProjectController::class, 'byCategory']);
+    Route::get('projects/status/{status}', [ProjectController::class, 'byStatus']);
+    Route::get('projects/export/{format}', [ProjectController::class, 'export']);
     Route::put('projects/{project}/status', [ProjectController::class, 'updateStatus']);
+    Route::get('projects/{project}/milestones', [ProjectController::class, 'milestones']);
+    Route::post('projects/{project}/milestones', [ProjectController::class, 'createMilestone']);
+    Route::put('projects/{project}/milestones/{milestone}', [ProjectController::class, 'updateMilestone']);
+    Route::delete('projects/{project}/milestones/{milestone}', [ProjectController::class, 'deleteMilestone']);
     Route::apiResource('projects', ProjectController::class);
 
     // Dashboard routes
     Route::get('dashboard/stats', [DashboardController::class, 'stats']);
-    Route::get('dashboard/revenue', [DashboardController::class, 'revenue']);
-    Route::get('dashboard/projects-timeline', [DashboardController::class, 'projectsTimeline']);
+    Route::get('dashboard/clients', [DashboardController::class, 'clients']);
+    Route::get('dashboard/clients/top-revenue', [DashboardController::class, 'topClients']);
     Route::get('dashboard/activities', [DashboardController::class, 'activities']);
+    Route::get('dashboard/deadlines', [DashboardController::class, 'deadlines']);
     Route::get('dashboard/revenue/trend', [DashboardController::class, 'revenueTrend']);
-    Route::get('dashboard/projects/status-distribution', [DashboardController::class, 'statusDistribution']);
     Route::get('dashboard/revenue/by-category', [DashboardController::class, 'categoryBreakdown']);
+    Route::get('dashboard/revenue/{period}', [DashboardController::class, 'revenueByPeriod']);
+    Route::get('dashboard/projects/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('dashboard/projects/{period}', [DashboardController::class, 'projectsByPeriod']);
+    Route::get('dashboard/daily-stats', [DashboardController::class, 'dailyStats']);
+    Route::get('dashboard/weekly-stats', [DashboardController::class, 'weeklyStats']);
+    Route::get('dashboard/yearly-stats', [DashboardController::class, 'yearlyStats']);
+    Route::get('dashboard/projects-timeline', [DashboardController::class, 'projectsTimeline']);
 });

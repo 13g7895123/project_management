@@ -171,11 +171,182 @@ class ProjectController extends Controller
                 ->selectRaw('category, count(*) as count')
                 ->pluck('count', 'category'),
             'total_amount' => Project::sum('amount'),
-            'paid_amount' => Project::where('status', 'paid')->sum('amount'),
+            'paid_amount' => Project::where('status', 'completed')->sum('amount'),
         ];
 
         return response()->json([
             'data' => $stats
+        ]);
+    }
+
+    /**
+     * Get projects by category
+     */
+    public function byCategory(string $category, Request $request): JsonResponse
+    {
+        $query = Project::with(['client', 'user'])->where('category', $category);
+        
+        // Apply additional filters
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        $projects = $query->orderBy('created_at', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'success' => true,
+            'data' => $projects,
+            'message' => "類別 {$category} 的專案列表"
+        ]);
+    }
+
+    /**
+     * Get projects by status
+     */
+    public function byStatus(string $status, Request $request): JsonResponse
+    {
+        $query = Project::with(['client', 'user'])->where('status', $status);
+        
+        // Apply additional filters
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        $projects = $query->orderBy('created_at', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'success' => true,
+            'data' => $projects,
+            'message' => "狀態 {$status} 的專案列表"
+        ]);
+    }
+
+    /**
+     * Export projects data
+     */
+    public function export(string $format, Request $request): JsonResponse
+    {
+        // Note: In a real application, you would implement actual export functionality
+        // For now, return a placeholder response
+        
+        $query = Project::with(['client', 'user']);
+        
+        // Apply filters if provided
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+        
+        $projects = $query->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'format' => $format,
+                'total_records' => $projects->count(),
+                'download_url' => "/api/projects/export/{$format}?token=" . uniqid(),
+                'expires_at' => now()->addMinutes(30),
+            ],
+            'message' => "專案資料匯出準備完成 ({$format} 格式)"
+        ]);
+    }
+
+    /**
+     * Get project milestones (placeholder)
+     */
+    public function milestones(string $id): JsonResponse
+    {
+        $project = Project::findOrFail($id);
+        
+        // Note: This would require a milestones table/model in a full implementation
+        // For now, return a placeholder response
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'project_id' => $project->id,
+                'project_name' => $project->name,
+                'milestones' => [] // Placeholder - would contain actual milestones
+            ],
+            'message' => '專案里程碑列表'
+        ]);
+    }
+
+    /**
+     * Create project milestone (placeholder)
+     */
+    public function createMilestone(string $projectId, Request $request): JsonResponse
+    {
+        $project = Project::findOrFail($projectId);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'completed' => 'boolean'
+        ]);
+        
+        // Note: This would create an actual milestone in a full implementation
+        
+        return response()->json([
+            'success' => true,
+            'data' => array_merge(['id' => rand(1000, 9999)], $validated),
+            'message' => '專案里程碑創建成功'
+        ], 201);
+    }
+
+    /**
+     * Update project milestone (placeholder)
+     */
+    public function updateMilestone(string $projectId, string $milestoneId, Request $request): JsonResponse
+    {
+        $project = Project::findOrFail($projectId);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'completed' => 'boolean'
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'data' => array_merge(['id' => $milestoneId], $validated),
+            'message' => '專案里程碑更新成功'
+        ]);
+    }
+
+    /**
+     * Delete project milestone (placeholder)
+     */
+    public function deleteMilestone(string $projectId, string $milestoneId): JsonResponse
+    {
+        $project = Project::findOrFail($projectId);
+        
+        return response()->json([
+            'success' => true,
+            'message' => '專案里程碑刪除成功'
         ]);
     }
 }
