@@ -41,3 +41,4 @@
 26. 我在/client裡面出現這個錯誤，"Cannot read properties of null (reading 'id')"，其他頁面也有，幫我修復一下，完成後執行第20點
 27. 我在/client/create終點新增聯繫方式沒有反應，另外我希望一進入網站可以是亮色主題的
 28. 幫我加入api的基礎路由為https://project.mercylife.cc/api/，完成後執行第20點
+29. 請確保最後的路由是第28點的資訊，我目前看到的正式環境還是吃docker環境的domain，完成後執行第20點

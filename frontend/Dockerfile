@@ -19,6 +19,13 @@ RUN npm ci
 # Copy source code
 COPY src/ .
 
+# Set production environment variables for build
+ENV NODE_ENV=production
+ENV NUXT_PUBLIC_API_BASE_URL=https://project.mercylife.cc/api
+ENV NUXT_PUBLIC_BACKEND_URL=https://project.mercylife.cc/api
+ENV NUXT_PUBLIC_BACKEND_HOST=project.mercylife.cc
+ENV NUXT_PUBLIC_BACKEND_PORT=443
+
 # Build the application
 RUN npm run build
 
@@ -40,6 +47,13 @@ EXPOSE 3000
 
 ENV PORT 3000
 ENV HOST 0.0.0.0
+ENV NODE_ENV=production
+
+# Set production API configuration
+ENV NUXT_PUBLIC_API_BASE_URL=https://project.mercylife.cc/api
+ENV NUXT_PUBLIC_BACKEND_URL=https://project.mercylife.cc/api
+ENV NUXT_PUBLIC_BACKEND_HOST=project.mercylife.cc
+ENV NUXT_PUBLIC_BACKEND_PORT=443
 
 # Start the application
 CMD ["node", "/app/.output/server/index.mjs"]

@@ -17,13 +17,16 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
-    devProxy: {
-      '/api': {
-        target: 'http://localhost:9018/api',
-        changeOrigin: true,
-        prependPath: true,
+    // Only use proxy in development mode
+    ...(process.env.NODE_ENV !== 'production' && {
+      devProxy: {
+        '/api': {
+          target: 'http://localhost:9018/api',
+          changeOrigin: true,
+          prependPath: true,
+        }
       }
-    }
+    })
   },
   colorMode: {
     preference: 'light', // Default to light mode
