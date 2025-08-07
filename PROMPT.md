@@ -35,3 +35,4 @@
 20. add commit push，記得不要加上「Generated with Claude Code」的標記
 21. 我目前推上去後在vps上面沒有看到有更新的功能，會建議怎麼執行測試呢
 22. 幫我在這個表單旁邊補上一個填入假資料的功能，然後執行第20點
+23. 前端使用的一堆api都顯示404，請backend agennt與frontend agent溝通一下，確認是哪邊的問題，並修正完全，目前先以/projects/create這個頁面用到的先處理，完成後執行第20點

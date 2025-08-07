@@ -11,6 +11,12 @@ services:
       - NODE_ENV=production
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
+      # Backend API Configuration
+      - NUXT_PUBLIC_API_BASE_URL=${BACKEND_URL:-http://localhost:9018/api}
+      - NUXT_PUBLIC_BACKEND_URL=${BACKEND_URL:-http://localhost:9018/api}
+      - NUXT_PUBLIC_BACKEND_HOST=${BACKEND_HOST:-localhost}
+      - NUXT_PUBLIC_BACKEND_PORT=${BACKEND_PORT:-9018}
+      - BACKEND_API_URL=${BACKEND_URL:-http://localhost:9018/api}
     volumes:
       # Mount source code for development (comment out for production)
       - ./src:/app/src:ro
@@ -30,6 +36,12 @@ services:
       - NODE_ENV=development
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
+      # Backend API Configuration for Development
+      - NUXT_PUBLIC_API_BASE_URL=${BACKEND_URL:-http://localhost:9018/api}
+      - NUXT_PUBLIC_BACKEND_URL=${BACKEND_URL:-http://localhost:9018/api}
+      - NUXT_PUBLIC_BACKEND_HOST=${BACKEND_HOST:-localhost}
+      - NUXT_PUBLIC_BACKEND_PORT=${BACKEND_PORT:-9018}
+      - BACKEND_API_URL=${BACKEND_URL:-http://localhost:9018/api}
     volumes:
       - ./src:/app:rw
       - /app/node_modules

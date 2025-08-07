@@ -10,7 +10,10 @@ export default defineNuxtConfig({
     // Private keys (only available on server-side)
     // Public keys (exposed to client-side)
     public: {
-      apiBaseUrl: process.env.BACKEND_API_URL || '/api'
+      apiBaseUrl: process.env.BACKEND_API_URL || '/api',
+      backendUrl: process.env.BACKEND_URL || process.env.BACKEND_API_URL,
+      backendHost: process.env.BACKEND_HOST || 'localhost',
+      backendPort: process.env.BACKEND_PORT || '9018'
     }
   },
   nitro: {

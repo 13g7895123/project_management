@@ -23,7 +23,10 @@
       "Bash(find:*)",
       "Bash(npm run:*)",
       "Bash(npm install)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(git reset:*)",
+      "Bash(rm:*)",
+      "Bash(true)"
     ],
     "deny": []
   }
