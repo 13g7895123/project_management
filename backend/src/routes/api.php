@@ -36,4 +36,8 @@ Route::group(['prefix' => '/'], function () {
     Route::get('dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('dashboard/revenue', [DashboardController::class, 'revenue']);
     Route::get('dashboard/projects-timeline', [DashboardController::class, 'projectsTimeline']);
+    Route::get('dashboard/activities', [DashboardController::class, 'activities']);
+    Route::get('dashboard/revenue/trend', [DashboardController::class, 'revenueTrend']);
+    Route::get('dashboard/projects/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('dashboard/revenue/by-category', [DashboardController::class, 'categoryBreakdown']);
 });

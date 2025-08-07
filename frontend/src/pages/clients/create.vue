@@ -196,7 +196,7 @@ const removeContact = (index) => {
   form.value.contacts.splice(index, 1)
   
   // 如果刪除的是主要聯繫方式，將第一個設為主要
-  if (wasprimary && form.value.contacts.length > 0) {
+  if (wasPrimary && form.value.contacts.length > 0) {
     form.value.contacts[0].is_primary = true
   }
 }
@@ -225,6 +225,8 @@ const getContactPlaceholder = (type) => {
   return placeholders[type] || '請輸入聯繫資訊'
 }
 
+const { createClient } = useClients()
+
 const submitForm = async () => {
   try {
     isSubmitting.value = true
@@ -235,17 +237,18 @@ const submitForm = async () => {
       return
     }
     
-    // 這裡應該呼叫 API 來儲存業主資料
-    console.log('提交業主資料:', form.value)
+    // 呼叫 API 來儲存業主資料
+    const response = await createClient(form.value)
     
-    // 模擬 API 請求
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // 成功後導向業主列表
-    await navigateTo('/clients')
+    if (response.success) {
+      // 成功後導向業主列表
+      await navigateTo('/clients')
+    } else {
+      alert(response.error?.message || '儲存業主失敗')
+    }
   } catch (error) {
     console.error('儲存業主失敗:', error)
-    // 這裡應該顯示錯誤訊息
+    alert('儲存業主失敗，請稍後再試')
   } finally {
     isSubmitting.value = false
   }
