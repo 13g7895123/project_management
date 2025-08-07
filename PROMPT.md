@@ -45,3 +45,4 @@
 30. 後端打了這支api "https://project.mercylife.cc/api/clients"，但她卻報了這個錯誤 "The route clients could not be found."，請後端agent幫我修復他，後端domain與前端是一樣的，只有/api proxy後端服務，完成後執行第20點
 31. 我現在看mysql資料庫都是空的，完全沒有資料表，可以在建置的時候，幫我確認是否要更新資料表嗎，透過laravel的command方式，完成後執行第20點
 32. 我在後端沒有看到/clients這支api，前端卻呼叫了，後端是laravel專案，請幫我重新確認並修復，包含該專案的所有api，請backend agent與frontend agent溝通並解決這個問題，完成後執行第20點
+33. 後端改完後，麻煩frontend agent確認前端是否都有使用對應的api，如果有缺請後端補上，完成後執行第20點
