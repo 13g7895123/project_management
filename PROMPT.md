@@ -33,3 +33,5 @@
 18. 後端路徑請直接使用/api即可
 19. /projects/create這個頁面的提交並沒有打到API並更新資料庫，請幫我讀取backend資料夾的後端專案後完善他，可以請frontend agent處理
 20. add commit push，記得不要加上「Generated with Claude Code」的標記
+21. 我目前推上去後在vps上面沒有看到有更新的功能，會建議怎麼執行測試呢
+22. 幫我在這個表單旁邊補上一個填入假資料的功能，然後執行第20點

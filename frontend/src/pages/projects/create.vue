@@ -1,17 +1,31 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="flex items-center space-x-4">
-      <button
-        @click="$router.back()"
-        class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-      >
-        <ArrowLeftIcon class="w-5 h-5" />
-      </button>
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增專案</h1>
-        <p class="text-gray-600 dark:text-gray-300">建立新的專案記錄</p>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <button
+          @click="$router.back()"
+          class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <ArrowLeftIcon class="w-5 h-5" />
+        </button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增專案</h1>
+          <p class="text-gray-600 dark:text-gray-300">建立新的專案記錄</p>
+        </div>
       </div>
+      <!-- Fake Data Button -->
+      <button
+        @click="fillFakeData"
+        type="button"
+        class="px-4 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2"
+        title="填入測試資料"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span>填入假資料</span>
+      </button>
     </div>
 
     <!-- Success/Error Messages -->
@@ -294,6 +308,78 @@ const submitForm = async () => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+// 假資料範例
+const fakeDataTemplates = [
+  {
+    name: '電商平台重構專案',
+    description: '重新設計並開發電商平台，包含前後端系統、金流整合、會員系統等功能。預計使用 Vue.js + Laravel 技術棧。',
+    category: 'website',
+    amount: 120000,
+    status: 'contacted'
+  },
+  {
+    name: '自動化部署腳本開發',
+    description: '開發 CI/CD 自動化部署腳本，包含 Docker 容器化、GitHub Actions 設定、監控告警系統等。',
+    category: 'script',
+    amount: 45000,
+    status: 'in_progress'
+  },
+  {
+    name: '雲端伺服器架設與維護',
+    description: '在 AWS 上架設高可用性伺服器架構，包含負載平衡、資料庫叢集、備份策略規劃。',
+    category: 'server',
+    amount: 85000,
+    status: 'completed'
+  },
+  {
+    name: '企業內部管理系統',
+    description: '開發客製化的企業內部管理系統，包含人事管理、財務報表、專案追蹤等模組。',
+    category: 'custom',
+    amount: 200000,
+    status: 'paid'
+  },
+  {
+    name: '行動 App 開發專案',
+    description: '開發跨平台行動應用程式，支援 iOS 和 Android 系統，包含即時通訊、地圖整合、推播通知等功能。',
+    category: 'website',
+    amount: 180000,
+    status: 'contacted'
+  }
+]
+
+// 填入假資料功能
+const fillFakeData = () => {
+  const randomTemplate = fakeDataTemplates[Math.floor(Math.random() * fakeDataTemplates.length)]
+  const randomClient = clients.value.length > 0 ? clients.value[Math.floor(Math.random() * clients.value.length)] : null
+  
+  // 產生隨機日期
+  const today = new Date()
+  const contactDate = new Date(today.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000) // 過去30天內
+  const startDate = new Date(contactDate.getTime() + Math.random() * 14 * 24 * 60 * 60 * 1000) // 接洽後14天內開始
+  const completionDate = new Date(startDate.getTime() + (Math.random() * 60 + 30) * 24 * 60 * 60 * 1000) // 開始後30-90天完成
+  const paymentDate = new Date(completionDate.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000) // 完成後30天內收款
+  
+  // 填入表單資料
+  form.value = {
+    name: randomTemplate.name,
+    client_id: randomClient ? randomClient.id : '',
+    description: randomTemplate.description,
+    category: randomTemplate.category,
+    amount: randomTemplate.amount,
+    contact_date: contactDate.toISOString().split('T')[0],
+    start_date: randomTemplate.status !== 'contacted' ? startDate.toISOString().split('T')[0] : '',
+    completion_date: ['completed', 'paid'].includes(randomTemplate.status) ? completionDate.toISOString().split('T')[0] : '',
+    payment_date: randomTemplate.status === 'paid' ? paymentDate.toISOString().split('T')[0] : '',
+    status: randomTemplate.status
+  }
+  
+  // 顯示提示訊息
+  successMessage.value = '已填入測試資料，您可以直接提交或修改後提交'
+  setTimeout(() => {
+    successMessage.value = ''
+  }, 3000)
 }
 
 // 設定今天的日期為預設接洽日期並載入業主列表
