@@ -66,6 +66,10 @@
 </template>
 
 <script setup>
+// Page metadata
+definePageMeta({
+  middleware: 'auth'
+})
 import {
   UsersIcon,
   CurrencyDollarIcon,

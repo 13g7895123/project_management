@@ -39,3 +39,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+// Page metadata
+definePageMeta({
+  middleware: 'auth'
+})
+</script>

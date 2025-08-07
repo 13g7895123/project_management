@@ -152,6 +152,10 @@
 </template>
 
 <script setup>
+// Page metadata
+definePageMeta({
+  middleware: 'auth'
+})
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 const { getProjects, deleteProject } = useProjects()

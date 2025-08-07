@@ -1,11 +1,12 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
   
   // 初始化認證狀態
-  authStore.initializeAuth()
+  await authStore.initializeAuth()
   
-  // 如果已經登入，重定向到首頁
+  // 如果已經登入且token有效，重定向到仟表板
   if (authStore.isLoggedIn) {
-    return navigateTo('/')
+    console.log('[Guest Middleware] User is authenticated, redirecting to dashboard')
+    return navigateTo('/dashboard/analytics')
   }
 })

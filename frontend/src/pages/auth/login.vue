@@ -96,11 +96,11 @@
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.admin_account') }}:</span>
-                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">admin / admin123</code>
+                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">admin / password</code>
               </div>
               <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.user_account') }}:</span>
-                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">user1 / user123</code>
+                <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.email_login') }}:</span>
+                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">admin@example.com / password</code>
               </div>
             </div>
           </div>
@@ -173,21 +173,30 @@ const handleLogin = async () => {
     loading.value = true
     error.value = ''
     
+    // Validate form data
+    if (!form.value.username || !form.value.password) {
+      throw new Error('請輸入用戶名和密碼')
+    }
+    
+    // Attempt login
     await authStore.login(form.value)
     
     // 重定向到首頁
-    await navigateTo('/')
+    await navigateTo('/dashboard/analytics')
   } catch (err) {
-    error.value = err.message
+    error.value = err.message || '登入失敗，請檢查您的登入資訊'
+    console.error('Login error:', err)
   } finally {
     loading.value = false
   }
 }
 
-// 如果已經登入，重定向到首頁
-onMounted(() => {
+// 初始化認證狀態並檢查是否已登入
+onMounted(async () => {
+  await authStore.initializeAuth()
+  
   if (authStore.isLoggedIn) {
-    navigateTo('/')
+    await navigateTo('/dashboard/analytics')
   }
 })
 </script>

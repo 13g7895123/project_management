@@ -204,6 +204,10 @@
 </template>
 
 <script setup>
+// Page metadata
+definePageMeta({
+  middleware: 'auth'
+})
 import {
   MagnifyingGlassIcon,
   ShieldExclamationIcon,

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\DashboardController;
@@ -18,8 +19,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Authentication routes (public)
+Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/register', [AuthController::class, 'register']);
+
+// Authenticated routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('auth/logout', [AuthController::class, 'logout']);
+    Route::post('auth/logout-all', [AuthController::class, 'logoutAll']);
+    Route::get('auth/me', [AuthController::class, 'me']);
+    Route::post('auth/refresh', [AuthController::class, 'refresh']);
+    Route::put('auth/change-password', [AuthController::class, 'changePassword']);
+    
+    // Legacy user endpoint for compatibility
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
 
 // Health check and test routes
@@ -66,18 +81,16 @@ Route::get('test', function () {
     ]);
 });
 
-// Profile routes (authenticated)
+// Protected admin routes - require authentication
 Route::middleware('auth:sanctum')->group(function () {
+    // Profile routes
     Route::get('profile', [ProfileController::class, 'show']);
     Route::put('profile', [ProfileController::class, 'update']);
     Route::post('profile/avatar', [ProfileController::class, 'uploadAvatar']);
     Route::delete('profile/avatar', [ProfileController::class, 'removeAvatar']);
     Route::put('profile/password', [ProfileController::class, 'changePassword']);
     Route::delete('profile', [ProfileController::class, 'deleteAccount']);
-});
-
-// Public routes (for development - add auth middleware as needed)
-Route::group(['prefix' => '/'], function () {
+    
     // Clients routes
     Route::get('clients/{client}/projects', [ClientController::class, 'projects']);
     Route::get('clients/{client}/stats', [ClientController::class, 'stats']);
@@ -114,3 +127,4 @@ Route::group(['prefix' => '/'], function () {
     Route::get('dashboard/yearly-stats', [DashboardController::class, 'yearlyStats']);
     Route::get('dashboard/projects-timeline', [DashboardController::class, 'projectsTimeline']);
 });
+

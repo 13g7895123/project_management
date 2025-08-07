@@ -205,8 +205,8 @@
           class="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
         >
           <img
-            :src="user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=6366f1&color=fff`"
-            :alt="user?.name || 'User Avatar'"
+            :src="user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || user?.username || 'User')}&background=6366f1&color=fff`"
+            :alt="user?.name || user?.username || 'User Avatar'"
             class="w-8 h-8 rounded-full object-cover"
           />
           <ChevronDownIcon class="w-4 h-4 hidden sm:block" />
@@ -225,6 +225,16 @@
             v-if="showUserMenu"
             class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
           >
+            <!-- User info section -->
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ user?.name || user?.username || 'User' }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ user?.email }}
+              </p>
+            </div>
+            
             <NuxtLink
               to="/profile"
               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -434,9 +444,15 @@ const closeUserMenu = () => {
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
 
-const logout = () => {
-  authStore.logout()
-  showUserMenu.value = false
+const logout = async () => {
+  try {
+    showUserMenu.value = false
+    await authStore.logout()
+  } catch (error) {
+    console.error('Logout error:', error)
+    // Even if logout API fails, we still clear local state and redirect
+    await authStore.logout(true) // Skip API call
+  }
 }
 
 const getNotificationIcon = (iconName) => {

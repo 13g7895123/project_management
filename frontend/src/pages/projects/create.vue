@@ -242,6 +242,10 @@
 </template>
 
 <script setup>
+// Page metadata
+definePageMeta({
+  middleware: 'auth'
+})
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 const { createProject } = useProjects()

@@ -138,6 +138,10 @@
 </template>
 
 <script setup>
+// Page metadata
+definePageMeta({
+  middleware: 'auth'
+})
 import { TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 const settingsStore = useSettingsStore()

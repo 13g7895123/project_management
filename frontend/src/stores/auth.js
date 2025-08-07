@@ -1,244 +1,253 @@
 export const useAuthStore = defineStore('auth', () => {
   // 用戶狀態
   const user = ref(null)
-  const isLoggedIn = computed(() => !!user.value)
+  const token = ref(null)
+  const isLoggedIn = computed(() => !!user.value && !!token.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
+  const isLoading = ref(false)
   
-  // 模擬用戶數據
-  const mockUsers = ref([
-    {
-      id: 1,
-      username: 'admin',
-      email: 'admin@example.com',
-      password: 'admin123',
-      name: '管理員',
-      role: 'admin',
-      avatar: 'https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff',
-      createdAt: new Date('2024-01-01'),
-      lastLogin: new Date(),
-      status: 'active'
-    },
-    {
-      id: 2,
-      username: 'user1',
-      email: 'user1@example.com',
-      password: 'user123',
-      name: '使用者一',
-      role: 'user',
-      avatar: 'https://ui-avatars.com/api/?name=User1&background=22c55e&color=fff',
-      createdAt: new Date('2024-01-15'),
-      lastLogin: new Date(Date.now() - 86400000), // 1 day ago
-      status: 'active'
-    },
-    {
-      id: 3,
-      username: 'user2',
-      email: 'user2@example.com',
-      password: 'user123',
-      name: '使用者二',
-      role: 'user',
-      avatar: 'https://ui-avatars.com/api/?name=User2&background=f97316&color=fff',
-      createdAt: new Date('2024-02-01'),
-      lastLogin: new Date(Date.now() - 172800000), // 2 days ago
-      status: 'inactive'
-    }
-  ])
+  // Token storage keys
+  const TOKEN_KEY = 'auth_token'
+  const USER_KEY = 'auth_user'
 
   // 登入功能
   const login = async (credentials) => {
     try {
-      // 模擬 API 延遲
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      isLoading.value = true
       
-      // 查找用戶
-      const foundUser = mockUsers.value.find(u => 
-        (u.username === credentials.username || u.email === credentials.username) &&
-        u.password === credentials.password
-      )
-      
-      if (!foundUser) {
-        throw new Error('用戶名或密碼錯誤')
+      // 準備登入數據 - 後端期望 'login' 字段而非 'username'
+      const loginData = {
+        login: credentials.username,
+        password: credentials.password
       }
       
-      if (foundUser.status === 'inactive') {
-        throw new Error('帳戶已被停用')
+      // 使用API composable進行登入
+      const { post } = useApi()
+      const response = await post('/auth/login', loginData)
+      
+      if (!response.success) {
+        throw new Error(response.error?.message || '登入失敗')
       }
       
-      // 更新最後登入時間
-      foundUser.lastLogin = new Date()
+      const { user: userData, token: userToken } = response.data.data
       
-      // 設定用戶資料 (不包含密碼)
-      const { password, ...userWithoutPassword } = foundUser
-      user.value = userWithoutPassword
+      // 設定用戶資料和token
+      user.value = userData
+      token.value = userToken
       
       // 儲存到 localStorage
       if (process.client) {
-        localStorage.setItem('admin-template-user', JSON.stringify(userWithoutPassword))
+        localStorage.setItem(TOKEN_KEY, userToken)
+        localStorage.setItem(USER_KEY, JSON.stringify(userData))
       }
       
-      return { success: true, user: userWithoutPassword }
+      return { success: true, user: userData, token: userToken }
     } catch (error) {
-      throw error
+      console.error('Login error:', error)
+      throw new Error(error.message || '登入失敗')
+    } finally {
+      isLoading.value = false
     }
   }
 
   // 註冊功能
   const register = async (userData) => {
     try {
-      // 模擬 API 延遲
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      isLoading.value = true
       
-      // 檢查用戶名和郵箱是否已存在
-      const existingUser = mockUsers.value.find(u => 
-        u.username === userData.username || u.email === userData.email
-      )
+      // 使用API composable進行註冊
+      const { post } = useApi()
+      const response = await post('/auth/register', userData)
       
-      if (existingUser) {
-        throw new Error('用戶名或郵箱已存在')
+      if (!response.success) {
+        const errorMessage = response.error?.message || '註冊失敗'
+        throw new Error(errorMessage)
       }
       
-      // 創建新用戶
-      const newUser = {
-        id: Math.max(...mockUsers.value.map(u => u.id)) + 1,
-        username: userData.username,
-        email: userData.email,
-        password: userData.password,
-        name: userData.name || userData.username,
-        role: 'user',
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || userData.username)}&background=6366f1&color=fff`,
-        createdAt: new Date(),
-        lastLogin: new Date(),
-        status: 'active'
-      }
+      const { user: registeredUser, token: userToken } = response.data.data
       
-      mockUsers.value.push(newUser)
-      
-      // 自動登入
-      const { password, ...userWithoutPassword } = newUser
-      user.value = userWithoutPassword
+      // 設定用戶資料和token
+      user.value = registeredUser
+      token.value = userToken
       
       // 儲存到 localStorage
       if (process.client) {
-        localStorage.setItem('admin-template-user', JSON.stringify(userWithoutPassword))
+        localStorage.setItem(TOKEN_KEY, userToken)
+        localStorage.setItem(USER_KEY, JSON.stringify(registeredUser))
       }
       
-      return { success: true, user: userWithoutPassword }
+      return { success: true, user: registeredUser, token: userToken }
     } catch (error) {
-      throw error
+      console.error('Registration error:', error)
+      throw new Error(error.message || '註冊失敗')
+    } finally {
+      isLoading.value = false
     }
   }
 
   // 登出功能
-  const logout = () => {
-    user.value = null
-    
-    // 清除 localStorage
-    if (process.client) {
-      localStorage.removeItem('admin-template-user')
+  const logout = async (skipApiCall = false) => {
+    try {
+      // 如果有token且不跳過API調用，則調用後端登出
+      if (token.value && !skipApiCall) {
+        const { post } = useApi()
+        await post('/auth/logout')
+      }
+    } catch (error) {
+      console.error('Logout API error:', error)
+      // 即使API調用失敗，仍然清除本地狀態
+    } finally {
+      // 清除所有認證狀態
+      user.value = null
+      token.value = null
+      
+      // 清除 localStorage
+      if (process.client) {
+        localStorage.removeItem(TOKEN_KEY)
+        localStorage.removeItem(USER_KEY)
+      }
+      
+      // 重定向到登入頁面
+      await navigateTo('/auth/login')
     }
-    
-    // 重定向到登入頁面
-    navigateTo('/auth/login')
   }
 
+  // 獲取當前用戶信息
+  const fetchUser = async () => {
+    try {
+      if (!token.value) return null
+      
+      const { get } = useApi()
+      const response = await get('/auth/me')
+      
+      if (!response.success) {
+        throw new Error('Failed to fetch user data')
+      }
+      
+      const userData = response.data.data.user
+      user.value = userData
+      
+      // 更新 localStorage 中的用戶資料
+      if (process.client) {
+        localStorage.setItem(USER_KEY, JSON.stringify(userData))
+      }
+      
+      return userData
+    } catch (error) {
+      console.error('Fetch user error:', error)
+      // 如果獲取用戶資料失敗，清除認證狀態
+      await logout(true)
+      return null
+    }
+  }
+  
   // 初始化用戶狀態
-  const initializeAuth = () => {
+  const initializeAuth = async () => {
     if (process.client) {
-      const savedUser = localStorage.getItem('admin-template-user')
-      if (savedUser) {
+      const savedToken = localStorage.getItem(TOKEN_KEY)
+      const savedUser = localStorage.getItem(USER_KEY)
+      
+      if (savedToken && savedUser) {
         try {
+          token.value = savedToken
           user.value = JSON.parse(savedUser)
+          
+          // 驗證token是否仍然有效
+          await fetchUser()
         } catch (error) {
-          console.error('Failed to parse saved user data:', error)
-          localStorage.removeItem('admin-template-user')
+          console.error('Failed to parse saved auth data:', error)
+          await logout(true)
         }
       }
     }
   }
 
-  // 用戶管理功能 (僅管理員)
-  const getAllUsers = () => {
-    if (!isAdmin.value) {
-      throw new Error('權限不足')
-    }
-    return mockUsers.value.map(({ password, ...user }) => user)
-  }
-
-  const updateUser = (userId, updates) => {
-    if (!isAdmin.value && user.value?.id !== userId) {
-      throw new Error('權限不足')
-    }
-    
-    const userIndex = mockUsers.value.findIndex(u => u.id === userId)
-    if (userIndex === -1) {
-      throw new Error('用戶不存在')
-    }
-    
-    // 更新用戶資料
-    Object.assign(mockUsers.value[userIndex], updates)
-    
-    // 如果更新的是當前用戶，同步更新 user 狀態
-    if (user.value?.id === userId) {
-      const { password, ...updatedUser } = mockUsers.value[userIndex]
+  // 更新用戶資料
+  const updateProfile = async (profileData) => {
+    try {
+      const { put } = useApi()
+      const response = await put('/profile', profileData)
+      
+      if (!response.success) {
+        throw new Error(response.error?.message || '更新失敗')
+      }
+      
+      const updatedUser = response.data.data.user
       user.value = updatedUser
       
+      // 更新 localStorage
       if (process.client) {
-        localStorage.setItem('admin-template-user', JSON.stringify(updatedUser))
+        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser))
       }
+      
+      return { success: true, user: updatedUser }
+    } catch (error) {
+      console.error('Update profile error:', error)
+      throw new Error(error.message || '更新失敗')
     }
-    
-    return mockUsers.value[userIndex]
   }
-
-  const deleteUser = (userId) => {
-    if (!isAdmin.value) {
-      throw new Error('權限不足')
+  
+  // 更改密碼
+  const changePassword = async (passwordData) => {
+    try {
+      const { post } = useApi()
+      const response = await post('/auth/change-password', passwordData)
+      
+      if (!response.success) {
+        throw new Error(response.error?.message || '密碼更改失敗')
+      }
+      
+      return { success: true, message: '密碼更改成功' }
+    } catch (error) {
+      console.error('Change password error:', error)
+      throw new Error(error.message || '密碼更改失敗')
     }
-    
-    if (user.value?.id === userId) {
-      throw new Error('無法刪除自己的帳戶')
-    }
-    
-    const userIndex = mockUsers.value.findIndex(u => u.id === userId)
-    if (userIndex === -1) {
-      throw new Error('用戶不存在')
-    }
-    
-    mockUsers.value.splice(userIndex, 1)
-    return true
   }
-
-  const toggleUserStatus = (userId) => {
-    if (!isAdmin.value) {
-      throw new Error('權限不足')
+  
+  // 刷新token
+  const refreshToken = async () => {
+    try {
+      const { post } = useApi()
+      const response = await post('/auth/refresh')
+      
+      if (!response.success) {
+        throw new Error('Token refresh failed')
+      }
+      
+      const newToken = response.data.data.token
+      token.value = newToken
+      
+      // 更新 localStorage
+      if (process.client) {
+        localStorage.setItem(TOKEN_KEY, newToken)
+      }
+      
+      return newToken
+    } catch (error) {
+      console.error('Refresh token error:', error)
+      await logout(true)
+      throw error
     }
-    
-    const userToUpdate = mockUsers.value.find(u => u.id === userId)
-    if (!userToUpdate) {
-      throw new Error('用戶不存在')
-    }
-    
-    userToUpdate.status = userToUpdate.status === 'active' ? 'inactive' : 'active'
-    return userToUpdate
   }
 
   return {
     // 狀態
     user: readonly(user),
+    token: readonly(token),
     isLoggedIn,
     isAdmin,
-    mockUsers: readonly(mockUsers),
+    isLoading: readonly(isLoading),
     
-    // 方法
+    // 認證方法
     login,
     register,
     logout,
     initializeAuth,
+    fetchUser,
     
     // 用戶管理
-    getAllUsers,
-    updateUser,
-    deleteUser,
-    toggleUserStatus
+    updateProfile,
+    changePassword,
+    refreshToken
   }
 })

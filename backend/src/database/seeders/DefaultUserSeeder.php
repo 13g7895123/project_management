@@ -16,11 +16,12 @@ class DefaultUserSeeder extends Seeder
             'email' => 'admin@example.com'
         ], [
             'name' => 'Default Admin',
+            'username' => 'admin',
             'email' => 'admin@example.com',
             'password' => \Hash::make('password'),
             'email_verified_at' => now(),
         ]);
         
-        echo "Created default user: admin@example.com / password\n";
+        echo "Created default user: admin@example.com (username: admin) / password\n";
     }
 }

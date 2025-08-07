@@ -1,42 +1,53 @@
 /**
- * Authentication API composable
+ * Authentication API composable - Updated to match Laravel backend
  */
 export const useAuth = () => {
-  const { post, get } = useApi()
+  const { post, get, put } = useApi()
 
   /**
-   * Login user
+   * Login user with email/username and password
    */
   const login = async (credentials) => {
-    return await post('/auth/login', credentials)
+    const loginData = {
+      login: credentials.username || credentials.email, // Backend expects 'login' field
+      password: credentials.password
+    }
+    return await post('/auth/login', loginData)
   }
 
   /**
-   * Register user
+   * Register new user
    */
   const register = async (userData) => {
     return await post('/auth/register', userData)
   }
 
   /**
-   * Logout user
+   * Logout current user
    */
   const logout = async () => {
     return await post('/auth/logout')
   }
 
   /**
-   * Get current user profile
+   * Logout from all devices
    */
-  const getProfile = async () => {
-    return await get('/auth/profile')
+  const logoutAll = async () => {
+    return await post('/auth/logout-all')
   }
 
   /**
-   * Update user profile
+   * Get current authenticated user data
+   */
+  const getCurrentUser = async () => {
+    return await get('/auth/me')
+  }
+
+  /**
+   * Update user profile (using profile endpoint)
    */
   const updateProfile = async (profileData) => {
-    return await post('/auth/profile', profileData)
+    return await put('/profile', profileData)
   }
 
   /**
@@ -47,43 +58,74 @@ export const useAuth = () => {
   }
 
   /**
-   * Request password reset
-   */
-  const requestPasswordReset = async (email) => {
-    return await post('/auth/forgot-password', { email })
-  }
-
-  /**
-   * Reset password
-   */
-  const resetPassword = async (resetData) => {
-    return await post('/auth/reset-password', resetData)
-  }
-
-  /**
-   * Refresh token
+   * Refresh authentication token
    */
   const refreshToken = async () => {
     return await post('/auth/refresh')
   }
 
   /**
-   * Verify email
+   * Request password reset (if implemented in backend)
+   */
+  const requestPasswordReset = async (email) => {
+    return await post('/auth/forgot-password', { email })
+  }
+
+  /**
+   * Reset password with token (if implemented in backend)
+   */
+  const resetPassword = async (resetData) => {
+    return await post('/auth/reset-password', resetData)
+  }
+
+  /**
+   * Verify email address (if implemented in backend)
    */
   const verifyEmail = async (token) => {
     return await post('/auth/verify-email', { token })
   }
 
+  /**
+   * Check if user is authenticated by trying to fetch user data
+   */
+  const checkAuth = async () => {
+    try {
+      const response = await getCurrentUser()
+      return response.success && response.data?.user
+    } catch (error) {
+      return false
+    }
+  }
+
+  /**
+   * Validate authentication token
+   */
+  const validateToken = async () => {
+    return await checkAuth()
+  }
+
   return {
+    // Core authentication
     login,
     register,
     logout,
-    getProfile,
+    logoutAll,
+    getCurrentUser,
+    checkAuth,
+    validateToken,
+    
+    // Profile management
     updateProfile,
     changePassword,
+    
+    // Token management
+    refreshToken,
+    
+    // Password reset (optional - depends on backend implementation)
     requestPasswordReset,
     resetPassword,
-    refreshToken,
+    
+    // Email verification (optional - depends on backend implementation)
     verifyEmail
   }
 }
