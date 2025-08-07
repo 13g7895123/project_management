@@ -32,7 +32,7 @@ return new class extends Migration
             $table->index(['client_id']);
             $table->index(['status']);
             $table->index(['category']);
-            $table->index(['contact_date', 'start_date', 'completion_date', 'payment_date'], 'projects_dates_index');
+            $table->index(['contact_date', 'start_date', 'completion_date', 'payment_date'], 'projects_dates_idx');
             $table->index(['amount']);
             $table->index(['is_active']);
         });

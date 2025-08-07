@@ -50,8 +50,8 @@ RUN if [ ! -f .env ]; then cp .env.example .env; fi
 RUN php artisan key:generate --force
 
 # Copy and set up entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -75,5 +75,5 @@ RUN mkdir -p /var/log/supervisor
 # Expose port 8000
 EXPOSE 8000
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
