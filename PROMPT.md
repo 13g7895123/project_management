@@ -31,4 +31,5 @@
 16. 幫我為這個前端寫一個可以執行的docker-compose檔案，完成後add commit push，記得不要加上「Generated with Claude Code」的標記
 17. 請幫我把前端所有使用到的api，整理進composables中統一管理
 18. 後端路徑請直接使用/api即可
-19. 測試部屬
+19. /projects/create這個頁面的提交並沒有打到API並更新資料庫，請幫我讀取backend資料夾的後端專案後完善他，可以請frontend agent處理
+20. add commit push，記得不要加上「Generated with Claude Code」的標記

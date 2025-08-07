@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy via SSH
         run: |
-          ssh -p 8022 -i ~/.ssh/id_ed25519 jarvis@172.105.120.61 << 'EOF'
+          ssh -p 8022 -i ~/.ssh/id_ed25519 -o ServerAliveInterval=60 -o ServerAliveCountMax= jarvis@172.105.120.61 << 'EOF'
             cd /home/jarvis/project/project_management/frontend
             git pull
             docker compose down

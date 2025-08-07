@@ -13,6 +13,15 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.BACKEND_API_URL || '/api'
     }
   },
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'http://localhost:9018/api',
+        changeOrigin: true,
+        prependPath: true,
+      }
+    }
+  },
   colorMode: {
     preference: 'system',
     fallback: 'light',

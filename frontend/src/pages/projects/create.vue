@@ -14,6 +14,33 @@
       </div>
     </div>
 
+    <!-- Success/Error Messages -->
+    <div v-if="successMessage" class="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ successMessage }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="errorMessage" class="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 rounded-md p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ errorMessage }}</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Form -->
     <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm">
       <form @submit.prevent="submitForm" class="p-6 space-y-6">
@@ -203,13 +230,13 @@
 <script setup>
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
-// Mock clients data - 實際應用中應從 API 獲取
-const clients = ref([
-  { id: 1, name: 'ABC公司' },
-  { id: 2, name: 'XYZ企業' },
-  { id: 3, name: '123公司' }
-])
+const { createProject } = useProjects()
+const { getClients } = useClients()
 
+// 業主列表
+const clients = ref([])
+
+// 表單資料
 const form = ref({
   name: '',
   client_id: '',
@@ -224,30 +251,55 @@ const form = ref({
 })
 
 const isSubmitting = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
+
+// 載入業主列表
+const loadClients = async () => {
+  try {
+    const response = await getClients()
+    if (response.success) {
+      clients.value = response.data.data
+    } else {
+      clients.value = []
+    }
+  } catch (error) {
+    console.error('載入業主失敗:', error)
+    clients.value = []
+  }
+}
 
 const submitForm = async () => {
   try {
     isSubmitting.value = true
+    errorMessage.value = ''
+    successMessage.value = ''
     
-    // 這裡應該呼叫 API 來儲存專案
-    console.log('提交專案資料:', form.value)
+    // 呼叫 API 來儲存專案
+    const response = await createProject(form.value)
     
-    // 模擬 API 請求
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // 成功後導向專案列表
-    await navigateTo('/projects')
+    if (response && response.data) {
+      successMessage.value = response.message || '專案建立成功'
+      
+      // 成功後延遲導向專案列表
+      setTimeout(async () => {
+        await navigateTo('/projects')
+      }, 1500)
+    } else {
+      throw new Error('專案建立失敗')
+    }
   } catch (error) {
     console.error('儲存專案失敗:', error)
-    // 這裡應該顯示錯誤訊息
+    errorMessage.value = error.message || '專案建立失敗，請稍後再試'
   } finally {
     isSubmitting.value = false
   }
 }
 
-// 設定今天的日期為預設接洽日期
-onMounted(() => {
+// 設定今天的日期為預設接洽日期並載入業主列表
+onMounted(async () => {
   const today = new Date().toISOString().split('T')[0]
   form.value.contact_date = today
+  await loadClients()
 })
 </script>
