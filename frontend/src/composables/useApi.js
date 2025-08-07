@@ -11,25 +11,20 @@ export const useApi = () => {
       return '/api'
     }
     
-    // In production, use direct backend URL from environment or default
-    const backendUrl = config.public.backendUrl || config.public.apiBaseUrl
-    if (backendUrl && backendUrl !== '/api') {
-      return backendUrl
+    // In production, use the configured API URL
+    const apiBaseUrl = config.public.apiBaseUrl || config.public.backendUrl
+    if (apiBaseUrl) {
+      return apiBaseUrl
     }
     
-    // Fallback: try to detect backend port from current URL
-    if (process.client) {
-      const currentHost = window.location.hostname
-      const currentProtocol = window.location.protocol
-      
-      // Try common backend ports
-      return `${currentProtocol}//${currentHost}:9018/api`
-    }
-    
-    return '/api'
+    // Default fallback
+    return 'https://project.mercylife.cc/api'
   }
   
   const baseURL = getBaseURL()
+  
+  // Log the resolved base URL for debugging
+  console.log('[API] Base URL resolved to:', baseURL)
 
   /**
    * Generic API request handler
