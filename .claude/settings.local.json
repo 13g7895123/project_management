@@ -26,7 +26,8 @@
       "Bash(taskkill:*)",
       "Bash(git reset:*)",
       "Bash(rm:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

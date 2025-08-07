@@ -15,42 +15,63 @@ class ClientController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Client::with(['contactMethods', 'projects']);
-        
-        // Add user filter if authenticated
-        if (auth()->check()) {
-            $query->where('user_id', auth()->id());
-        }
+        try {
+            // Check database connection
+            \DB::connection()->getPdo();
+            
+            $query = Client::with(['contactMethods', 'projects']);
+            
+            // Add user filter if authenticated
+            if (auth()->check()) {
+                $query->where('user_id', auth()->id());
+            }
 
-        // 搜尋功能
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('how_we_met', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%");
+            // 搜尋功能
+            if ($request->has('search')) {
+                $search = $request->get('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('how_we_met', 'like', "%{$search}%")
+                      ->orWhere('notes', 'like', "%{$search}%");
+                });
+            }
+
+            // 篩選有效的業主
+            if ($request->has('active')) {
+                $query->where('is_active', $request->get('active'));
+            }
+
+            $clients = $query->orderBy('created_at', 'desc')
+                ->paginate($request->get('per_page', 15));
+
+            // 加上專案數量
+            $clients->getCollection()->transform(function ($client) {
+                $client->projects_count = $client->projects()->count();
+                return $client;
             });
+
+            return response()->json([
+                'success' => true,
+                'data' => $clients,
+                'message' => '業主列表獲取成功'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Database connection error in ClientController@index', [
+                'error' => $e->getMessage(),
+                'db_host' => config('database.connections.mysql.host'),
+                'db_database' => config('database.connections.mysql.database')
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Database connection failed: ' . $e->getMessage(),
+                'error' => [
+                    'type' => 'database_error',
+                    'details' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                ]
+            ], 500);
         }
-
-        // 篩選有效的業主
-        if ($request->has('active')) {
-            $query->where('is_active', $request->get('active'));
-        }
-
-        $clients = $query->orderBy('created_at', 'desc')
-            ->paginate($request->get('per_page', 15));
-
-        // 加上專案數量
-        $clients->getCollection()->transform(function ($client) {
-            $client->projects_count = $client->projects()->count();
-            return $client;
-        });
-
-        return response()->json([
-            'success' => true,
-            'data' => $clients,
-            'message' => '業主列表獲取成功'
-        ]);
     }
 
     /**
