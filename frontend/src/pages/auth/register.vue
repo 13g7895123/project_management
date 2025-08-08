@@ -166,7 +166,8 @@ const handleRegister = async () => {
       name: form.value.name,
       username: form.value.username,
       email: form.value.email,
-      password: form.value.password
+      password: form.value.password,
+      password_confirmation: form.value.confirmPassword
     })
     
     // 重定向到首頁

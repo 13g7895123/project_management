@@ -32,29 +32,18 @@ class DefaultUserSeeder extends Seeder
             'location' => 'Head Office',
         ]);
 
-        // Create sample admin users
+        // Create additional admin users
         $sampleAdmins = [
             [
-                'name' => 'Sarah Johnson',
-                'username' => 'sarah.admin',
-                'email' => 'sarah.admin@example.com',
-                'phone' => '+1-555-0002',
-                'bio' => 'Senior administrator specializing in project oversight.',
-                'company' => 'Project Management Inc.',
-                'position' => 'Senior Administrator',
-                'location' => 'New York Office',
-                'website' => 'https://linkedin.com/in/sarah-johnson',
-            ],
-            [
-                'name' => 'Michael Chen',
-                'username' => 'michael.admin',
-                'email' => 'michael.admin@example.com',
-                'phone' => '+1-555-0003',
-                'bio' => 'Technical administrator focused on system optimization.',
-                'company' => 'Project Management Inc.',
-                'position' => 'Technical Administrator',
-                'location' => 'San Francisco Office',
-                'website' => 'https://github.com/michael-chen',
+                'name' => '張志明',
+                'username' => 'zhiming.admin',
+                'email' => 'zhiming@admin.com',
+                'phone' => '+886-912-345-678',
+                'bio' => '資深系統管理員，負責專案監督與管理',
+                'company' => '專案管理有限公司',
+                'position' => '資深管理員',
+                'location' => '台北辦公室',
+                'website' => 'https://linkedin.com/in/zhang-zhiming',
             ]
         ];
 
@@ -69,76 +58,42 @@ class DefaultUserSeeder extends Seeder
             ]));
         }
 
-        // Create sample regular users with different statuses
+        // Create regular users with realistic data
         $sampleUsers = [
             [
-                'name' => 'John Smith',
-                'username' => 'john.smith',
-                'email' => 'john.smith@example.com',
-                'phone' => '+1-555-0101',
-                'bio' => 'Freelance project manager with 5+ years experience.',
-                'company' => 'Freelance',
-                'position' => 'Project Manager',
-                'location' => 'Remote',
-                'website' => 'https://johnsmith-pm.com',
+                'name' => '王小明',
+                'username' => 'xiaoming.wang',
+                'email' => 'xiaoming@freelancer.tw',
+                'phone' => '+886-987-654-321',
+                'bio' => '自由工作者，專精於網站開發與專案管理',
+                'company' => '個人工作室',
+                'position' => '專案經理',
+                'location' => '台北',
+                'website' => 'https://xiaoming-dev.com',
                 'status' => User::STATUS_ACTIVE,
             ],
             [
-                'name' => 'Emily Davis',
-                'username' => 'emily.davis',
-                'email' => 'emily.davis@example.com',
-                'phone' => '+1-555-0102',
-                'bio' => 'Creative consultant focusing on digital projects.',
-                'company' => 'Creative Solutions LLC',
-                'position' => 'Creative Director',
-                'location' => 'Los Angeles',
-                'website' => 'https://emilydavis.design',
+                'name' => '陳美華',
+                'username' => 'meihua.chen',
+                'email' => 'meihua@design.com.tw',
+                'phone' => '+886-976-543-210',
+                'bio' => 'UI/UX設計師，擅長使用者體驗設計',
+                'company' => '美華設計工作室',
+                'position' => 'UI/UX設計師',
+                'location' => '台中',
+                'website' => 'https://meihua-design.tw',
                 'status' => User::STATUS_ACTIVE,
             ],
             [
-                'name' => 'Robert Wilson',
-                'username' => 'robert.wilson',
-                'email' => 'robert.wilson@example.com',
-                'phone' => '+1-555-0103',
-                'bio' => 'Software development consultant and technical lead.',
-                'company' => 'Wilson Tech Consulting',
-                'position' => 'Senior Developer',
-                'location' => 'Austin',
-                'website' => 'https://rwilson-tech.com',
-                'status' => User::STATUS_ACTIVE,
-            ],
-            [
-                'name' => 'Lisa Anderson',
-                'username' => 'lisa.anderson',
-                'email' => 'lisa.anderson@example.com',
-                'phone' => '+1-555-0104',
-                'bio' => 'Marketing specialist on temporary leave.',
-                'company' => 'Marketing Pro',
-                'position' => 'Marketing Specialist',
-                'location' => 'Chicago',
-                'status' => User::STATUS_INACTIVE,
-            ],
-            [
-                'name' => 'David Brown',
-                'username' => 'david.brown',
-                'email' => 'david.brown@example.com',
-                'phone' => '+1-555-0105',
-                'bio' => 'Account suspended pending review.',
-                'company' => 'Brown Enterprises',
-                'position' => 'Business Analyst',
-                'location' => 'Miami',
-                'status' => User::STATUS_SUSPENDED,
-            ],
-            [
-                'name' => 'Jennifer Taylor',
-                'username' => 'jennifer.taylor',
-                'email' => 'jennifer.taylor@example.com',
-                'phone' => '+1-555-0106',
-                'bio' => 'UX/UI designer passionate about user experience.',
-                'company' => 'Taylor Design Studio',
-                'position' => 'UX/UI Designer',
-                'location' => 'Seattle',
-                'website' => 'https://jennifertaylor.design',
+                'name' => '李建國',
+                'username' => 'jianguo.li',
+                'email' => 'jianguo@webdev.tw',
+                'phone' => '+886-965-432-109',
+                'bio' => '全端工程師，專精於Laravel與Vue.js開發',
+                'company' => '建國科技',
+                'position' => '資深工程師',
+                'location' => '高雄',
+                'website' => 'https://jianguo-tech.com',
                 'status' => User::STATUS_ACTIVE,
             ]
         ];
@@ -150,7 +105,7 @@ class DefaultUserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => User::ROLE_USER,
                 'email_verified_at' => now(),
-                'last_login_at' => fake()->optional(0.7)->dateTimeBetween('-30 days', 'now'),
+                'last_login_at' => now()->subDays(rand(1, 30)),
             ]));
         }
 
@@ -161,6 +116,6 @@ class DefaultUserSeeder extends Seeder
         $this->command->info('- Active users: ' . User::active()->count());
         $this->command->info('');
         $this->command->info('Admin login: admin@example.com / password');
-        $this->command->info('Sample user login: john.smith@example.com / password');
+        $this->command->info('Sample user login: xiaoming@freelancer.tw / password');
     }
 }

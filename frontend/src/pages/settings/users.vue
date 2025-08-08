@@ -11,11 +11,20 @@
             <input
               v-model="searchQuery"
               type="text"
-              :placeholder="t('common.search') + '...'"
+              placeholder="搜尋用戶..."
               class="w-64 px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
             <MagnifyingGlassIcon class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
           </div>
+          
+          <!-- Add User Button -->
+          <button
+            @click="showCreateModal = true"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <PlusIcon class="w-4 h-4 mr-2" />
+            新增用戶
+          </button>
         </div>
       </div>
 
@@ -116,11 +125,11 @@
                   <!-- Delete -->
                   <button
                     v-if="user?.id !== authStore.user?.id"
-                    @click="deleteUser(user)"
+                    @click="handleDeleteUser(user)"
                     class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors duration-200"
                     :disabled="!user?.id"
                   >
-                    {{ t('common.delete') }}
+                    刪除
                   </button>
                 </div>
               </td>
@@ -200,6 +209,112 @@
         </div>
       </div>
     </div>
+
+    <!-- Create User Modal -->
+    <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          新增用戶
+        </h3>
+        
+        <div class="space-y-4">
+          <!-- Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              姓名 *
+            </label>
+            <input
+              v-model="createForm.name"
+              type="text"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          
+          <!-- Username -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              用戶名 *
+            </label>
+            <input
+              v-model="createForm.username"
+              type="text"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Email *
+            </label>
+            <input
+              v-model="createForm.email"
+              type="email"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              密碼 *
+            </label>
+            <input
+              v-model="createForm.password"
+              type="password"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              確認密碼 *
+            </label>
+            <input
+              v-model="createForm.password_confirmation"
+              type="password"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          <!-- Role -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              角色
+            </label>
+            <select
+              v-model="createForm.role"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="user">一般用戶</option>
+              <option value="admin">管理員</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            @click="showCreateModal = false"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+          >
+            取消
+          </button>
+          <button
+            @click="saveNewUser"
+            class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200"
+          >
+            建立
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -211,24 +326,55 @@ definePageMeta({
 import {
   MagnifyingGlassIcon,
   ShieldExclamationIcon,
-  UsersIcon
+  UsersIcon,
+  PlusIcon
 } from '@heroicons/vue/24/outline'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const { getUsers, updateUser, deleteUser, toggleUserStatus, createUser } = useUsers()
 
+// Reactive data
 const searchQuery = ref('')
 const showEditModal = ref(false)
+const showCreateModal = ref(false)
 const editForm = ref({})
-
-// Get all users (only for admins)
-const users = computed(() => {
-  try {
-    return authStore.isAdmin ? authStore.getAllUsers() : []
-  } catch {
-    return []
-  }
+const createForm = ref({
+  name: '',
+  username: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
+  role: 'user',
+  status: 'active'
 })
+const users = ref([])
+const loading = ref(false)
+const error = ref(null)
+
+// Load users data
+const loadUsers = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    const response = await getUsers({
+      search: searchQuery.value,
+      per_page: 50
+    })
+    
+    if (response.success) {
+      users.value = response.data.data || response.data || []
+    } else {
+      throw new Error(response.message || 'Failed to load users')
+    }
+  } catch (err) {
+    error.value = err.message
+    console.error('Failed to load users:', err)
+    users.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 // Filter users based on search query
 const filteredUsers = computed(() => {
@@ -236,11 +382,16 @@ const filteredUsers = computed(() => {
   
   const query = searchQuery.value.toLowerCase()
   return users.value.filter(user => 
-    user.name.toLowerCase().includes(query) ||
-    user.email.toLowerCase().includes(query) ||
-    user.username.toLowerCase().includes(query)
+    user.name?.toLowerCase().includes(query) ||
+    user.email?.toLowerCase().includes(query) ||
+    user.username?.toLowerCase().includes(query)
   )
 })
+
+// Watch search query and reload users
+watch(searchQuery, async () => {
+  await loadUsers()
+}, { debounce: 500 })
 
 // Format date for display
 const formatDate = (date) => {
@@ -260,12 +411,20 @@ const formatDate = (date) => {
 }
 
 // Toggle user status
-const toggleStatus = (user) => {
+const toggleStatus = async (user) => {
   if (!user?.id) return
   try {
-    authStore.toggleUserStatus(user.id)
+    const newStatus = user.status === 'active' ? 'inactive' : 'active'
+    const response = await toggleUserStatus(user.id, newStatus)
+    
+    if (response.success) {
+      await loadUsers() // Reload users to reflect changes
+    } else {
+      throw new Error(response.message || 'Failed to toggle user status')
+    }
   } catch (error) {
     console.error('Failed to toggle user status:', error)
+    alert('Failed to toggle user status: ' + error.message)
   }
 }
 
@@ -277,29 +436,82 @@ const editUser = (user) => {
 }
 
 // Save user changes
-const saveUser = () => {
+const saveUser = async () => {
   if (!editForm.value?.id) return
   try {
-    authStore.updateUser(editForm.value.id, {
+    const response = await updateUser(editForm.value.id, {
       name: editForm.value.name,
+      username: editForm.value.username,
       email: editForm.value.email,
-      role: editForm.value.role
+      role: editForm.value.role,
+      phone: editForm.value.phone,
+      bio: editForm.value.bio,
+      company: editForm.value.company,
+      position: editForm.value.position,
+      location: editForm.value.location,
+      website: editForm.value.website
     })
-    showEditModal.value = false
+    
+    if (response.success) {
+      showEditModal.value = false
+      await loadUsers() // Reload users to reflect changes
+    } else {
+      throw new Error(response.message || 'Failed to update user')
+    }
   } catch (error) {
     console.error('Failed to update user:', error)
+    alert('Failed to update user: ' + error.message)
+  }
+}
+
+// Create new user
+const saveNewUser = async () => {
+  try {
+    const response = await createUser(createForm.value)
+    
+    if (response.success) {
+      showCreateModal.value = false
+      // Reset form
+      createForm.value = {
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        role: 'user',
+        status: 'active'
+      }
+      await loadUsers() // Reload users to reflect changes
+    } else {
+      throw new Error(response.message || 'Failed to create user')
+    }
+  } catch (error) {
+    console.error('Failed to create user:', error)
+    alert('Failed to create user: ' + error.message)
   }
 }
 
 // Delete user
-const deleteUser = (user) => {
+const handleDeleteUser = async (user) => {
   if (!user?.id) return
-  if (confirm(t('auth.confirm_delete_user'))) {
+  if (confirm('確定要刪除這位用戶嗎？')) {
     try {
-      authStore.deleteUser(user.id)
+      const response = await deleteUser(user.id)
+      
+      if (response.success) {
+        await loadUsers() // Reload users to reflect changes
+      } else {
+        throw new Error(response.message || 'Failed to delete user')
+      }
     } catch (error) {
       console.error('Failed to delete user:', error)
+      alert('Failed to delete user: ' + error.message)
     }
   }
 }
+
+// Load users on mount
+onMounted(async () => {
+  await loadUsers()
+})
 </script>
