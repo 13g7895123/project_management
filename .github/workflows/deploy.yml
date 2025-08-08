@@ -28,5 +28,5 @@ jobs:
             cd frontend
             docker compose up --build -d
             cd ../backend
-            docker compose exec backend-app-1 php artisan migrate --force
+            docker exec -it backend-app-1 php artisan migrate --force
           EOF

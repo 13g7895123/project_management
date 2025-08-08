@@ -63,3 +63,6 @@
     - 執行第20點
 38. 前端調整完出現以下錯誤，"[nuxi]  ERROR  Nuxt Build Error: [nuxt:pages-macros-transform] Multiple definePageMeta calls are not supported. File: /app/pages/profile.vue
 9.140 file: /app/pages/profile.vue?macro=true"
+39. 如果我想整合這個專案前後端的docker-compose，幫我讀取完整專案後給我意見與執行項目，寫入TODO.md
+40. 移除階段二的部分，這個部分已經由其他工具處理
+41. 目前使用者帳號我還是沒有看到出現在資料庫中，現在完全無法登入使用，幫我排除這個問題，且是用資料來自資料庫的方式

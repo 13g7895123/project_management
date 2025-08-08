@@ -465,6 +465,7 @@ import {
 // Composables
 const { t } = useI18n()
 const { updateProfile: updateProfileAPI, changePassword: changePasswordAPI, getProfile } = useAuth()
+const { del } = useApi()
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
 
@@ -576,8 +577,8 @@ const updateProfile = async () => {
   isUpdatingProfile.value = true
   
   try {
-    // Since we're using mock data, update the auth store directly
-    authStore.updateUser(user.value.id, {
+    // Use the proper API method
+    const response = await updateProfileAPI({
       name: profileForm.name,
       username: profileForm.username,
       email: profileForm.email,
@@ -586,14 +587,17 @@ const updateProfile = async () => {
       website: profileForm.website,
       location: profileForm.location,
       company: profileForm.company,
-      position: profileForm.position,
-      avatar: profileForm.avatar
+      position: profileForm.position
     })
     
-    showMessage(t('profile.profile_updated'), 'success')
+    if (response.success) {
+      showMessage('個人資料更新成功', 'success')
+    } else {
+      throw new Error(response.message || '個人資料更新失敗')
+    }
   } catch (error) {
     console.error('Profile update failed:', error)
-    showMessage(error.message || 'Profile update failed', 'error')
+    showMessage(error.message || '個人資料更新失敗', 'error')
   } finally {
     isUpdatingProfile.value = false
   }
@@ -605,29 +609,34 @@ const changePassword = async () => {
   isChangingPassword.value = true
   
   try {
-    // For mock implementation, just validate current password
-    const currentUser = authStore.mockUsers.find(u => u.id === user.value.id)
-    if (!currentUser || currentUser.password !== passwordForm.currentPassword) {
-      passwordErrors.value.currentPassword = t('profile.current_password_incorrect')
-      return
+    // Use the proper API method
+    const response = await changePasswordAPI({
+      current_password: passwordForm.currentPassword,
+      password: passwordForm.newPassword,
+      password_confirmation: passwordForm.confirmPassword
+    })
+    
+    if (response.success) {
+      // Clear form
+      Object.assign(passwordForm, {
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      })
+      
+      showMessage('密碼修改成功', 'success')
+    } else {
+      throw new Error(response.message || '密碼修改失敗')
     }
-    
-    // Update password in mock store
-    authStore.updateUser(user.value.id, {
-      password: passwordForm.newPassword
-    })
-    
-    // Clear form
-    Object.assign(passwordForm, {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    })
-    
-    showMessage(t('profile.password_changed'), 'success')
   } catch (error) {
     console.error('Password change failed:', error)
-    showMessage(error.message || 'Password change failed', 'error')
+    
+    // Handle specific validation errors
+    if (error.message.includes('Current password is incorrect')) {
+      passwordErrors.value.currentPassword = '目前密碼不正確'
+    } else {
+      showMessage(error.message || '密碼修改失敗', 'error')
+    }
   } finally {
     isChangingPassword.value = false
   }
@@ -671,26 +680,31 @@ const isDefaultAvatar = (avatarUrl) => {
 
 // Account deletion
 const deleteAccount = async () => {
-  if (!deleteConfirmPassword) return
+  if (!deleteConfirmPassword.value) return
   
   isDeletingAccount.value = true
   
   try {
-    // Validate password
-    const currentUser = authStore.mockUsers.find(u => u.id === user.value.id)
-    if (!currentUser || currentUser.password !== deleteConfirmPassword) {
-      showMessage(t('profile.current_password_incorrect'), 'error')
-      return
+    // Use the profile API to delete account
+    const response = await del('/profile', {
+      password: deleteConfirmPassword.value
+    })
+    
+    if (response.success) {
+      showMessage('帳號刪除成功', 'success')
+      // Logout after successful deletion
+      await authStore.logout()
+    } else {
+      throw new Error(response.message || '帳號刪除失敗')
     }
-    
-    // Delete user
-    authStore.deleteUser(user.value.id)
-    
-    // Logout
-    authStore.logout()
   } catch (error) {
     console.error('Account deletion failed:', error)
-    showMessage(error.message || 'Account deletion failed', 'error')
+    
+    if (error.message.includes('password') || error.message.includes('incorrect')) {
+      showMessage('密碼不正確', 'error')
+    } else {
+      showMessage(error.message || '帳號刪除失敗', 'error')
+    }
   } finally {
     isDeletingAccount.value = false
     showDeleteConfirm.value = false
