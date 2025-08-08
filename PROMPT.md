@@ -61,3 +61,5 @@
     - 目前的user都沒有資料，且後台也沒有可以管理的地方，幫我補上，包含前端與後端
     - 註冊的部分也是完全沒有寫入資料庫，幫我補上，包含前端與後端
     - 執行第20點
+38. 前端調整完出現以下錯誤，"[nuxi]  ERROR  Nuxt Build Error: [nuxt:pages-macros-transform] Multiple definePageMeta calls are not supported. File: /app/pages/profile.vue
+9.140 file: /app/pages/profile.vue?macro=true"

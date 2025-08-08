@@ -740,11 +740,6 @@ watch(user, () => {
   initializeProfile()
 }, { deep: true })
 
-// Meta
-definePageMeta({
-  middleware: ['auth']
-})
-
 // Head
 useHead({
   title: computed(() => t('profile.title'))
