@@ -117,7 +117,7 @@ class ProjectManagementSeeder extends Seeder
                 'start_date' => null,
                 'completion_date' => null,
                 'payment_date' => null,
-                'status' => 'pending',
+                'status' => 'contacted',
             ]
         ];
 
