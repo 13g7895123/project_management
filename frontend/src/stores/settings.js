@@ -23,6 +23,13 @@ export const useSettingsStore = defineStore('settings', () => {
       ]
     },
     {
+      name: '用戶管理',
+      icon: 'UserGroupIcon',
+      children: [
+        { name: '用戶列表', href: '/settings/users' }
+      ]
+    },
+    {
       name: '設定',
       icon: 'CogIcon',
       children: [
