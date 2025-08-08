@@ -60,33 +60,13 @@ backend:
 - [ ] 後端代碼變更自動重啟（開發環境）
 - [ ] 設定 volumes 映射以便實時編輯
 
-#### ✅ 6. 統一腳本管理
-- [ ] 創建 `scripts/` 目錄
-- [ ] 開發啟動腳本 `scripts/dev.sh`
-- [ ] 生產部署腳本 `scripts/deploy.sh`
-- [ ] 資料庫初始化腳本 `scripts/init-db.sh`
-
-#### ✅ 7. 日志統一管理
-- [ ] 配置 ELK Stack 或 Loki (可選)
-- [ ] 設定日志卷映射
-- [ ] 統一日志格式和輪轉策略
-
-### 階段三：生產環境優化（低優先級）
-
-#### ✅ 8. 健康檢查配置
-- [ ] 為所有服務添加健康檢查
-- [ ] 設定服務依賴關係和啟動順序
-- [ ] 配置重啟策略
-
-#### ✅ 9. 監控和指標收集
-- [ ] 整合 Prometheus + Grafana
-- [ ] 設定應用程式指標收集
-- [ ] 配置告警規則
-
-#### ✅ 10. 備份和恢復策略
-- [ ] 自動化資料庫備份
-- [ ] 應用程式狀態備份
-- [ ] 災害恢復流程文檔
+#### ✅ 6. 舊檔案處理和遷移
+- [ ] 備份現有的 docker-compose 檔案
+  - `backend/docker-compose.yml` → `backend/docker-compose.yml.backup`
+  - `frontend/docker-compose.yml` → `frontend/docker-compose.yml.backup`
+- [ ] 建立遷移指南文檔 `MIGRATION.md`
+- [ ] 建立快速回滾腳本 `scripts/rollback.sh`
+- [ ] 更新 README 檔案說明新的啟動方式
 
 ## 🛠️ 實施計畫
 
@@ -100,15 +80,16 @@ project_management/
 ├── scripts/
 │   ├── dev.sh                       # 開發環境啟動
 │   ├── deploy.sh                    # 生產環境部署
-│   └── init-db.sh                   # 資料庫初始化
+│   └── rollback.sh                  # 快速回滾腳本
+├── MIGRATION.md                     # 詳細遷移指南
 ├── backend/
 │   ├── Dockerfile
 │   ├── src/                         # Laravel 代碼
-│   └── docker-compose.yml           # 保留作為參考
+│   └── docker-compose.yml.backup    # 原始檔案備份
 └── frontend/
     ├── Dockerfile
     ├── src/                         # Nuxt 代碼
-    └── docker-compose.yml           # 保留作為參考
+    └── docker-compose.yml.backup    # 原始檔案備份
 ```
 
 ### 統一的環境變數配置範例
@@ -146,10 +127,19 @@ FRONTEND_API_URL=http://backend:8000/api
 
 ## ⚠️ 重要注意事項
 
-### 向後相容性
-- 保留現有的 `backend/docker-compose.yml` 和 `frontend/docker-compose.yml` 作為參考
-- 確保現有的環境變數和配置不會被破壞
-- 提供遷移指南和回滾計畫
+### 向後相容性與舊檔案處理
+- **檔案備份策略**：
+  - 將 `backend/docker-compose.yml` 重命名為 `docker-compose.yml.backup`
+  - 將 `frontend/docker-compose.yml` 重命名為 `docker-compose.yml.backup`
+  - 保留所有現有的 Dockerfile 和環境配置
+- **遷移指南**：
+  - 建立詳細的 `MIGRATION.md` 文檔說明整合步驟
+  - 包含新舊配置的對照表和啟動命令變更
+  - 提供常見問題和解決方案
+- **回滾計畫**：
+  - 建立 `scripts/rollback.sh` 腳本快速恢復舊配置
+  - 確保可以在 5 分鐘內回到原始狀態
+  - 提供完整的回滾驗證檢查清單
 
 ### 安全考量
 - 資料庫密碼使用 Docker secrets 或環境變數
@@ -170,18 +160,8 @@ FRONTEND_API_URL=http://backend:8000/api
 
 ### 短期目標（Week 2-3）
 4. 完善開發環境配置
-5. 建立部署腳本和統一腳本管理
-6. 設定熱重載和開發體驗優化
-
-### 中期目標（Week 4-6）
-7. 日志統一管理配置
-8. 健康檢查和服務依賴配置
-9. 完善文檔和測試
-
-### 長期目標（Month 2+）
-10. 監控和指標收集
-11. 備份和災害恢復
-12. CI/CD 整合
+5. 設定熱重載和開發體驗優化
+6. 舊檔案處理和遷移指南建立
 
 ## 📋 檢查清單
 
@@ -196,11 +176,11 @@ FRONTEND_API_URL=http://backend:8000/api
 - [ ] 開發和生產環境都能正常運行
 - [ ] 所有現有功能保持正常
 
-### 效能測試
-- [ ] 服務啟動時間測試
-- [ ] API 回應時間測試
-- [ ] 資源使用率監控
-- [ ] 負載測試（如果需要）
+### 舊檔案處理驗證
+- [ ] 確認備份檔案建立成功
+- [ ] 測試回滾腳本功能正常
+- [ ] 驗證遷移指南的完整性和正確性
+- [ ] 確認所有團隊成員了解新的工作流程
 
 ## 🎉 預期效益
 
