@@ -206,17 +206,13 @@
 <script setup>
 // Page metadata
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'admin'
 })
 import {
   MagnifyingGlassIcon,
   ShieldExclamationIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
-
-definePageMeta({
-  middleware: 'auth'
-})
 
 const { t } = useI18n()
 const authStore = useAuthStore()

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -126,5 +127,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('dashboard/weekly-stats', [DashboardController::class, 'weeklyStats']);
     Route::get('dashboard/yearly-stats', [DashboardController::class, 'yearlyStats']);
     Route::get('dashboard/projects-timeline', [DashboardController::class, 'projectsTimeline']);
+
+    // User Management routes (Admin only) - using admin middleware for extra security
+    Route::prefix('users')->middleware('admin')->group(function () {
+        Route::get('/', [UserController::class, 'index']); // List users with pagination/filtering
+        Route::post('/', [UserController::class, 'store']); // Create new user
+        Route::get('/{id}', [UserController::class, 'show']); // Show specific user
+        Route::put('/{id}', [UserController::class, 'update']); // Update user
+        Route::delete('/{id}', [UserController::class, 'destroy']); // Soft delete user
+        Route::patch('/{id}/status', [UserController::class, 'toggleStatus']); // Toggle user status
+        Route::patch('/{id}/password', [UserController::class, 'changePassword']); // Change user password
+        Route::patch('/{id}/restore', [UserController::class, 'restore']); // Restore soft deleted user
+        Route::delete('/{id}/force', [UserController::class, 'forceDelete']); // Permanently delete user
+    });
 });
 

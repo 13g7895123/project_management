@@ -47,6 +47,18 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Check if user account is active
+        if (!$user->isActive()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Account is not active. Please contact administrator.',
+                'error' => 'Account ' . $user->status
+            ], 403);
+        }
+
+        // Update last login timestamp
+        $user->updateLastLogin();
+
         // Create token for API authentication
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -66,6 +78,9 @@ class AuthController extends Controller
                     'company' => $user->company,
                     'position' => $user->position,
                     'avatar' => $user->avatar,
+                    'role' => $user->role,
+                    'status' => $user->status,
+                    'last_login_at' => $user->last_login_at,
                     'email_verified_at' => $user->email_verified_at,
                     'created_at' => $user->created_at,
                     'updated_at' => $user->updated_at,
@@ -113,8 +128,13 @@ class AuthController extends Controller
                 'location' => $request->input('location'),
                 'company' => $request->input('company'),
                 'position' => $request->input('position'),
+                'role' => User::ROLE_USER, // Default role for new users
+                'status' => User::STATUS_ACTIVE, // Default status
                 'email_verified_at' => now(), // Auto-verify for now
             ]);
+
+            // Update last login timestamp
+            $user->updateLastLogin();
 
             $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -134,6 +154,9 @@ class AuthController extends Controller
                         'company' => $user->company,
                         'position' => $user->position,
                         'avatar' => $user->avatar,
+                        'role' => $user->role,
+                        'status' => $user->status,
+                        'last_login_at' => $user->last_login_at,
                         'email_verified_at' => $user->email_verified_at,
                         'created_at' => $user->created_at,
                         'updated_at' => $user->updated_at,
@@ -218,6 +241,9 @@ class AuthController extends Controller
                         'company' => $user->company,
                         'position' => $user->position,
                         'avatar' => $user->avatar,
+                        'role' => $user->role,
+                        'status' => $user->status,
+                        'last_login_at' => $user->last_login_at,
                         'email_verified_at' => $user->email_verified_at,
                         'created_at' => $user->created_at,
                         'updated_at' => $user->updated_at,
