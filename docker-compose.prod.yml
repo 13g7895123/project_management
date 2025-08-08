@@ -1,0 +1,101 @@
+version: '3.8'
+
+# Production environment overrides
+services:
+  # =============================================================================
+  # Frontend Production Configuration
+  # =============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      - NODE_ENV=production
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      # Production API configuration
+      - NUXT_PUBLIC_API_BASE_URL=${PRODUCTION_API_URL:-https://project.mercylife.cc/api}
+      - NUXT_PUBLIC_BACKEND_URL=${PRODUCTION_API_URL:-https://project.mercylife.cc/api}
+      - NUXT_PUBLIC_BACKEND_HOST=${PRODUCTION_BACKEND_HOST:-project.mercylife.cc}
+      - NUXT_PUBLIC_BACKEND_PORT=${PRODUCTION_BACKEND_PORT:-443}
+      - BACKEND_API_URL=${PRODUCTION_API_URL:-https://project.mercylife.cc/api}
+    volumes:
+      # Remove source code volume mapping in production for security
+      - /dev/null:/app/src
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # =============================================================================
+  # Backend Production Configuration
+  # =============================================================================
+  backend:
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - LOG_LEVEL=warning
+      - APP_URL=${PRODUCTION_APP_URL:-https://project.mercylife.cc}
+    volumes:
+      # Remove source code write access in production
+      - ./backend/src:/var/www/html:ro
+      - ./backend/src/storage:/var/www/html/storage:rw
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # =============================================================================
+  # Database Production Configuration
+  # =============================================================================
+  mysql:
+    environment:
+      # Secure root password for production
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PRODUCTION_ROOT_PASSWORD:-secure_root_password_change_me}
+    # Remove external port exposure for security
+    ports: []
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # =============================================================================
+  # Redis Production Configuration
+  # =============================================================================
+  redis:
+    # Remove external port exposure for security
+    ports: []
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+
+  # =============================================================================
+  # Database Management (Disabled in production for security)
+  # =============================================================================
+  phpmyadmin:
+    # Disable phpMyAdmin in production
+    profiles:
+      - debug
+    ports: []

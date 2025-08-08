@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      # Backend API Configuration - Use environment variables or fallback to production defaults
+      - NUXT_PUBLIC_API_BASE_URL=${NUXT_PUBLIC_API_BASE_URL:-https://project.mercylife.cc/api}
+      - NUXT_PUBLIC_BACKEND_URL=${NUXT_PUBLIC_BACKEND_URL:-https://project.mercylife.cc/api}
+      - NUXT_PUBLIC_BACKEND_HOST=${NUXT_PUBLIC_BACKEND_HOST:-project.mercylife.cc}
+      - NUXT_PUBLIC_BACKEND_PORT=${NUXT_PUBLIC_BACKEND_PORT:-443}
+      - BACKEND_API_URL=${BACKEND_API_URL:-https://project.mercylife.cc/api}
+    volumes:
+      # Mount source code for development (comment out for production)
+      - ./src:/app/src:ro
+    networks:
+      - frontend-network
+    restart: unless-stopped
+
+  # Development service (alternative to production build)
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    ports:
+      - "${FRONTEND_DEV_PORT:-3001}:3000"
+    environment:
+      - NODE_ENV=development
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      # Backend API Configuration for Development - Use localhost proxy in dev mode
+      - NUXT_PUBLIC_API_BASE_URL=${NUXT_PUBLIC_API_BASE_URL:-/api}
+      - NUXT_PUBLIC_BACKEND_URL=${NUXT_PUBLIC_BACKEND_URL:-/api}
+      - NUXT_PUBLIC_BACKEND_HOST=${NUXT_PUBLIC_BACKEND_HOST:-localhost}
+      - NUXT_PUBLIC_BACKEND_PORT=${NUXT_PUBLIC_BACKEND_PORT:-9018}
+      - BACKEND_API_URL=${BACKEND_API_URL:-http://localhost:9018/api}
+    volumes:
+      - ./src:/app:rw
+      - /app/node_modules
+    networks:
+      - frontend-network
+    restart: unless-stopped
+    profiles:
+      - dev
+
+networks:
+  frontend-network:
+    driver: bridge

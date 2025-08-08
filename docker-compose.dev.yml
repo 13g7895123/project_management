@@ -1,0 +1,69 @@
+version: '3.8'
+
+# Development environment overrides
+services:
+  # =============================================================================
+  # Frontend Development Configuration
+  # =============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+      target: development
+    ports:
+      - "${EXTERNAL_FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      # Development API configuration - use Docker internal networking
+      - NUXT_PUBLIC_API_BASE_URL=http://backend:8000/api
+      - NUXT_PUBLIC_BACKEND_URL=http://backend:8000/api
+      - NUXT_PUBLIC_BACKEND_HOST=backend
+      - NUXT_PUBLIC_BACKEND_PORT=8000
+      - BACKEND_API_URL=http://backend:8000/api
+    volumes:
+      # Enable hot reload in development
+      - ./frontend/src:/app:rw
+      - /app/node_modules
+    command: npm run dev
+    restart: unless-stopped
+
+  # =============================================================================
+  # Backend Development Configuration
+  # =============================================================================
+  backend:
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - LOG_LEVEL=debug
+    volumes:
+      # Enable live code reloading for development
+      - ./backend/src:/var/www/html:rw
+      - ./backend/src/storage:/var/www/html/storage:rw
+
+  # =============================================================================
+  # Database Development Configuration
+  # =============================================================================
+  mysql:
+    ports:
+      # Expose MySQL port for external development tools
+      - "${EXTERNAL_MYSQL_PORT:-3306}:3306"
+    environment:
+      # More permissive settings for development
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_password}
+
+  # =============================================================================
+  # Redis Development Configuration
+  # =============================================================================
+  redis:
+    ports:
+      # Expose Redis port for external development tools
+      - "${EXTERNAL_REDIS_PORT:-6379}:6379"
+
+  # =============================================================================
+  # Database Management (Always available in development)
+  # =============================================================================
+  phpmyadmin:
+    ports:
+      - "${EXTERNAL_PHPMYADMIN_PORT:-8080}:80"

@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # Frontend Service (Nuxt 3)
+  # =============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${EXTERNAL_FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      # Internal service communication
+      - NUXT_PUBLIC_API_BASE_URL=http://backend:8000/api
+      - NUXT_PUBLIC_BACKEND_URL=http://backend:8000/api
+      - NUXT_PUBLIC_BACKEND_HOST=backend
+      - NUXT_PUBLIC_BACKEND_PORT=8000
+      - BACKEND_API_URL=http://backend:8000/api
+    volumes:
+      - ./frontend/src:/app/src:ro
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # =============================================================================
+  # Backend Service (Laravel 11)
+  # =============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${EXTERNAL_BACKEND_PORT:-8000}:8000"
+    volumes:
+      - ./backend/src:/var/www/html
+      - ./backend/src/storage:/var/www/html/storage
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_KEY=${APP_KEY}
+      - APP_URL=${APP_URL:-http://localhost}
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-project_management}
+      - DB_USERNAME=${DB_USERNAME:-laravel}
+      - DB_PASSWORD=${DB_PASSWORD:-laravel_password}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=null
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # =============================================================================
+  # Database Service (MySQL 8.0)
+  # =============================================================================
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "${EXTERNAL_MYSQL_PORT:-3306}:3306"
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE:-project_management}
+      - MYSQL_USER=${DB_USERNAME:-laravel}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-laravel_password}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # =============================================================================
+  # Cache Service (Redis)
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${EXTERNAL_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # =============================================================================
+  # Database Management (phpMyAdmin)
+  # =============================================================================
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "${EXTERNAL_PHPMYADMIN_PORT:-8080}:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=${DB_USERNAME:-laravel}
+      - PMA_PASSWORD=${DB_PASSWORD:-laravel_password}
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# =============================================================================
+# Networks Configuration
+# =============================================================================
+networks:
+  app-network:
+    driver: bridge
+    name: ${COMPOSE_PROJECT_NAME:-project_management}_network
+
+# =============================================================================
+# Volumes Configuration
+# =============================================================================
+volumes:
+  mysql_data:
+    name: ${COMPOSE_PROJECT_NAME:-project_management}_mysql_data
+  redis_data:
+    name: ${COMPOSE_PROJECT_NAME:-project_management}_redis_data
