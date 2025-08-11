@@ -32,7 +32,8 @@
       "Bash(./test-404-page.sh:*)",
       "Bash(timeout 10s npm run build)",
       "Bash(git pull:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(scripts/test-authentication.sh:*)"
     ],
     "deny": []
   }

@@ -73,3 +73,14 @@
 46. 他現在執行正確的api路徑了，但response的msg顯示Server Error，幫我確認是甚麼問題
 47. CD報了這個錯誤，可以幫我檢查是否有那裡錯誤嗎"the input device is not a TTY
 Error: Process completed with exit code 1."
+48. API似乎有問題，以下是他回傳的資訊
+{
+    "success": false,
+    "message": "Invalid credentials",
+    "debug": {
+        "login_type": "username",
+        "login_value": "admin",
+        "user_exists": true,
+        "total_users": 6
+    }
+}
