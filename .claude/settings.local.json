@@ -30,7 +30,9 @@
       "Bash(chmod:*)",
       "Bash(grep:*)",
       "Bash(./test-404-page.sh:*)",
-      "Bash(timeout 10s npm run build)"
+      "Bash(timeout 10s npm run build)",
+      "Bash(git pull:*)",
+      "Bash(bash:*)"
     ],
     "deny": []
   }

@@ -71,3 +71,5 @@
 44. 針對TODO.md，調整專案的docker-compose結構，希望調整前後不會影響功能
 45. 目前登入頁打的API是這支http://backend:8000/api/auth/login，我希望他可以打正確的domain到https://project.mercylife.cc/這支，環境配置都完成了
 46. 他現在執行正確的api路徑了，但response的msg顯示Server Error，幫我確認是甚麼問題
+47. CD報了這個錯誤，可以幫我檢查是否有那裡錯誤嗎"the input device is not a TTY
+Error: Process completed with exit code 1."
