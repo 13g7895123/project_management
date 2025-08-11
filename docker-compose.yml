@@ -14,12 +14,12 @@ services:
       - NODE_ENV=production
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
-      # Internal service communication
-      - NUXT_PUBLIC_API_BASE_URL=http://backend:8000/api
-      - NUXT_PUBLIC_BACKEND_URL=http://backend:8000/api
-      - NUXT_PUBLIC_BACKEND_HOST=backend
-      - NUXT_PUBLIC_BACKEND_PORT=8000
-      - BACKEND_API_URL=http://backend:8000/api
+      # Production API configuration
+      - NUXT_PUBLIC_API_BASE_URL=https://project.mercylife.cc/api
+      - NUXT_PUBLIC_BACKEND_URL=https://project.mercylife.cc/api
+      - NUXT_PUBLIC_BACKEND_HOST=project.mercylife.cc
+      - NUXT_PUBLIC_BACKEND_PORT=443
+      - BACKEND_API_URL=https://project.mercylife.cc/api
     volumes:
       - ./frontend/src:/app/src:ro
     depends_on:
