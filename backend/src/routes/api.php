@@ -82,6 +82,59 @@ Route::get('test', function () {
     ]);
 });
 
+Route::get('database/setup', function () {
+    try {
+        // Check database connection
+        \DB::connection()->getPdo();
+        
+        // Run migrations if needed
+        $migrationOutput = [];
+        try {
+            \Artisan::call('migrate', ['--force' => true]);
+            $migrationOutput[] = 'Migrations completed';
+        } catch (\Exception $e) {
+            $migrationOutput[] = 'Migration error: ' . $e->getMessage();
+        }
+        
+        // Run seeders if needed
+        $seedOutput = [];
+        try {
+            \Artisan::call('db:seed', ['--force' => true]);
+            $seedOutput[] = 'Seeders completed';
+        } catch (\Exception $e) {
+            $seedOutput[] = 'Seeder error: ' . $e->getMessage();
+        }
+        
+        // Get database stats
+        $stats = [];
+        try {
+            $stats['users'] = \DB::table('users')->count();
+            $stats['clients'] = \DB::table('clients')->count();  
+            $stats['projects'] = \DB::table('projects')->count();
+            $stats['admin_user'] = \DB::table('users')->where('email', 'admin@example.com')->exists();
+        } catch (\Exception $e) {
+            $stats['error'] = $e->getMessage();
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Database setup completed',
+            'migration_output' => $migrationOutput,
+            'seed_output' => $seedOutput,
+            'database_stats' => $stats,
+            'timestamp' => now()
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Database setup failed',
+            'error' => $e->getMessage(),
+            'timestamp' => now()
+        ], 500);
+    }
+});
+
 // Protected admin routes - require authentication
 Route::middleware('auth:sanctum')->group(function () {
     // Profile routes

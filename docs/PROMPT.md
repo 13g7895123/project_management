@@ -70,3 +70,4 @@
 43. 請提供一個管理員帳號給我，希望這個帳號是有寫在資料庫中的，不然我無法使用，完成後執行第20點
 44. 針對TODO.md，調整專案的docker-compose結構，希望調整前後不會影響功能
 45. 目前登入頁打的API是這支http://backend:8000/api/auth/login，我希望他可以打正確的domain到https://project.mercylife.cc/這支，環境配置都完成了
+46. 他現在執行正確的api路徑了，但response的msg顯示Server Error，幫我確認是甚麼問題
