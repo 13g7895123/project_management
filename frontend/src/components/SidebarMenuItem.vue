@@ -3,12 +3,16 @@
     <button
       @click="toggleItem"
       class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group"
-      :class="{ 'justify-center': collapsed }"
+      :class="{ 
+        'justify-center': collapsed,
+        'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400': isCurrentRoute
+      }"
     >
       <!-- Icon -->
       <component 
         :is="getIcon(item.icon)" 
-        class="w-5 h-5 text-gray-500 group-hover:text-primary-500 transition-colors duration-200" 
+        class="w-5 h-5 transition-colors duration-200" 
+        :class="isCurrentRoute ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 group-hover:text-primary-500'"
       />
       
       <!-- Text and Arrow (desktop) -->
@@ -58,7 +62,10 @@ import {
   ChartBarIcon,
   CogIcon,
   QuestionMarkCircleIcon,
-  ChevronDownIcon 
+  ChevronDownIcon,
+  FolderIcon,
+  UsersIcon,
+  UserGroupIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -72,20 +79,48 @@ const props = defineProps({
   }
 })
 
+const route = useRoute()
 const isExpanded = ref(false)
+
+// Check if this item or any of its children is the current route
+const isCurrentRoute = computed(() => {
+  if (props.item.href === route.path) {
+    return true
+  }
+  if (props.item.children) {
+    return props.item.children.some(child => child.href === route.path)
+  }
+  return false
+})
+
+// Auto-expand if current route is a child
+watch(() => route.path, (newPath) => {
+  if (props.item.children) {
+    const hasActiveChild = props.item.children.some(child => child.href === newPath)
+    if (hasActiveChild) {
+      isExpanded.value = true
+    }
+  }
+}, { immediate: true })
 
 const toggleItem = () => {
   if (props.item.children && !props.collapsed) {
     isExpanded.value = !isExpanded.value
   } else if (props.item.children && props.collapsed) {
     // For collapsed state, we could show a popover menu here in the future
+  } else if (props.item.href) {
+    // Navigate to the href if the item has one and no children
+    navigateTo(props.item.href)
   }
 }
 
 const iconComponents = {
   ChartBarIcon,
   CogIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  FolderIcon,
+  UsersIcon,
+  UserGroupIcon
 }
 
 const getIcon = (iconName) => {

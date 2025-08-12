@@ -222,8 +222,17 @@ const loadProjects = async () => {
       // After useApi wrapper: {success: true, data: {success: true, data: {data: [...]}}, error: null}
       const backendResponse = response.data
       
-      if (backendResponse.success && backendResponse.data && backendResponse.data.data) {
-        projects.value = backendResponse.data.data || []
+      if (backendResponse.success && backendResponse.data) {
+        // Laravel paginated response structure: backendResponse.data.data contains the actual project array
+        if (Array.isArray(backendResponse.data.data)) {
+          projects.value = backendResponse.data.data || []
+        } else if (Array.isArray(backendResponse.data)) {
+          // Fallback: in case the response is not paginated
+          projects.value = backendResponse.data || []
+        } else {
+          projects.value = []
+          error.value = '載入專案資料失敗：API回應格式不正確'
+        }
       } else {
         // Handle case where backend response doesn't have expected structure
         projects.value = []
