@@ -64,8 +64,33 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+        <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">載入中...</span>
+      </div>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">正在載入專案資料...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 rounded-md p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ error }}</p>
+          <button @click="loadProjects" class="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 underline">
+            重新載入
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Projects Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-900">
@@ -98,7 +123,6 @@
               v-for="project in filteredProjects"
               :key="project?.id || 'empty'"
               class="hover:bg-gray-50 dark:hover:bg-gray-700"
-              v-if="project"
             >
               <td class="px-6 py-4 whitespace-nowrap">
                 <div>
@@ -185,52 +209,37 @@ const loadProjects = async () => {
   loading.value = true
   error.value = null
   
-  const response = await getProjects({
-    search: searchQuery.value,
-    category: filterCategory.value,
-    status: filterStatus.value
-  })
-  
-  if (response.success) {
-    projects.value = response.data.data || response.data || []
-  } else {
-    error.value = response.error?.message || '載入專案資料失敗'
-    // Fallback to mock data for development
-    projects.value = [
-      {
-        id: 1,
-        name: 'ABC公司官網',
-        description: '企業形象網站建置',
-        client: 'ABC公司',
-        category: 'website',
-        amount: 50000,
-        status: 'completed',
-        contact_date: '2024-01-15'
-      },
-      {
-        id: 2,
-        name: '自動化備份腳本',
-        description: '伺服器備份自動化',
-        client: 'XYZ企業',
-        category: 'script',
-        amount: 15000,
-        status: 'in_progress',
-        contact_date: '2024-01-20'
-      },
-      {
-        id: 3,
-        name: '伺服器維護',
-        description: '定期系統維護',
-        client: '123公司',
-        category: 'server',
-        amount: 30000,
-        status: 'paid',
-        contact_date: '2024-01-10'
+  try {
+    const response = await getProjects({
+      search: searchQuery.value,
+      category: filterCategory.value,
+      status: filterStatus.value
+    })
+    
+    if (response.success && response.data) {
+      // Handle paginated response: response.data.data.data contains the actual project array
+      // Backend structure: {success: true, data: {data: [...], ...pagination}, message}
+      // After useApi wrapper: {success: true, data: {success: true, data: {data: [...]}}, error: null}
+      const backendResponse = response.data
+      
+      if (backendResponse.success && backendResponse.data && backendResponse.data.data) {
+        projects.value = backendResponse.data.data || []
+      } else {
+        // Handle case where backend response doesn't have expected structure
+        projects.value = []
+        error.value = backendResponse.message || '載入專案資料失敗：格式錯誤'
       }
-    ]
+    } else {
+      projects.value = []
+      error.value = response.error?.message || '載入專案資料失敗'
+    }
+  } catch (err) {
+    console.error('Load projects error:', err)
+    projects.value = []
+    error.value = '載入專案資料時發生錯誤，請稍後再試'
+  } finally {
+    loading.value = false
   }
-  
-  loading.value = false
 }
 
 const clearFilters = () => {
