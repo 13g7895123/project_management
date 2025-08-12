@@ -18,76 +18,106 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'login' => 'required|string', // Can be email or username
-            'password' => 'required|string',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'login' => 'required|string', // Can be email or username
+                'password' => 'required|string',
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $login = $request->input('login');
+            $password = $request->input('password');
+
+            // Debug: Check database connection
+            try {
+                \DB::connection()->getPdo();
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Database connection failed',
+                    'error' => 'Unable to connect to database: ' . $e->getMessage()
+                ], 500);
+            }
+
+            // Determine if login is email or username
+            $loginType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+            // Attempt to find user by email or username
+            $user = User::where($loginType, $login)->first();
+
+            if (!$user || !Hash::check($password, $user->password)) {
+                // Debug: Check if user exists and provide helpful info
+                $userCount = User::count();
+                $debugInfo = [
+                    'login_type' => $loginType,
+                    'login_value' => $login,
+                    'user_exists' => $user ? true : false,
+                    'total_users' => $userCount
+                ];
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials',
+                    'debug' => config('app.debug') ? $debugInfo : null
+                ], 401);
+            }
+
+            // Check if user account is active
+            if (!$user->isActive()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Account is not active. Please contact administrator.',
+                    'error' => 'Account ' . $user->status
+                ], 403);
+            }
+
+            // Update last login timestamp
+            $user->updateLastLogin();
+
+            // Create token for API authentication
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'username' => $user->username,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'bio' => $user->bio,
+                        'website' => $user->website,
+                        'location' => $user->location,
+                        'company' => $user->company,
+                        'position' => $user->position,
+                        'avatar' => $user->avatar,
+                        'role' => $user->role,
+                        'status' => $user->status,
+                        'last_login_at' => $user->last_login_at,
+                        'email_verified_at' => $user->email_verified_at,
+                        'created_at' => $user->created_at,
+                        'updated_at' => $user->updated_at,
+                    ],
+                    'token' => $token
+                ]
+            ]);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+                'message' => 'Login failed due to server error',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
         }
-
-        $login = $request->input('login');
-        $password = $request->input('password');
-
-        // Determine if login is email or username
-        $loginType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
-        // Attempt to find user by email or username
-        $user = User::where($loginType, $login)->first();
-
-        if (!$user || !Hash::check($password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
-
-        // Check if user account is active
-        if (!$user->isActive()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Account is not active. Please contact administrator.',
-                'error' => 'Account ' . $user->status
-            ], 403);
-        }
-
-        // Update last login timestamp
-        $user->updateLastLogin();
-
-        // Create token for API authentication
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login successful',
-            'data' => [
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'phone' => $user->phone,
-                    'bio' => $user->bio,
-                    'website' => $user->website,
-                    'location' => $user->location,
-                    'company' => $user->company,
-                    'position' => $user->position,
-                    'avatar' => $user->avatar,
-                    'role' => $user->role,
-                    'status' => $user->status,
-                    'last_login_at' => $user->last_login_at,
-                    'email_verified_at' => $user->email_verified_at,
-                    'created_at' => $user->created_at,
-                    'updated_at' => $user->updated_at,
-                ],
-                'token' => $token
-            ]
-        ]);
     }
 
     /**

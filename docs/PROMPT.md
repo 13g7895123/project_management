@@ -69,7 +69,22 @@
 42. 目前側邊欄沒有管理員管理與使用者管理的路徑，幫我確認是否有這些功能並補上，完成後執行第20點
 43. 請提供一個管理員帳號給我，希望這個帳號是有寫在資料庫中的，不然我無法使用，完成後執行第20點
 44. 針對TODO.md，調整專案的docker-compose結構，希望調整前後不會影響功能
-45. 幫我修正用戶管理的列表，都沒有看到任何從後端來的資料，另外欄位名稱幫我調整成大一點的，列表需要有分頁功能
-46. 完成以下功能
+45. 目前登入頁打的API是這支http://backend:8000/api/auth/login，我希望他可以打正確的domain到https://project.mercylife.cc/這支，環境配置都完成了
+46. 他現在執行正確的api路徑了，但response的msg顯示Server Error，幫我確認是甚麼問題
+47. CD報了這個錯誤，可以幫我檢查是否有那裡錯誤嗎"the input device is not a TTY
+Error: Process completed with exit code 1."
+48. API似乎有問題，以下是他回傳的資訊
+{
+    "success": false,
+    "message": "Invalid credentials",
+    "debug": {
+        "login_type": "username",
+        "login_value": "admin",
+        "user_exists": true,
+        "total_users": 6
+    }
+}
+49. 幫我修正用戶管理的列表，都沒有看到任何從後端來的資料，另外欄位名稱幫我調整成大一點的，列表需要有分頁功能
+50. 完成以下功能
     - 業主列表沒有正確顯示讀取到的資料
     - 新增專案中的業主下拉選單也沒有讀取到正確資料

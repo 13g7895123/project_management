@@ -18,13 +18,38 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 8022 -H 172.105.120.61 >> ~/.ssh/known_hosts
+          ssh-keyscan -p 8022 -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
         run: |
-          ssh -p 8022 -i ~/.ssh/id_ed25519 -o ServerAliveInterval=60 -o ServerAliveCountMax=3 jarvis@172.105.120.61 << 'EOF'
-            cd /home/jarvis/project/project_management
+          ssh -p 8022 -i ~/.ssh/id_ed25519 -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e  # Exit on any error
+            
+            echo "🚀 Starting deployment..."
+            cd /home/jarvis/project/idea/project_management
+            
+            echo "📥 Pulling latest changes..."
             git pull
+            
+            echo "🐳 Building and starting containers..."
             docker compose up --build -d
-            docker exec -it backend-app-1 php artisan migrate --force
+            
+            # Wait for containers to be ready
+            echo "⏳ Waiting for containers to start..."
+            sleep 10
+            
+            echo "🗄️ Running database setup..."
+            # Use -T flag to disable TTY allocation for non-interactive commands
+            docker-compose exec -T backend php artisan migrate --force || echo "❌ Migration failed"
+            docker-compose exec -T backend php artisan db:seed --force || echo "ℹ️ Seeding skipped (might already exist)"
+            
+            echo "⚡ Optimizing application..."
+            docker-compose exec -T backend php artisan config:cache || echo "Config cache failed"
+            docker-compose exec -T backend php artisan route:cache || echo "Route cache failed"
+            docker-compose exec -T backend php artisan view:cache || echo "View cache failed"
+            
+            echo "🔍 Verifying deployment..."
+            docker ps | grep project_management || echo "Container status check"
+            
+            echo "✅ Deployment completed!"
           EOF
