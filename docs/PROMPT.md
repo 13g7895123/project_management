@@ -137,3 +137,4 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
 63. 右側儀錶板點下去沒有反應，幫我修復這個功能，完成後執行point 20
 64. 專案列表拿到的data依舊是空的，請重新確認，側邊欄的儀表板點下去也還是沒有反映
 65. 專案列表中還是沒有資料，請確認API是否有正確拿到資料庫的資料，目前資料庫確認是有資料的API路徑如下https://project.mercylife.cc/api/projects?search=&category=&status=
+66. 我看你的SQL最後是這樣select * from `projects` where `status` is null and `category` is null and (`name` like "%%" or `description` like "%%") order by `created_at` desc; 但根本就取不到任何資料，請幫我修正

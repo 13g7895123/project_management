@@ -60,26 +60,40 @@ class ProjectController extends Controller
                 $query->whereRaw('1 = 0'); // This will return no results
             }
 
-            // Apply filters
-            if ($request->has('status')) {
+            // Apply filters - only when values are not empty
+            if ($request->filled('status')) {
                 $query->where('status', $request->status);
+                \Log::info('ProjectController: Applied status filter', ['status' => $request->status]);
             }
 
-            if ($request->has('category')) {
+            if ($request->filled('category')) {
                 $query->where('category', $request->category);
+                \Log::info('ProjectController: Applied category filter', ['category' => $request->category]);
             }
 
-            if ($request->has('client_id')) {
+            if ($request->filled('client_id')) {
                 $query->where('client_id', $request->client_id);
+                \Log::info('ProjectController: Applied client_id filter', ['client_id' => $request->client_id]);
             }
 
-            if ($request->has('search')) {
+            if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%");
                 });
+                \Log::info('ProjectController: Applied search filter', ['search' => $search]);
             }
+
+            // Log when no filters are applied
+            $filtersApplied = $request->filled('status') || $request->filled('category') || $request->filled('client_id') || $request->filled('search');
+            \Log::info('ProjectController: Filters summary', [
+                'filters_applied' => $filtersApplied,
+                'status_filter' => $request->filled('status') ? $request->status : 'not applied',
+                'category_filter' => $request->filled('category') ? $request->category : 'not applied',
+                'client_id_filter' => $request->filled('client_id') ? $request->client_id : 'not applied',
+                'search_filter' => $request->filled('search') ? $request->search : 'not applied'
+            ]);
 
             // Apply sorting
             $sortBy = $request->get('sort_by', 'created_at');
@@ -277,12 +291,12 @@ class ProjectController extends Controller
             $query->whereRaw('1 = 0'); // Return no results if not authenticated
         }
         
-        // Apply additional filters
-        if ($request->has('status')) {
+        // Apply additional filters - only when values are not empty
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -317,12 +331,12 @@ class ProjectController extends Controller
             $query->whereRaw('1 = 0'); // Return no results if not authenticated
         }
         
-        // Apply additional filters
-        if ($request->has('category')) {
+        // Apply additional filters - only when values are not empty
+        if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
         
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -360,12 +374,12 @@ class ProjectController extends Controller
             $query->whereRaw('1 = 0'); // Return no results if not authenticated
         }
         
-        // Apply filters if provided
-        if ($request->has('status')) {
+        // Apply filters if provided - only when values are not empty
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
         
