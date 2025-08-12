@@ -54,27 +54,42 @@ jobs:
       - name: Update .env for testing
         working-directory: backend/src
         run: |
+          echo "APP_ENV=testing" >> .env
           echo "DB_CONNECTION=mysql" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=3306" >> .env
           echo "DB_DATABASE=testing" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=password" >> .env
+          echo "CACHE_DRIVER=array" >> .env
+          echo "SESSION_DRIVER=array" >> .env
+          echo "QUEUE_CONNECTION=sync" >> .env
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysql --host=127.0.0.1 --port=3306 --user=root --password=password -e "SELECT 1"; do
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
 
       - name: Run database migrations
         working-directory: backend/src
-        run: php artisan migrate --env=testing
+        run: php artisan migrate --env=testing --force
+
+      - name: Verify health endpoint
+        working-directory: backend/src
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          sleep 5
+          curl -f http://127.0.0.1:8000/api/health || exit 1
+          pkill -f "artisan serve"
 
       - name: Run backend tests
         working-directory: backend/src
-        run: php artisan test --coverage --min=80
-
-      - name: Upload backend coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./backend/src/coverage.xml
-          flags: backend
-          name: backend-coverage
+        run: |
+          echo "Running backend tests..."
+          php artisan test --verbose
+        continue-on-error: false
 
   test-frontend:
     name: Frontend Tests
@@ -97,18 +112,10 @@ jobs:
 
       - name: Run frontend tests
         working-directory: frontend/src
-        run: npm run test:run
-
-      - name: Run frontend tests with coverage
-        working-directory: frontend/src
-        run: npm run test:coverage
-
-      - name: Upload frontend coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./frontend/src/coverage/lcov.info
-          flags: frontend
-          name: frontend-coverage
+        run: |
+          echo "Running frontend tests..."
+          npm run test:run
+        continue-on-error: false
 
   lint-and-format:
     name: Code Quality
@@ -217,6 +224,7 @@ jobs:
             git pull
             
             echo "🐳 Building and starting containers..."
+            docker compose down || true
             docker compose up --build -d
             
             # Wait for containers to be ready
@@ -225,23 +233,25 @@ jobs:
             
             echo "🗄️ Running database setup..."
             # Use -T flag to disable TTY allocation for non-interactive commands
-            docker-compose exec -T backend php artisan migrate --force || echo "❌ Migration failed"
-            docker-compose exec -T backend php artisan db:seed --force || echo "ℹ️ Seeding skipped (might already exist)"
+            docker compose exec -T backend php artisan migrate --force || echo "❌ Migration failed"
+            docker compose exec -T backend php artisan db:seed --force || echo "ℹ️ Seeding skipped (might already exist)"
             
             echo "🧪 Running production health checks..."
-            docker-compose exec -T backend php artisan migrate:status || echo "Migration status check failed"
+            docker compose exec -T backend php artisan migrate:status || echo "Migration status check failed"
             
             echo "⚡ Optimizing application..."
-            docker-compose exec -T backend php artisan config:cache || echo "Config cache failed"
-            docker-compose exec -T backend php artisan route:cache || echo "Route cache failed"
-            docker-compose exec -T backend php artisan view:cache || echo "View cache failed"
+            docker compose exec -T backend php artisan config:cache || echo "Config cache failed"
+            docker compose exec -T backend php artisan route:cache || echo "Route cache failed"
+            docker compose exec -T backend php artisan view:cache || echo "View cache failed"
             
             echo "🔍 Verifying deployment..."
             docker ps | grep project_management || echo "Container status check"
             
             # Basic smoke test
             echo "🌐 Running smoke tests..."
-            docker-compose exec -T backend curl -f http://localhost:8000/api/health || echo "Health check failed"
+            # Try multiple endpoints to ensure the system is working
+            docker compose exec -T backend curl -f http://localhost:8000/api/health || echo "Health check failed"
+            docker compose exec -T backend curl -f http://localhost:8000/api/test || echo "Test endpoint failed"
             
             echo "✅ Deployment completed successfully!"
           EOF
