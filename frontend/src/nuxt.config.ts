@@ -39,6 +39,17 @@ export default defineNuxtConfig({
     storageKey: 'nuxt-color-mode',
     dataValue: 'theme' // This sets data-theme attribute
   },
+  // Build optimization - ensure chart.js can be dynamically imported
+  vite: {
+    optimizeDeps: {
+      include: ['chart.js']
+    },
+    build: {
+      rollupOptions: {
+        external: ['chart.js']
+      }
+    }
+  },
   // Disable problematic nuxt-icon server bundle
   icon: {
     serverBundle: false

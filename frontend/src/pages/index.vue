@@ -54,7 +54,19 @@
           </div>
         </div>
         <div v-else class="h-64">
-          <canvas ref="chartCanvas" class="w-full h-full"></canvas>
+          <ClientOnly>
+            <RevenueChart :revenue-data="revenueData" />
+            <template #fallback>
+              <div class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                <div class="text-center">
+                  <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                    <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">載入中...</span>
+                  </div>
+                  <p class="mt-2 text-gray-500 dark:text-gray-400">載入收入趨勢...</p>
+                </div>
+              </div>
+            </template>
+          </ClientOnly>
         </div>
       </div>
 
@@ -147,8 +159,6 @@ const activities = ref([])
 // Chart data
 const loadingChart = ref(true)
 const chartError = ref(null)
-const chartCanvas = ref(null)
-const chartInstance = ref(null)
 const revenueData = ref([])
 
 // Computed stats
@@ -255,11 +265,7 @@ const loadRevenueChart = async () => {
     }
     
     await nextTick()
-    // Give a small delay to ensure DOM is fully ready
-    setTimeout(() => {
-      initChart()
-      loadingChart.value = false
-    }, 100)
+    loadingChart.value = false
   } catch (err) {
     console.error('Chart loading error:', err)
     chartError.value = `載入收入趨勢失敗: ${err.message}`
@@ -268,12 +274,6 @@ const loadRevenueChart = async () => {
 }
 
 
-const initChart = async () => {
-  // Temporarily disabled chart to test routing fix
-  console.log('Chart functionality temporarily disabled for routing fix testing')
-  chartError.value = 'Chart功能暫時停用以測試路由修復'
-  loadingChart.value = false
-}
 
 const iconComponents = {
   UsersIcon,
@@ -304,16 +304,8 @@ onMounted(async () => {
   await loadDashboardData()
   console.log('Dashboard data loaded, starting chart load')
   
-  // Give extra time for canvas element to be ready
-  await nextTick()
+  // Load chart data
   await loadRevenueChart()
   console.log('Chart load completed')
-})
-
-// Cleanup chart on unmount
-onUnmounted(() => {
-  if (chartInstance.value) {
-    chartInstance.value.destroy()
-  }
 })
 </script>
