@@ -42,7 +42,9 @@
       <!-- Logout Button -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
         <button
-          class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-300"
+          @click="handleLogout"
+          :disabled="isLoading"
+          class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           :class="{ 'justify-center': sidebarCollapsed }"
         >
           <ArrowRightOnRectangleIcon class="w-5 h-5 flex-shrink-0" />
@@ -54,7 +56,9 @@
             leave-from-class="opacity-100 transform translate-x-0"
             leave-to-class="opacity-0 transform -translate-x-2"
           >
-            <span v-if="!sidebarCollapsed" class="ml-3 whitespace-nowrap">登出</span>
+            <span v-if="!sidebarCollapsed" class="ml-3 whitespace-nowrap">
+              {{ isLoading ? '登出中...' : '登出' }}
+            </span>
           </transition>
         </button>
       </div>
@@ -115,11 +119,12 @@
       <!-- Logout Button -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
         <button
-          class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-          @click="closeMobileSidebar"
+          @click="handleLogout"
+          :disabled="isLoading"
+          class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ArrowRightOnRectangleIcon class="w-5 h-5" />
-          <span class="ml-3">登出</span>
+          <span class="ml-3">{{ isLoading ? '登出中...' : '登出' }}</span>
         </button>
       </div>
     </aside>
@@ -140,7 +145,19 @@ const { toggleSidebar, closeMobileSidebar } = sidebarStore
 const settingsStore = useSettingsStore()
 const { sidebarMenuItems } = storeToRefs(settingsStore)
 
+const authStore = useAuthStore()
+const { isLoading } = storeToRefs(authStore)
+const { logout } = authStore
+
 const menuItems = computed(() => sidebarMenuItems.value)
+
+const handleLogout = async () => {
+  try {
+    await logout()
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
 </script>
 
 <style scoped>

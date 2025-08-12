@@ -18,5 +18,8 @@ class ProjectManagementSeeder extends Seeder
         $this->command->info('');
         $this->command->info('📋 No sample data created - clean installation.');
         $this->command->info('🏢 Add your clients and projects through the admin interface.');
+        $this->command->info('');
+        $this->command->info('💡 If you need to clean existing seed data from previous deployments:');
+        $this->command->info('   Run: php artisan seed:cleanup --force');
     }
 }

@@ -216,7 +216,7 @@ class DashboardController extends Controller
             $monthStart = $date->copy()->startOfMonth();
             $monthEnd = $date->copy()->endOfMonth();
             
-            $revenue = Project::where('status', 'completed')
+            $revenue = Project::where('status', 'paid')
                 ->whereBetween('payment_date', [$monthStart, $monthEnd])
                 ->sum('amount');
                 

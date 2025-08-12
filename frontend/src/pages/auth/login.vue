@@ -7,26 +7,25 @@
     </div>
     
     <!-- Main login container -->
-    <div class="relative z-10 w-full max-w-md space-y-8">
-      <!-- Brand logo and header card -->
-      <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/50 p-8 text-center transform hover:scale-[1.02] transition-all duration-300">
-        <!-- Logo placeholder - you can replace with actual logo -->
-        <div class="mx-auto w-16 h-16 bg-gradient-to-tr from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        
-        <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-          {{ t('auth.login_title') }}
-        </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
-          {{ t('auth.login_subtitle') }}
-        </p>
-      </div>
-
-      <!-- Login form card -->
+    <div class="relative z-10 w-full max-w-md">
+      <!-- Combined login card -->
       <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/50 p-8 transform hover:shadow-2xl transition-all duration-300">
+        <!-- Brand logo and header -->
+        <div class="text-center mb-8">
+          <!-- Logo placeholder - you can replace with actual logo -->
+          <div class="mx-auto w-16 h-16 bg-gradient-to-tr from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            {{ t('auth.login_title') }}
+          </h1>
+          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
+            {{ t('auth.login_subtitle') }}
+          </p>
+        </div>
         <form class="space-y-6" @submit.prevent="handleLogin">
           <!-- Form fields -->
           <div class="space-y-5">
@@ -120,13 +119,13 @@
             </p>
           </div>
         </form>
-      </div>
-
-      <!-- Footer info -->
-      <div class="text-center">
-        <p class="text-xs text-gray-500 dark:text-gray-400">
-          Professional Project Management for Freelancers
-        </p>
+        
+        <!-- Footer info -->
+        <div class="text-center mt-6 pt-6 border-t border-gray-200 dark:border-slate-600">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Professional Project Management for Freelancers
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -163,7 +162,7 @@ const handleLogin = async () => {
     await authStore.login(form.value)
     
     // 重定向到首頁
-    await navigateTo('/dashboard/analytics')
+    await navigateTo('/')
   } catch (err) {
     error.value = err.message || '登入失敗，請檢查您的登入資訊'
     console.error('Login error:', err)
@@ -177,7 +176,7 @@ onMounted(async () => {
   await authStore.initializeAuth()
   
   if (authStore.isLoggedIn) {
-    await navigateTo('/dashboard/analytics')
+    await navigateTo('/')
   }
 })
 </script>

@@ -164,3 +164,10 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
 73. 完成以下功能
     -幫我移除seed中的測試專案，用戶管理也保留system admin就好，其餘通通刪除，登入頁面也不要提示帳號資訊了
     - 執行 point 20
+74. 完成以下功能
+    - 登入頁請幫我把兩個區塊底下的框框合在一起
+    - 側邊欄的登出按鈕沒有反應
+    - 一登入請不要導到dashboard/analytics，到根目錄即可
+    - 收入趨勢目前還是沒有看到相關圖表
+    - seed是不是刪除後需要執行甚麼動作，我看部屬後原先的測試專案還是會出現，用戶也是
+    - 執行 point 20
