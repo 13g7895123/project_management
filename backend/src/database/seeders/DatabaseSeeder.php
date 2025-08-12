@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DefaultUserSeeder::class,
             ProjectManagementSeeder::class,
+            WebsiteSettingsSeeder::class,
         ]);
     }
 }

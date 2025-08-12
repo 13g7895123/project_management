@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WebsiteSettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -260,6 +261,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{id}/password', [UserController::class, 'changePassword']); // Change user password
         Route::patch('/{id}/restore', [UserController::class, 'restore']); // Restore soft deleted user
         Route::delete('/{id}/force', [UserController::class, 'forceDelete']); // Permanently delete user
+    });
+
+    // Website Settings routes (Admin only)
+    Route::prefix('website-settings')->middleware('admin')->group(function () {
+        Route::get('/', [WebsiteSettingsController::class, 'index']); // Get all settings
+        Route::post('/', [WebsiteSettingsController::class, 'update']); // Update settings
+        Route::get('/{key}', [WebsiteSettingsController::class, 'show']); // Get specific setting
+        Route::post('/reset-defaults', [WebsiteSettingsController::class, 'resetDefaults']); // Reset to defaults
     });
 });
 

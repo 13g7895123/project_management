@@ -248,6 +248,9 @@ jobs:
             docker compose exec -T backend php artisan migrate --force || echo "❌ Migration failed"
             docker compose exec -T backend php artisan db:seed --force || echo "ℹ️ Seeding skipped (might already exist)"
             
+            echo "🧹 Cleaning up users (keeping only admin)..."
+            docker compose exec -T backend php artisan users:cleanup --force || echo "ℹ️ User cleanup completed or skipped"
+            
             echo "🧪 Running production health checks..."
             docker compose exec -T backend php artisan migrate:status || echo "Migration status check failed"
             

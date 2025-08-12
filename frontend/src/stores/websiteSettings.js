@@ -1,4 +1,5 @@
 export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
+  const { getSettings, updateSettings, resetDefaults: apiResetDefaults } = useWebsiteSettingsApi()
   // Website basic settings
   const websiteName = ref('專案管理系統')
   const websiteSecondaryName = ref('Project Management')
@@ -16,9 +17,42 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   // Theme settings integration
   const enableDarkMode = ref(true)
   
-  // Load settings from localStorage on initialization
-  const loadSettings = () => {
+  // Load settings from API or localStorage fallback
+  const loadSettings = async () => {
     if (process.client) {
+      try {
+        // Try to load from API first
+        const response = await getSettings()
+        if (response.success) {
+          const apiSettings = response.data
+          
+          // Map API settings to store
+          websiteName.value = apiSettings.website_primary_name || '專案管理系統'
+          websiteSecondaryName.value = apiSettings.website_secondary_name || 'Project Management'
+          websiteTitle.value = apiSettings.website_primary_name || '專案管理系統'
+          logoUrl.value = apiSettings.logo_data || ''
+          showLogo.value = !!apiSettings.logo_data
+          faviconUrl.value = apiSettings.favicon_data || '/favicon.ico'
+          
+          enableMultilingual.value = apiSettings.multilingual_enabled !== undefined ? apiSettings.multilingual_enabled : false
+          enableSearch.value = apiSettings.search_enabled !== undefined ? apiSettings.search_enabled : true
+          enableNotifications.value = apiSettings.notifications_enabled !== undefined ? apiSettings.notifications_enabled : true
+          showFooter.value = apiSettings.footer_enabled !== undefined ? apiSettings.footer_enabled : true
+          enableDarkMode.value = apiSettings.dark_mode_enabled !== undefined ? apiSettings.dark_mode_enabled : true
+          
+          // Save to localStorage as backup
+          saveToLocalStorage()
+          
+          // Update document elements
+          updateDocumentTitle()
+          updateFavicon()
+          return
+        }
+      } catch (error) {
+        console.warn('Failed to load settings from API, falling back to localStorage:', error)
+      }
+
+      // Fallback to localStorage
       const savedSettings = localStorage.getItem('website-settings')
       if (savedSettings) {
         try {
@@ -31,7 +65,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           logoUrl.value = settings.logoUrl || ''
           faviconUrl.value = settings.faviconUrl || '/favicon.ico'
           
-          enableMultilingual.value = settings.enableMultilingual !== undefined ? settings.enableMultilingual : true
+          enableMultilingual.value = settings.enableMultilingual !== undefined ? settings.enableMultilingual : false
           enableSearch.value = settings.enableSearch !== undefined ? settings.enableSearch : true
           enableNotifications.value = settings.enableNotifications !== undefined ? settings.enableNotifications : true
           showFooter.value = settings.showFooter !== undefined ? settings.showFooter : true
@@ -43,14 +77,14 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           // Update favicon
           updateFavicon()
         } catch (error) {
-          console.error('Error loading website settings:', error)
+          console.error('Error loading website settings from localStorage:', error)
         }
       }
     }
   }
   
-  // Save settings to localStorage
-  const saveSettings = () => {
+  // Save settings to localStorage only
+  const saveToLocalStorage = () => {
     if (process.client) {
       const settings = {
         websiteName: websiteName.value,
@@ -67,6 +101,39 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       }
       
       localStorage.setItem('website-settings', JSON.stringify(settings))
+    }
+  }
+
+  // Save settings to API and localStorage
+  const saveSettings = async () => {
+    if (process.client) {
+      try {
+        // Prepare API payload
+        const apiPayload = {
+          website_primary_name: websiteName.value,
+          website_secondary_name: websiteSecondaryName.value,
+          logo_data: logoUrl.value,
+          favicon_data: faviconUrl.value,
+          multilingual_enabled: enableMultilingual.value,
+          search_enabled: enableSearch.value,
+          notifications_enabled: enableNotifications.value,
+          footer_enabled: showFooter.value,
+          dark_mode_enabled: enableDarkMode.value
+        }
+
+        // Save to API
+        const response = await updateSettings(apiPayload)
+        if (response.success) {
+          console.log('Settings saved to API successfully')
+        } else {
+          console.warn('Failed to save settings to API:', response.message)
+        }
+      } catch (error) {
+        console.warn('API save failed, saving to localStorage only:', error)
+      }
+
+      // Always save to localStorage as backup
+      saveToLocalStorage()
       
       // Update document title
       updateDocumentTitle()
@@ -75,7 +142,21 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       updateFavicon()
       
       // Trigger a global event for other components
-      window.dispatchEvent(new CustomEvent('website-settings-changed', { detail: settings }))
+      window.dispatchEvent(new CustomEvent('website-settings-changed', { 
+        detail: {
+          websiteName: websiteName.value,
+          websiteSecondaryName: websiteSecondaryName.value,
+          websiteTitle: websiteTitle.value,
+          showLogo: showLogo.value,
+          logoUrl: logoUrl.value,
+          faviconUrl: faviconUrl.value,
+          enableMultilingual: enableMultilingual.value,
+          enableSearch: enableSearch.value,
+          enableNotifications: enableNotifications.value,
+          showFooter: showFooter.value,
+          enableDarkMode: enableDarkMode.value
+        }
+      }))
     }
   }
   
@@ -145,20 +226,33 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   }
   
   // Reset to defaults
-  const resetToDefaults = () => {
+  const resetToDefaults = async () => {
+    try {
+      // Reset via API first
+      const response = await apiResetDefaults()
+      if (response.success) {
+        // Load the reset settings from API
+        await loadSettings()
+        return
+      }
+    } catch (error) {
+      console.warn('API reset failed, using local defaults:', error)
+    }
+
+    // Fallback to local reset
     websiteName.value = '專案管理系統'
     websiteSecondaryName.value = 'Project Management'
     websiteTitle.value = '專案管理系統'
     showLogo.value = false
     logoUrl.value = ''
     faviconUrl.value = '/favicon.ico'
-    enableMultilingual.value = true
+    enableMultilingual.value = false
     enableSearch.value = true
     enableNotifications.value = true
     showFooter.value = true
     enableDarkMode.value = true
     
-    saveSettings()
+    await saveSettings()
   }
   
   // Computed properties for easy access
@@ -196,6 +290,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
     // Methods
     loadSettings,
     saveSettings,
+    saveToLocalStorage,
     updateDocumentTitle,
     updateFavicon,
     uploadLogo,

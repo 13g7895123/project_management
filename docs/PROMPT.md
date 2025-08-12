@@ -262,3 +262,139 @@ Error: Process completed with exit code 2.
     - 修復主題設定的所有功能
     - 幫我多一個網站設定的頁籤在設定中，他可以設定是否要多語系，亮案模式，搜尋，通知小鈴鐺，以及是否顯示Footer，需要完整的功能並與資料庫關聯，然後可以設定網站左上角的名稱顯示，包含主要名稱與次要名稱，或是可以用logo的圖片替代，同事這個也要連動網站的title，對應的是主要名稱，以及favicon也要
     - 完成後執行point 20
+89. 前端測試會出現以下錯誤
+Error: AssertionError: expected { …(6) } to deeply equal ObjectContaining{…}
+
+- Expected
++ Received
+
+- ObjectContaining {
+-   "message": "Resource not found",
++ {
++   "errors": null,
++   "message": "API endpoint not found: http://localhost:8000/api/test",
++   "method": "GET",
+    "status": 404,
++   "statusText": "Not Found",
++   "url": "http://localhost:8000/api/test",
+  }
+
+ ❯ tests/composables/useApi.test.ts:71:26
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:30:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:48:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:66:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:84:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:104:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:122:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:140:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:162:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useDashboard composables/useDashboard.js:5:19
+ ❯ tests/composables/useDashboard.test.ts:180:23
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:36:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:51:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:65:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:85:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:104:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:116:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:132:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:147:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:162:22
+
+
+
+Error: ReferenceError: useApi is not defined
+ ❯ Module.useProjects composables/useProjects.js:5:43
+ ❯ tests/composables/useProjects.test.ts:177:22
+ 90. 完成以下功能
+    - 設定中要多一個身份設定的項目，可以管理目前系統有存在的身分，要與後台資料庫連動
+    - 設定中要多一個權限設定的項目，可以針對不同的身份給定不同權限，要與後台資料庫連動
+    - 專案狀態多一個待評估的項目，該項目可以不用填金額，因為未評估不知道金額多少錢，請完整檢查前端到後端的功能
