@@ -76,3 +76,15 @@
 
 ## 重要提醒
 請不要在每次提交時都加上「Generated with Claude Code」的標記。
+
+## CSS 樣式指示
+
+### 側邊欄收縮樣式
+不要在 `main.css` 中加入以下 CSS 樣式：
+```css
+.sidebar-collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+```
+
+此樣式應避免添加到主要樣式表中。
