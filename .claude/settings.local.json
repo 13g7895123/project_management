@@ -33,7 +33,10 @@
       "Bash(timeout 10s npm run build)",
       "Bash(git pull:*)",
       "Bash(bash:*)",
-      "Bash(scripts/test-authentication.sh:*)"
+      "Bash(scripts/test-authentication.sh:*)",
+      "Bash(timeout 30 docker-compose logs -f backend)",
+      "Bash(timeout 30 docker-compose logs backend)",
+      "Bash(timeout 30 docker-compose logs app)"
     ],
     "deny": []
   }

@@ -161,6 +161,16 @@ export const useApi = () => {
   }
 
   /**
+   * PATCH request
+   */
+  const patch = async (endpoint, body = {}) => {
+    return await apiRequest(endpoint, {
+      method: 'PATCH',
+      body
+    })
+  }
+
+  /**
    * DELETE request
    */
   const del = async (endpoint) => {
@@ -187,6 +197,7 @@ export const useApi = () => {
     get,
     post,
     put,
+    patch,
     delete: del,
     apiRequest,
     getAuthToken,
