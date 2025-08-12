@@ -113,13 +113,14 @@ export const useApi = () => {
       if (errorDetails.status === 404) {
         errorDetails.message = `API endpoint not found: ${errorDetails.url}`
       } else if (errorDetails.status === 401) {
-        errorDetails.message = '登入已過期，請重新登入'
+        errorDetails.message = error.data?.message || '登入已過期，請重新登入'
       } else if (errorDetails.status === 403) {
-        errorDetails.message = '權限不足'
+        // Preserve the specific 403 error message from backend
+        errorDetails.message = error.data?.message || '權限不足'
       } else if (errorDetails.status === 422) {
         errorDetails.message = error.data?.message || '表單驗證失敗'
       } else if (errorDetails.status >= 500) {
-        errorDetails.message = '伺服器錯誤，請稍後再試'
+        errorDetails.message = error.data?.message || '伺服器錯誤，請稍後再試'
       }
       
       return {

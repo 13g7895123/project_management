@@ -578,19 +578,60 @@ const saveNewUser = async () => {
 
 // Delete user
 const handleDeleteUser = async (user) => {
-  if (!user?.id) return
-  if (confirm('確定要刪除這位用戶嗎？')) {
+  if (!user?.id) {
+    console.error('No user ID provided for deletion')
+    alert('錯誤：無法刪除用戶，缺少用戶 ID')
+    return
+  }
+  
+  // Check if user is trying to delete themselves (frontend validation)
+  if (user.id === authStore.user?.id) {
+    alert('錯誤：無法刪除自己的帳號')
+    return
+  }
+  
+  // Check if this is the last admin user (frontend validation)
+  const adminUsers = users.value.filter(u => u.role === 'admin')
+  if (user.role === 'admin' && adminUsers.length <= 1) {
+    alert('錯誤：無法刪除最後一個管理員帳號')
+    return
+  }
+  
+  if (confirm(`確定要刪除用戶「${user.name}」嗎？此操作無法復原。`)) {
     try {
+      console.log('Attempting to delete user:', user.id, user.name)
       const response = await deleteUser(user.id)
+      console.log('Delete user response:', response)
       
       if (response.success) {
+        console.log('User deleted successfully')
+        alert('用戶刪除成功')
         await loadUsers() // Reload users to reflect changes
       } else {
-        throw new Error(response.message || 'Failed to delete user')
+        console.error('Delete user failed:', response)
+        const errorMessage = response.error?.message || response.message || response.error || 'Failed to delete user'
+        throw new Error(errorMessage)
       }
     } catch (error) {
       console.error('Failed to delete user:', error)
-      alert('Failed to delete user: ' + error.message)
+      
+      // Provide more specific error messages
+      let userMessage = '刪除用戶失敗'
+      if (error.message) {
+        if (error.message.includes('cannot delete your own account') || error.message.includes('自己')) {
+          userMessage = '錯誤：無法刪除自己的帳號'
+        } else if (error.message.includes('last admin') || error.message.includes('最後一個管理員')) {
+          userMessage = '錯誤：無法刪除最後一個管理員帳號'
+        } else if (error.message.includes('權限不足') || error.message.includes('403')) {
+          userMessage = '錯誤：權限不足'
+        } else if (error.message.includes('登入已過期') || error.message.includes('401')) {
+          userMessage = '錯誤：登入已過期，請重新登入'
+        } else {
+          userMessage = `刪除用戶失敗：${error.message}`
+        }
+      }
+      
+      alert(userMessage)
     }
   }
 }
