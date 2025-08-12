@@ -23,7 +23,7 @@ export default defineNuxtPlugin(() => {
       favicon.href = settings.faviconUrl
       
       // Force title update based on current route
-      nextTick(() => {
+      nextTick(async () => {
         const { usePageTitle } = await import('~/composables/usePageTitle')
         usePageTitle()
       })

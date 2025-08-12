@@ -107,7 +107,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
   
-  // 初始化用戶狀態
+  // 初始化用戶狀態 (改善SSR處理)
   const initializeAuth = async () => {
     if (process.client) {
       const savedToken = localStorage.getItem(TOKEN_KEY)
@@ -118,11 +118,15 @@ export const useAuthStore = defineStore('auth', () => {
           token.value = savedToken
           user.value = JSON.parse(savedUser)
           
-          // 驗證token是否仍然有效
-          await fetchUser()
+          // 不要在初始化時立即驗證token，避免頁面刷新時的重定向問題
+          // token驗證會在middleware中按需進行
         } catch (error) {
           console.error('Failed to parse saved auth data:', error)
-          await logout(true)
+          // 清除無效的儲存數據
+          localStorage.removeItem(TOKEN_KEY)
+          localStorage.removeItem(USER_KEY)
+          user.value = null
+          token.value = null
         }
       }
     }

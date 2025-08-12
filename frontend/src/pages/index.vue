@@ -134,6 +134,7 @@ import {
   ClockIcon,
   FolderIcon
 } from '@heroicons/vue/24/outline'
+// import { Chart, registerables } from 'chart.js'
 
 const { getDashboardStats, getRecentActivities, getMonthlyRevenueTrend } = useDashboard()
 
@@ -268,106 +269,10 @@ const loadRevenueChart = async () => {
 
 
 const initChart = async () => {
-  // Wait for canvas element to be available
-  let attempts = 0
-  const maxAttempts = 10
-  
-  while (!chartCanvas.value && attempts < maxAttempts) {
-    console.log(`Waiting for canvas element, attempt ${attempts + 1}`)
-    await new Promise(resolve => setTimeout(resolve, 100))
-    attempts++
-  }
-  
-  if (!chartCanvas.value) {
-    console.error('Chart canvas not available after waiting')
-    chartError.value = 'Canvas element not found'
-    return
-  }
-  
-  if (!revenueData.value.length) {
-    console.warn('No revenue data available for chart')
-    return
-  }
-
-  try {
-    // Dynamically import Chart.js
-    console.log('Importing Chart.js...')
-    const { Chart, registerables } = await import('chart.js')
-    console.log('Chart.js imported successfully')
-    Chart.register(...registerables)
-    console.log('Chart.js registerables registered')
-
-    // Destroy existing chart if it exists
-    if (chartInstance.value) {
-      chartInstance.value.destroy()
-    }
-
-    const ctx = chartCanvas.value.getContext('2d')
-    
-    const labels = revenueData.value.map(item => item.month_name || item.month)
-    const actualRevenue = revenueData.value.map(item => item.revenue || 0)
-    const expectedRevenue = revenueData.value.map(item => item.expected_revenue || 0)
-    
-    console.log('Creating chart with data:', { labels, actualRevenue, expectedRevenue })
-
-  chartInstance.value = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: '實際收入',
-        data: actualRevenue,
-        borderColor: 'rgb(99, 102, 241)',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-        tension: 0.1,
-        fill: true
-      }, {
-        label: '預期收入',
-        data: expectedRevenue,
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-        borderDash: [5, 5],
-        tension: 0.1,
-        fill: false
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            usePointStyle: true,
-            padding: 20
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function(value) {
-              return 'NT$' + value.toLocaleString()
-            }
-          }
-        }
-      },
-      elements: {
-        point: {
-          radius: 4,
-          hoverRadius: 6
-        }
-      }
-    }
-  })
-  
-  console.log('Chart created successfully')
-  } catch (error) {
-    console.error('Error creating chart:', error)
-    chartError.value = 'Failed to create revenue chart: ' + error.message
-  }
+  // Temporarily disabled chart to test routing fix
+  console.log('Chart functionality temporarily disabled for routing fix testing')
+  chartError.value = 'Chart功能暫時停用以測試路由修復'
+  loadingChart.value = false
 }
 
 const iconComponents = {
