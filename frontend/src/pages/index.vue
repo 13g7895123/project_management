@@ -245,7 +245,7 @@ const loadRevenueChart = async () => {
           revenueData.value = backendResponse.data
         } else {
           // If all revenue is zero, show mock data for demo purposes
-          console.warn('No revenue data found, using fallback data for demo')
+          console.info('No revenue data in database, displaying demo data for preview')
           revenueData.value = generateMockRevenueData()
         }
       } else if (Array.isArray(backendResponse.data)) {
@@ -254,7 +254,7 @@ const loadRevenueChart = async () => {
         if (hasRealData) {
           revenueData.value = backendResponse.data
         } else {
-          console.warn('No revenue data found, using fallback data for demo')
+          console.info('No revenue data in database, displaying demo data for preview')
           revenueData.value = generateMockRevenueData()
         }
       } else {
@@ -313,8 +313,19 @@ const generateMockActivities = () => {
 }
 
 const initChart = async () => {
+  // Wait for canvas element to be available
+  let attempts = 0
+  const maxAttempts = 10
+  
+  while (!chartCanvas.value && attempts < maxAttempts) {
+    console.log(`Waiting for canvas element, attempt ${attempts + 1}`)
+    await new Promise(resolve => setTimeout(resolve, 100))
+    attempts++
+  }
+  
   if (!chartCanvas.value) {
-    console.warn('Chart canvas not available')
+    console.error('Chart canvas not available after waiting')
+    chartError.value = 'Canvas element not found'
     return
   }
   
@@ -412,8 +423,15 @@ const retryChart = () => {
 // Load data on mount
 onMounted(async () => {
   console.log('Dashboard component mounted')
+  
+  // Ensure DOM is fully rendered
+  await nextTick()
+  
   await loadDashboardData()
   console.log('Dashboard data loaded, starting chart load')
+  
+  // Give extra time for canvas element to be ready
+  await nextTick()
   await loadRevenueChart()
   console.log('Chart load completed')
 })

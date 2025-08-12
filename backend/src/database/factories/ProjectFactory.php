@@ -35,7 +35,20 @@ class ProjectFactory extends Factory
         }
 
         return [
-            'user_id' => User::factory(),
+            'user_id' => function() {
+                // Use existing admin user or create if not exists
+                return User::firstOrCreate([
+                    'email' => 'admin@example.com'
+                ], [
+                    'name' => 'System Administrator',
+                    'username' => 'admin',
+                    'email' => 'admin@example.com',
+                    'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                    'role' => 'admin',
+                    'status' => 'active',
+                    'email_verified_at' => now(),
+                ])->id;
+            },
             'client_id' => Client::factory(),
             'name' => fake()->catchPhrase() . ' 專案',
             'description' => fake()->paragraph(3),

@@ -72,6 +72,7 @@ class CleanupSeedData extends Command
             // Reset auto-increment IDs
             DB::statement('ALTER TABLE projects AUTO_INCREMENT = 1');
             DB::statement('ALTER TABLE clients AUTO_INCREMENT = 1');
+            DB::statement('ALTER TABLE users AUTO_INCREMENT = 1');
 
             // Ensure system admin exists
             $admin = User::firstOrCreate([

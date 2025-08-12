@@ -179,3 +179,7 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 登入後請不要導到dashboard/analytics，到根目錄即可，檢查所有前端功能，不要有導到dashboard/analytics的地方，並刪除該檔案
     - 根目錄index.vue中，有看到收入趨勢的code，但沒有圖片顯示，幫我進一步除錯
     - 執行 point 20
+77. 完成以下功能
+    - 76的第二點報了錯誤，"No revenue data found, using fallback data for demo"，"Chart canvas not available"
+    - 用戶資料幫我保留目前正常使用的資料即可，其餘的幫我從SEED全部刪除，我不要部屬後又有那些資料，請用與專案一樣的方式移除
+    - 執行 point 20
