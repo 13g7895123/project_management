@@ -104,6 +104,7 @@ jobs:
           # Check if PHPUnit is available
           if [ -f vendor/bin/phpunit ]; then
             echo "Using PHPUnit directly"
+            chmod +x vendor/bin/phpunit
             vendor/bin/phpunit --testdox
           else
             echo "Using Laravel Artisan test command"
