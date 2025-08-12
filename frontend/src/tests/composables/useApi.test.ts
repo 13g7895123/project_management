@@ -70,7 +70,11 @@ describe('useApi composable', () => {
     expect(result.data).toBe(null)
     expect(result.error).toEqual(expect.objectContaining({
       status: 404,
-      message: 'Resource not found'
+      message: 'API endpoint not found: http://localhost:8000/api/test',
+      statusText: 'Not Found',
+      url: 'http://localhost:8000/api/test',
+      method: 'GET',
+      errors: null
     }))
   })
 

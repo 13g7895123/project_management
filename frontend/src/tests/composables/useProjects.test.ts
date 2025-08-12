@@ -6,15 +6,15 @@ const mockGet = vi.fn()
 const mockPost = vi.fn()
 const mockPut = vi.fn()
 const mockDelete = vi.fn()
-
-vi.mock('../../composables/useApi', () => ({
-  useApi: () => ({
-    get: mockGet,
-    post: mockPost,
-    put: mockPut,
-    delete: mockDelete
-  })
+const mockUseApi = vi.fn(() => ({
+  get: mockGet,
+  post: mockPost,
+  put: mockPut,
+  delete: mockDelete
 }))
+
+// Set global mock before importing
+global.useApi = mockUseApi
 
 describe('useProjects composable', () => {
   beforeEach(() => {

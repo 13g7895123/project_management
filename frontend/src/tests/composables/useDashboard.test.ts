@@ -3,12 +3,12 @@ import { useDashboard } from '../../composables/useDashboard'
 
 // Mock useApi
 const mockGet = vi.fn()
-
-vi.mock('../../composables/useApi', () => ({
-  useApi: () => ({
-    get: mockGet
-  })
+const mockUseApi = vi.fn(() => ({
+  get: mockGet
 }))
+
+// Set global mock before importing
+global.useApi = mockUseApi
 
 describe('useDashboard composable', () => {
   beforeEach(() => {

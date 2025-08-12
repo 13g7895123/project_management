@@ -271,3 +271,29 @@ Error: Process completed with exit code 2.
 92. 目前功能好了，幫我重啟chart
 93. 系統上所有顯示金額的部分，幫我加入千分位
 94. 專案新增與編輯中的專案狀態多一個待評估的項目，該項目可以不用填金額，因為未評估不知道金額多少錢，請完整檢查前端到後端的功能
+95. 後端測試有問題，錯誤訊息如下
+✗ PHP Could not setup PHP 8.2
+Error: The process '/usr/bin/bash' failed with exit code 1
+96. 完成以下功能
+    - 儀錶板的收入趨勢圖表一樣有錯誤無法使用，完整檢查前後端專案
+    - 前端測試有問題，錯誤訊息如下
+        1. Error: ReferenceError: useApi is not defined
+        ❯ Module.useDashboard composables/useDashboard.js:5:19
+        ❯ tests/composables/useDashboard.test.ts:30:23
+        2. Error: AssertionError: expected { …(6) } to deeply equal ObjectContaining{…}
+
+        - Expected
+        + Received
+
+        - ObjectContaining {
+        -   "message": "Resource not found",
+        + {
+        +   "errors": null,
+        +   "message": "API endpoint not found: http://localhost:8000/api/test",
+        +   "method": "GET",
+            "status": 404,
+        +   "statusText": "Not Found",
+        +   "url": "http://localhost:8000/api/test",
+        }
+
+        ❯ tests/composables/useApi.test.ts:71:26

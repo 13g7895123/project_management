@@ -18,6 +18,20 @@ global.useRuntimeConfig = vi.fn(() => ({
   }
 }))
 
+// Mock useApi globally to fix import issues
+global.useApi = vi.fn(() => ({
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  patch: vi.fn(),
+  delete: vi.fn(),
+  apiRequest: vi.fn(),
+  getAuthToken: vi.fn(),
+  getAuthHeaders: vi.fn(),
+  setAuthToken: vi.fn(),
+  clearAuthToken: vi.fn()
+}))
+
 // Mock localStorage
 Object.defineProperty(window, 'localStorage', {
   value: {
