@@ -29,17 +29,20 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, dom, fileinfo, mysql, redis
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, mysql, redis, curl, xml
           tools: composer:v2
-          coverage: xdebug
+          ini-values: memory_limit=512M, max_execution_time=180
+          coverage: none
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: backend/src/vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('backend/src/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          key: ${{ runner.os }}-php-8.3-composer-${{ hashFiles('backend/src/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.3-composer-
+            ${{ runner.os }}-composer-
 
       - name: Install backend dependencies
         working-directory: backend/src
@@ -84,11 +87,28 @@ jobs:
           curl -f http://127.0.0.1:8000/api/health || exit 1
           pkill -f "artisan serve"
 
+      - name: Check PHP version
+        working-directory: backend/src
+        run: |
+          echo "PHP Version:"
+          php -v
+          echo "PHP Modules:"
+          php -m | grep -E "(mysql|pdo|mbstring|dom|fileinfo|redis)"
+          echo "Composer version:"
+          composer --version
+
       - name: Run backend tests
         working-directory: backend/src
         run: |
           echo "Running backend tests..."
-          php artisan test -v
+          # Check if PHPUnit is available
+          if [ -f vendor/bin/phpunit ]; then
+            echo "Using PHPUnit directly"
+            vendor/bin/phpunit --testdox
+          else
+            echo "Using Laravel Artisan test command"
+            php artisan test --testdox
+          fi
         continue-on-error: false
 
   test-frontend:
@@ -140,8 +160,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           tools: composer:v2
+          ini-values: memory_limit=512M
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -186,8 +207,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           tools: composer:v2
+          ini-values: memory_limit=512M
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
