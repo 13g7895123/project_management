@@ -92,8 +92,8 @@
       <div
         v-if="collapsed && showCollapsedSubmenu && item.children"
         class="absolute left-full top-0 ml-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-48"
-        @mouseenter="showCollapsedSubmenu = true"
-        @mouseleave="showCollapsedSubmenu = false"
+        @mouseenter="handleSubmenuMouseEnter"
+        @mouseleave="handleSubmenuMouseLeave"
       >
         <!-- Parent item title -->
         <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
@@ -146,6 +146,7 @@ const route = useRoute()
 const isExpanded = ref(false)
 const showTooltip = ref(false)
 const showCollapsedSubmenu = ref(false)
+const hideTimer = ref(null)
 
 // Check if this item or any of its children is the current route
 const isCurrentRoute = computed(() => {
@@ -169,6 +170,12 @@ watch(() => route.path, (newPath) => {
 }, { immediate: true })
 
 const handleMouseEnter = () => {
+  // Clear any existing hide timer
+  if (hideTimer.value) {
+    clearTimeout(hideTimer.value)
+    hideTimer.value = null
+  }
+  
   showTooltip.value = true
   if (props.collapsed && props.item.children) {
     showCollapsedSubmenu.value = true
@@ -178,10 +185,28 @@ const handleMouseEnter = () => {
 const handleMouseLeave = () => {
   showTooltip.value = false
   if (props.collapsed && props.item.children) {
-    // Add a small delay to allow moving mouse to submenu
-    setTimeout(() => {
+    // Add a longer delay to allow moving mouse to submenu
+    hideTimer.value = setTimeout(() => {
       showCollapsedSubmenu.value = false
-    }, 100)
+      hideTimer.value = null
+    }, 300)
+  }
+}
+
+const handleSubmenuMouseEnter = () => {
+  // Clear the hide timer when mouse enters submenu
+  if (hideTimer.value) {
+    clearTimeout(hideTimer.value)
+    hideTimer.value = null
+  }
+}
+
+const handleSubmenuMouseLeave = () => {
+  // Hide submenu immediately when leaving submenu area
+  showCollapsedSubmenu.value = false
+  if (hideTimer.value) {
+    clearTimeout(hideTimer.value)
+    hideTimer.value = null
   }
 }
 
@@ -209,4 +234,11 @@ const iconComponents = {
 const getIcon = (iconName) => {
   return iconComponents[iconName] || ChartBarIcon
 }
+
+// Cleanup timer on unmount
+onUnmounted(() => {
+  if (hideTimer.value) {
+    clearTimeout(hideTimer.value)
+  }
+})
 </script>
