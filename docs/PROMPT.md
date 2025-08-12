@@ -196,3 +196,6 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 預期收入的規則為，如果專案有填入預計完成日期，則加入計算該月份的預期收入
     - 收入趨勢幫我改為前六個月+後一個月的資料
     - 執行 point 20
+81. 完成以下功能
+    - 側邊欄收起的時候，有兩層的項目看不到下面那一層的選項，會被遮住
+    - 執行 point 20

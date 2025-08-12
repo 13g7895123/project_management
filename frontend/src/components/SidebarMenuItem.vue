@@ -1,8 +1,8 @@
 <template>
   <div 
     class="relative"
-    @mouseenter="showTooltip = true"
-    @mouseleave="showTooltip = false"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
   >
     <button
       @click="toggleItem"
@@ -49,7 +49,7 @@
       leave-to-class="opacity-0 transform scale-90 translate-x-1"
     >
       <div
-        v-if="collapsed && showTooltip"
+        v-if="collapsed && showTooltip && !item.children"
         class="absolute left-full top-1/2 ml-3 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg pointer-events-none z-50 whitespace-nowrap shadow-lg"
         style="transform: translateY(-50%)"
       >
@@ -59,7 +59,7 @@
       </div>
     </transition>
 
-    <!-- Submenu -->
+    <!-- Submenu - Expanded Sidebar -->
     <transition
       enter-active-class="transition-all duration-200 ease-out"
       enter-from-class="opacity-0 max-h-0"
@@ -77,6 +77,44 @@
         >
           {{ child.name }}
         </NuxtLink>
+      </div>
+    </transition>
+
+    <!-- Submenu Popover - Collapsed Sidebar -->
+    <transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 transform scale-90 translate-x-1"
+      enter-to-class="opacity-100 transform scale-100 translate-x-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 transform scale-100 translate-x-0"
+      leave-to-class="opacity-0 transform scale-90 translate-x-1"
+    >
+      <div
+        v-if="collapsed && showCollapsedSubmenu && item.children"
+        class="absolute left-full top-0 ml-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-48"
+        @mouseenter="showCollapsedSubmenu = true"
+        @mouseleave="showCollapsedSubmenu = false"
+      >
+        <!-- Parent item title -->
+        <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ item.name }}</span>
+        </div>
+        
+        <!-- Child items -->
+        <div class="py-1">
+          <NuxtLink
+            v-for="child in item.children"
+            :key="child.name"
+            :to="child.href"
+            class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+            @click="showCollapsedSubmenu = false"
+          >
+            {{ child.name }}
+          </NuxtLink>
+        </div>
+        
+        <!-- Arrow -->
+        <div class="absolute right-full top-4 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-white dark:border-r-gray-800"></div>
       </div>
     </transition>
   </div>
@@ -107,6 +145,7 @@ const props = defineProps({
 const route = useRoute()
 const isExpanded = ref(false)
 const showTooltip = ref(false)
+const showCollapsedSubmenu = ref(false)
 
 // Check if this item or any of its children is the current route
 const isCurrentRoute = computed(() => {
@@ -129,11 +168,29 @@ watch(() => route.path, (newPath) => {
   }
 }, { immediate: true })
 
+const handleMouseEnter = () => {
+  showTooltip.value = true
+  if (props.collapsed && props.item.children) {
+    showCollapsedSubmenu.value = true
+  }
+}
+
+const handleMouseLeave = () => {
+  showTooltip.value = false
+  if (props.collapsed && props.item.children) {
+    // Add a small delay to allow moving mouse to submenu
+    setTimeout(() => {
+      showCollapsedSubmenu.value = false
+    }, 100)
+  }
+}
+
 const toggleItem = () => {
   if (props.item.children && !props.collapsed) {
     isExpanded.value = !isExpanded.value
   } else if (props.item.children && props.collapsed) {
-    // For collapsed state, we could show a popover menu here in the future
+    // Toggle collapsed submenu on click
+    showCollapsedSubmenu.value = !showCollapsedSubmenu.value
   } else if (props.item.href) {
     // Navigate to the href if the item has one and no children
     navigateTo(props.item.href)
