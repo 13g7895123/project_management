@@ -132,16 +132,24 @@ const loadDashboardData = async () => {
 
     // Load recent activities
     const activitiesResponse = await getRecentActivities(4)
-    if (activitiesResponse.success) {
-      activities.value = activitiesResponse.data
+    if (activitiesResponse.success && activitiesResponse.data) {
+      // Handle the response based on backend structure
+      // Backend returns: {success: true, data: [...]}
+      // useApi wrapper adds another layer: {success: true, data: {success: true, data: [...]}}
+      const backendResponse = activitiesResponse.data
+      
+      if (backendResponse.success && Array.isArray(backendResponse.data)) {
+        activities.value = backendResponse.data
+      } else if (Array.isArray(backendResponse)) {
+        // Handle case where data is directly an array
+        activities.value = backendResponse
+      } else {
+        activities.value = []
+        console.warn('Unexpected activities response format:', backendResponse)
+      }
     } else {
-      // Fallback to mock data for development
-      activities.value = [
-        { id: 1, description: '完成「ABC公司網站」專案', time: '2小時前' },
-        { id: 2, description: '新增業主「XYZ企業」', time: '1天前' },
-        { id: 3, description: '收到「伺服器維護」專案款項', time: '2天前' },
-        { id: 4, description: '開始執行「自動化腳本」專案', time: '3天前' }
-      ]
+      activities.value = []
+      console.error('Failed to load activities:', activitiesResponse.error)
     }
   } catch (err) {
     error.value = err.message || '載入數據失敗'

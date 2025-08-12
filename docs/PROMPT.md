@@ -97,3 +97,7 @@ Error: Process completed with exit code 1."
 54. 專案列表的datatable顯示這個錯誤，載入專案資料失敗：格式錯誤，請確認API格式後修改
 55. 資料庫中有存在資料，但API沒有帶資料過來，幫我確認一下API是否有問題
 56. 修正用戶管理裡面沒有拿到資料的問題，目前看起來API回傳500應該是有問題，幫我修正他
+57. 用戶管理出現的錯誤訊息，"'Class "Spatie\\QueryBuilder\\QueryBuilder" not found'"
+58. 這隻API出現point 57的錯誤，另外本地沒有docker架這個專案的環境，修正後不用測試，/api/users?page=1&per_page=15&sort=-created_at
+59. 我給你完整路徑吧，https://project.mercylife.cc/api/users?page=1&per_page=15&sort=-created_at，請登入後打這支API，修復到她好為止，更新可以直接push上去，等CD結束他就會套用了，用這樣慢慢除錯吧
+60. API已可正常使用，但目前列表中顯示的資料為假資料，請幫我改為由API獲取的資料
