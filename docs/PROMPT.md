@@ -100,4 +100,4 @@ Error: Process completed with exit code 1."
 57. 用戶管理出現的錯誤訊息，"'Class "Spatie\\QueryBuilder\\QueryBuilder" not found'"
 58. 這隻API出現point 57的錯誤，另外本地沒有docker架這個專案的環境，修正後不用測試，/api/users?page=1&per_page=15&sort=-created_at
 59. 我給你完整路徑吧，https://project.mercylife.cc/api/users?page=1&per_page=15&sort=-created_at，請登入後打這支API，修復到她好為止，更新可以直接push上去，等CD結束他就會套用了，用這樣慢慢除錯吧
-60. API已可正常使用，但目前列表中顯示的資料為假資料，請幫我改為由API獲取的資料
+60. API已可正常使用，但目前用戶管理列表中顯示的資料為假資料，請幫我改為由API獲取的資料

@@ -417,8 +417,8 @@ const loadUsers = async (page = 1) => {
     })
     
     if (response.success) {
-      users.value = response.data || []
-      pagination.value = response.pagination || {
+      users.value = response.data.data || []
+      pagination.value = response.data.pagination || {
         current_page: 1,
         last_page: 1,
         per_page: 15,
