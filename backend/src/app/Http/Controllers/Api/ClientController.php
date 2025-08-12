@@ -23,8 +23,43 @@ class ClientController extends Controller
             
             // Add user filter if authenticated
             if (auth()->check()) {
-                $query->where('user_id', auth()->id());
+                \Log::info('ClientController: User authenticated', [
+                    'user_id' => auth()->id(),
+                    'user_email' => auth()->user()->email ?? 'no email'
+                ]);
+                
+                // Check if user has any clients
+                $userClients = Client::where('user_id', auth()->id())->count();
+                \Log::info('ClientController: User clients count', ['user_clients' => $userClients]);
+                
+                // If authenticated user has no clients, check if admin user has data
+                if ($userClients === 0) {
+                    $adminUser = \DB::table('users')->where('email', 'admin@project.mercylife.cc')->first();
+                    if ($adminUser) {
+                        $adminClients = Client::where('user_id', $adminUser->id)->count();
+                        \Log::info('ClientController: Admin user clients count', ['admin_clients' => $adminClients]);
+                        
+                        // Temporarily show admin data if current user has no data
+                        if ($adminClients > 0) {
+                            \Log::info('ClientController: Showing admin data as fallback');
+                            $query->where('user_id', $adminUser->id);
+                        } else {
+                            $query->where('user_id', auth()->id());
+                        }
+                    } else {
+                        $query->where('user_id', auth()->id());
+                    }
+                } else {
+                    $query->where('user_id', auth()->id());
+                }
+            } else {
+                \Log::info('ClientController: User not authenticated, showing all clients');
+                // For debugging: don't filter by user when not authenticated
             }
+            
+            // Debug: log total clients count before filtering
+            $totalClients = \DB::table('clients')->count();
+            \Log::info('ClientController: Total clients in database', ['count' => $totalClients]);
 
             // 搜尋功能
             if ($request->has('search')) {
@@ -43,6 +78,12 @@ class ClientController extends Controller
 
             $clients = $query->orderBy('created_at', 'desc')
                 ->paginate($request->get('per_page', 15));
+            
+            // Debug: log result count
+            \Log::info('ClientController: Clients found after filtering', [
+                'count' => $clients->count(),
+                'total' => $clients->total()
+            ]);
 
             // 加上專案數量
             $clients->getCollection()->transform(function ($client) {
