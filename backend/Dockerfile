@@ -40,11 +40,14 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 # Copy application code
 COPY --chown=www-data:www-data src/ /var/www/html
 
-# Complete composer setup
-RUN composer dump-autoload --no-dev --optimize
+# Complete composer setup - install any remaining dependencies and optimize
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Copy .env.example to .env if .env doesn't exist
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
+# Set default environment variables for build process
+ENV PUSHER_PORT=443
 
 # Generate application key
 RUN php artisan key:generate --force

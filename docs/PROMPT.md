@@ -101,3 +101,35 @@ Error: Process completed with exit code 1."
 58. 這隻API出現point 57的錯誤，另外本地沒有docker架這個專案的環境，修正後不用測試，/api/users?page=1&per_page=15&sort=-created_at
 59. 我給你完整路徑吧，https://project.mercylife.cc/api/users?page=1&per_page=15&sort=-created_at，請登入後打這支API，修復到她好為止，更新可以直接push上去，等CD結束他就會套用了，用這樣慢慢除錯吧
 60. API已可正常使用，但目前用戶管理列表中顯示的資料為假資料，請幫我改為由API獲取的資料
+61. 部屬報了以下錯誤，請修正
+ > [backend stage-0 10/25] RUN composer dump-autoload --no-dev --optimize:
+0.387 Generating optimized autoload files
+2.440 > Illuminate\Foundation\ComposerScripts::postAutoloadDump
+2.455 > @php artisan package:discover --ansi
+2.589
+2.597 In ProviderRepository.php line 206:
+2.598
+2.598   Class "Laravel\Sail\SailServiceProvider" not found
+2.598
+2.598
+2.606 Script @php artisan package:discover --ansi handling the post-autoload-dump event returned with error code 1
+------
+WARNING: The "PUSHER_PORT" variable is not set. Defaulting to a blank string.
+
+Dockerfile:44
+
+--------------------
+
+  42 |
+
+  43 |     # Complete composer setup
+
+  44 | >>> RUN composer dump-autoload --no-dev --optimize
+
+  45 |
+
+  46 |     # Copy .env.example to .env if .env doesn't exist
+
+--------------------
+
+target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no-dev --optimize" did not complete successfully: exit code: 1
