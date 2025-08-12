@@ -15,39 +15,69 @@ class ProjectController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Project::with(['client', 'user']);
+        try {
+            // Check database connection
+            \DB::connection()->getPdo();
+            
+            $query = Project::with(['client', 'user']);
+            
+            // Add user filter if authenticated
+            if (auth()->check()) {
+                $query->where('user_id', auth()->id());
+            }
 
-        // Apply filters
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+            // Apply filters
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->has('category')) {
+                $query->where('category', $request->category);
+            }
+
+            if ($request->has('client_id')) {
+                $query->where('client_id', $request->client_id);
+            }
+
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Apply sorting
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $query->orderBy($sortBy, $sortOrder);
+
+            // Pagination
+            $perPage = min($request->get('per_page', 15), 100);
+            $projects = $query->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'data' => $projects,
+                'message' => '專案列表獲取成功'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Database connection error in ProjectController@index', [
+                'error' => $e->getMessage(),
+                'db_host' => config('database.connections.mysql.host'),
+                'db_database' => config('database.connections.mysql.database')
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Database connection failed: ' . $e->getMessage(),
+                'error' => [
+                    'type' => 'database_error',
+                    'details' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                ]
+            ], 500);
         }
-
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
-        }
-
-        if ($request->has('client_id')) {
-            $query->where('client_id', $request->client_id);
-        }
-
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Apply sorting
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = min($request->get('per_page', 15), 100);
-        $projects = $query->paginate($perPage);
-
-        return response()->json($projects);
     }
 
     /**
@@ -77,8 +107,9 @@ class ProjectController extends Controller
         $project->load(['client', 'user']);
 
         return response()->json([
-            'message' => '專案建立成功',
-            'data' => $project
+            'success' => true,
+            'data' => $project,
+            'message' => '專案建立成功'
         ], 201);
     }
 
