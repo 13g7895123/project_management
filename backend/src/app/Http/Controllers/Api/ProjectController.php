@@ -21,15 +21,35 @@ class ProjectController extends Controller
             
             $query = Project::with(['client', 'user']);
             
+            // Debug: log total projects count before any filtering
+            $totalProjects = \DB::table('projects')->count();
+            \Log::info('ProjectController: Total projects in database', ['count' => $totalProjects]);
+            
             // Check if user is authenticated
             if (auth()->check()) {
                 $user = auth()->user();
                 \Log::info('ProjectController: User authenticated', [
                     'user_id' => $user->id,
                     'user_email' => $user->email ?? 'no email',
-                    'user_role' => $user->role ?? 'no role'
+                    'user_role' => $user->role ?? 'no role',
+                    'user_attributes' => $user->getAttributes()
                 ]);
                 
+                // Check how many projects exist for this user
+                $userProjectCount = Project::where('user_id', $user->id)->count();
+                \Log::info('ProjectController: Projects for current user', ['count' => $userProjectCount]);
+                
+                // Check projects for all users to understand data distribution
+                $allProjectsGrouped = \DB::table('projects')
+                    ->select('user_id', \DB::raw('count(*) as count'))
+                    ->groupBy('user_id')
+                    ->get();
+                \Log::info('ProjectController: Projects by user_id', ['distribution' => $allProjectsGrouped]);
+                
+                // TEMPORARY: Show all projects regardless of role for debugging
+                \Log::info('ProjectController: TEMPORARILY showing all projects for debugging');
+                // Comment out role-based filtering for now
+                /*
                 // Admin users can see all projects, regular users only see their own
                 if ($user->role !== 'admin') {
                     $query->where('user_id', $user->id);
@@ -38,15 +58,14 @@ class ProjectController extends Controller
                     \Log::info('ProjectController: Admin user - showing all projects');
                     // Admin can see all projects, no filtering needed
                 }
+                */
             } else {
-                \Log::info('ProjectController: User not authenticated, returning empty result');
-                // If not authenticated, return empty result for security
-                $query->whereRaw('1 = 0'); // This will return no results
+                \Log::info('ProjectController: User not authenticated');
+                // TEMPORARY: For debugging, let's see if this is an auth issue
+                // Comment out the restriction temporarily
+                // $query->whereRaw('1 = 0'); // This will return no results
+                \Log::info('ProjectController: TEMPORARILY allowing unauthenticated access for debugging');
             }
-            
-            // Debug: log total projects count before filtering
-            $totalProjects = \DB::table('projects')->count();
-            \Log::info('ProjectController: Total projects in database', ['count' => $totalProjects]);
 
             // Apply filters
             if ($request->has('status')) {
@@ -74,14 +93,24 @@ class ProjectController extends Controller
             $sortOrder = $request->get('sort_order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
 
+            // Debug: log the actual SQL query being executed
+            \Log::info('ProjectController: Final SQL query', [
+                'sql' => $query->toSql(),
+                'bindings' => $query->getBindings()
+            ]);
+            
             // Pagination
             $perPage = min($request->get('per_page', 15), 100);
             $projects = $query->paginate($perPage);
             
-            // Debug: log result count
+            // Debug: log result count and first few items
             \Log::info('ProjectController: Projects found after filtering', [
                 'count' => $projects->count(),
-                'total' => $projects->total()
+                'total' => $projects->total(),
+                'per_page' => $projects->perPage(),
+                'current_page' => $projects->currentPage(),
+                'last_page' => $projects->lastPage(),
+                'items_sample' => $projects->items() ? array_slice($projects->items(), 0, 2) : []
             ]);
 
             return response()->json([

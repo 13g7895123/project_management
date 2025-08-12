@@ -136,3 +136,4 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
 62. 目前專案列表中的datatable的API來源，data依舊是空的，請確認API端是否有出現邏輯錯誤，admin應該要可以看到所有的專案
 63. 右側儀錶板點下去沒有反應，幫我修復這個功能，完成後執行point 20
 64. 專案列表拿到的data依舊是空的，請重新確認，側邊欄的儀表板點下去也還是沒有反映
+65. 專案列表中還是沒有資料，請確認API是否有正確拿到資料庫的資料，目前資料庫確認是有資料的API路徑如下https://project.mercylife.cc/api/projects?search=&category=&status=
