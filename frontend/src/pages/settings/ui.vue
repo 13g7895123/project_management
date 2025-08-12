@@ -188,7 +188,6 @@ const resetMenuItems = () => {
       name: 'Dashboards',
       icon: 'ChartBarIcon',
       children: [
-        { name: '分析概覽', href: '/dashboard/analytics' },
         { name: 'CRM', href: '/dashboard/crm' },
         { name: 'eCommerce', href: '/dashboard/ecommerce' }
       ]

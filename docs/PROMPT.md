@@ -175,3 +175,7 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 修改密碼的功能API method有問題
     - 收入趨勢目前還是沒有看到相關圖表
     - 執行 point 20
+76. 完成以下功能
+    - 登入後請不要導到dashboard/analytics，到根目錄即可，檢查所有前端功能，不要有導到dashboard/analytics的地方，並刪除該檔案
+    - 根目錄index.vue中，有看到收入趨勢的code，但沒有圖片顯示，幫我進一步除錯
+    - 執行 point 20

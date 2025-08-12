@@ -45,7 +45,13 @@
           </div>
         </div>
         <div v-else-if="chartError" class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-          <p class="text-red-500 dark:text-red-400">{{ chartError }}</p>
+          <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-red-500 dark:text-red-400 text-sm">{{ chartError }}</p>
+            <button @click="retryChart" class="mt-2 text-primary-600 hover:text-primary-700 text-sm underline">重試</button>
+          </div>
         </div>
         <div v-else class="h-64">
           <canvas ref="chartCanvas" class="w-full h-full"></canvas>
@@ -222,11 +228,14 @@ const loadDashboardData = async () => {
 
 // Chart methods
 const loadRevenueChart = async () => {
+  console.log('Starting loadRevenueChart')
   loadingChart.value = true
   chartError.value = null
 
   try {
+    console.log('Calling getMonthlyRevenueTrend API')
     const response = await getMonthlyRevenueTrend(6) // Get last 6 months
+    console.log('API response received:', response)
     if (response.success && response.data) {
       const backendResponse = response.data
       if (backendResponse.success && Array.isArray(backendResponse.data)) {
@@ -260,15 +269,20 @@ const loadRevenueChart = async () => {
     }
     
     await nextTick()
-    initChart()
+    // Give a small delay to ensure DOM is fully ready
+    setTimeout(() => {
+      initChart()
+      loadingChart.value = false
+    }, 100)
   } catch (err) {
     console.error('Chart loading error:', err)
     // Use fallback data even on error
     revenueData.value = generateMockRevenueData()
     await nextTick()
-    initChart()
-  } finally {
-    loadingChart.value = false
+    setTimeout(() => {
+      initChart()
+      loadingChart.value = false
+    }, 100)
   }
 }
 
@@ -311,8 +325,11 @@ const initChart = async () => {
 
   try {
     // Dynamically import Chart.js
+    console.log('Importing Chart.js...')
     const { Chart, registerables } = await import('chart.js')
+    console.log('Chart.js imported successfully')
     Chart.register(...registerables)
+    console.log('Chart.js registerables registered')
 
     // Destroy existing chart if it exists
     if (chartInstance.value) {
@@ -385,10 +402,20 @@ const getIcon = (iconName) => {
   return iconComponents[iconName] || ChartBarIcon
 }
 
+// Retry chart loading function
+const retryChart = () => {
+  console.log('Retrying chart load')
+  chartError.value = null
+  loadRevenueChart()
+}
+
 // Load data on mount
 onMounted(async () => {
+  console.log('Dashboard component mounted')
   await loadDashboardData()
+  console.log('Dashboard data loaded, starting chart load')
   await loadRevenueChart()
+  console.log('Chart load completed')
 })
 
 // Cleanup chart on unmount

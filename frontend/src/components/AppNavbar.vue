@@ -327,7 +327,6 @@ const pageTitle = computed(() => {
   const titles = {
     '/': t('nav.dashboard'),
     '/dashboard': t('nav.dashboard'),
-    '/dashboard/analytics': t('nav.analytics'),
     '/dashboard/crm': t('nav.crm'),
     '/dashboard/ecommerce': t('nav.ecommerce'),
     '/profile': t('common.profile'),
@@ -360,7 +359,6 @@ const breadcrumbItems = computed(() => {
     
     const segmentTitles = {
       '/dashboard': t('nav.dashboards'),
-      '/dashboard/analytics': t('nav.analytics'),
       '/dashboard/crm': t('nav.crm'),
       '/dashboard/ecommerce': t('nav.ecommerce'),
       '/profile': t('common.profile'),
