@@ -134,3 +134,4 @@ Dockerfile:44
 
 target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no-dev --optimize" did not complete successfully: exit code: 1
 62. 目前專案列表中的datatable的API來源，data依舊是空的，請確認API端是否有出現邏輯錯誤，admin應該要可以看到所有的專案
+63. 右側儀錶板點下去沒有反應，幫我修復這個功能，完成後執行point 20

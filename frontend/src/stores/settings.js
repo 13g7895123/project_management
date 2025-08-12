@@ -4,7 +4,7 @@ export const useSettingsStore = defineStore('settings', () => {
     {
       name: '儀表板',
       icon: 'ChartBarIcon',
-      href: '/dashboard'
+      href: '/'
     },
     {
       name: '專案管理',
