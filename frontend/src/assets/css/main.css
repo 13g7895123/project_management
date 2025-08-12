@@ -72,10 +72,6 @@ body {
   width: var(--sidebar-width);
 }
 
-.sidebar-collapsed {
-  width: var(--sidebar-collapsed-width);
-}
-
 /* Main content area positioning */
 .main-content-area {
   margin-left: 0;

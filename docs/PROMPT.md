@@ -243,3 +243,4 @@ npm error command failed
 npm error command sh -c nuxt prepare
 npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-08-12T12_06_58_784Z-debug-0.log
 Error: Process completed with exit code 1.
+83. 

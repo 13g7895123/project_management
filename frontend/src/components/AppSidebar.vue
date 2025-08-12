@@ -29,7 +29,7 @@
       </div>
 
       <!-- Navigation Menu -->
-      <nav class="flex-1 px-4 py-6 space-y-2 overflow-hidden">
+      <nav class="flex-1 px-4 py-6 space-y-2">
         <SidebarMenuItem
           v-for="item in menuItems"
           :key="item.name"
