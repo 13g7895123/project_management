@@ -21,40 +21,27 @@ class ProjectController extends Controller
             
             $query = Project::with(['client', 'user']);
             
-            // Add user filter if authenticated
+            // Check if user is authenticated
             if (auth()->check()) {
+                $user = auth()->user();
                 \Log::info('ProjectController: User authenticated', [
-                    'user_id' => auth()->id(),
-                    'user_email' => auth()->user()->email ?? 'no email'
+                    'user_id' => $user->id,
+                    'user_email' => $user->email ?? 'no email',
+                    'user_role' => $user->role ?? 'no role'
                 ]);
                 
-                // Check if user has any projects
-                $userProjects = Project::where('user_id', auth()->id())->count();
-                \Log::info('ProjectController: User projects count', ['user_projects' => $userProjects]);
-                
-                // If authenticated user has no projects, check if admin user has data
-                if ($userProjects === 0) {
-                    $adminUser = \DB::table('users')->where('email', 'admin@project.mercylife.cc')->first();
-                    if ($adminUser) {
-                        $adminProjects = Project::where('user_id', $adminUser->id)->count();
-                        \Log::info('ProjectController: Admin user projects count', ['admin_projects' => $adminProjects]);
-                        
-                        // Temporarily show admin data if current user has no data
-                        if ($adminProjects > 0) {
-                            \Log::info('ProjectController: Showing admin data as fallback');
-                            $query->where('user_id', $adminUser->id);
-                        } else {
-                            $query->where('user_id', auth()->id());
-                        }
-                    } else {
-                        $query->where('user_id', auth()->id());
-                    }
+                // Admin users can see all projects, regular users only see their own
+                if ($user->role !== 'admin') {
+                    $query->where('user_id', $user->id);
+                    \Log::info('ProjectController: Regular user - filtering by user_id', ['user_id' => $user->id]);
                 } else {
-                    $query->where('user_id', auth()->id());
+                    \Log::info('ProjectController: Admin user - showing all projects');
+                    // Admin can see all projects, no filtering needed
                 }
             } else {
-                \Log::info('ProjectController: User not authenticated, showing all projects');
-                // For debugging: don't filter by user when not authenticated
+                \Log::info('ProjectController: User not authenticated, returning empty result');
+                // If not authenticated, return empty result for security
+                $query->whereRaw('1 = 0'); // This will return no results
             }
             
             // Debug: log total projects count before filtering
@@ -258,6 +245,16 @@ class ProjectController extends Controller
     {
         $query = Project::with(['client', 'user'])->where('category', $category);
         
+        // Apply user filtering based on role
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->role !== 'admin') {
+                $query->where('user_id', $user->id);
+            }
+        } else {
+            $query->whereRaw('1 = 0'); // Return no results if not authenticated
+        }
+        
         // Apply additional filters
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -287,6 +284,16 @@ class ProjectController extends Controller
     public function byStatus(string $status, Request $request): JsonResponse
     {
         $query = Project::with(['client', 'user'])->where('status', $status);
+        
+        // Apply user filtering based on role
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->role !== 'admin') {
+                $query->where('user_id', $user->id);
+            }
+        } else {
+            $query->whereRaw('1 = 0'); // Return no results if not authenticated
+        }
         
         // Apply additional filters
         if ($request->has('category')) {
@@ -320,6 +327,16 @@ class ProjectController extends Controller
         // For now, return a placeholder response
         
         $query = Project::with(['client', 'user']);
+        
+        // Apply user filtering based on role
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->role !== 'admin') {
+                $query->where('user_id', $user->id);
+            }
+        } else {
+            $query->whereRaw('1 = 0'); // Return no results if not authenticated
+        }
         
         // Apply filters if provided
         if ($request->has('status')) {
