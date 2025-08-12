@@ -171,7 +171,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
-                  <button @click="handleEditProject(project)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
+                  <button @click="editProject(project)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
                     <PencilIcon class="w-4 h-4" />
                   </button>
                   <button @click="handleDeleteProject(project?.id)" class="text-red-600 hover:text-red-900 dark:text-red-400" :disabled="!project?.id">
@@ -185,205 +185,6 @@
       </div>
     </div>
 
-    <!-- Edit Project Modal -->
-    <div v-if="showEditModal" class="fixed inset-0 z-50 overflow-y-auto">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeEditModal"></div>
-        
-        <!-- Modal panel -->
-        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <form @submit.prevent="submitEdit" class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
-                  編輯專案
-                </h3>
-                
-                <div class="space-y-4">
-                  <!-- 專案名稱 -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      專案名稱 <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      v-model="editForm.name"
-                      type="text"
-                      required
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      placeholder="請輸入專案名稱"
-                    />
-                  </div>
-
-                  <!-- 業主 -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      業主 <span class="text-red-500">*</span>
-                    </label>
-                    <select
-                      v-model="editForm.client_id"
-                      required
-                      :disabled="loadingClients"
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white disabled:opacity-50"
-                    >
-                      <option value="">請選擇業主</option>
-                      <option v-for="client in clients" :key="client?.id || 'empty'" :value="client?.id">
-                        {{ client?.name || '未知業主' }}
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- 專案描述 -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      專案描述
-                    </label>
-                    <textarea
-                      v-model="editForm.description"
-                      rows="3"
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      placeholder="請描述專案內容..."
-                    />
-                  </div>
-
-                  <!-- 類別和金額 -->
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        專案類別 <span class="text-red-500">*</span>
-                      </label>
-                      <select
-                        v-model="editForm.category"
-                        required
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      >
-                        <option value="">請選擇類別</option>
-                        <option value="website">網站</option>
-                        <option value="script">腳本</option>
-                        <option value="server">伺服器</option>
-                        <option value="custom">自訂</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        專案金額 <span class="text-red-500">*</span>
-                      </label>
-                      <div class="relative">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                          NT$
-                        </span>
-                        <input
-                          v-model.number="editForm.amount"
-                          type="number"
-                          min="0"
-                          step="1"
-                          required
-                          class="w-full pl-12 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                          placeholder="0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 日期 -->
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        接洽日期 <span class="text-red-500">*</span>
-                      </label>
-                      <input
-                        v-model="editForm.contact_date"
-                        type="date"
-                        required
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        開始執行日期
-                      </label>
-                      <input
-                        v-model="editForm.start_date"
-                        type="date"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-3 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        預計完成日期
-                      </label>
-                      <input
-                        v-model="editForm.expected_completion_date"
-                        type="date"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        實際完成日期
-                      </label>
-                      <input
-                        v-model="editForm.completion_date"
-                        type="date"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        收款日期
-                      </label>
-                      <input
-                        v-model="editForm.payment_date"
-                        type="date"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- 專案狀態 -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      專案狀態
-                    </label>
-                    <select
-                      v-model="editForm.status"
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                    >
-                      <option value="contacted">已接洽</option>
-                      <option value="in_progress">進行中</option>
-                      <option value="completed">已完成</option>
-                      <option value="paid">已收款</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Modal Actions -->
-            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="submit"
-                :disabled="isUpdating"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span v-if="isUpdating">更新中...</span>
-                <span v-else>更新專案</span>
-              </button>
-              <button
-                type="button"
-                @click="closeEditModal"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              >
-                取消
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -394,7 +195,7 @@ definePageMeta({
 })
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
-const { getProjects, deleteProject, updateProject } = useProjects()
+const { getProjects, deleteProject } = useProjects()
 const { getClients } = useClients()
 
 // Reactive data
@@ -406,25 +207,9 @@ const filterClientId = ref('')
 const loading = ref(false)
 const error = ref(null)
 
-// Edit modal data
-const showEditModal = ref(false)
-const isUpdating = ref(false)
-const editingProject = ref(null)
+// Client data for filter dropdown
 const clients = ref([])
 const loadingClients = ref(false)
-const editForm = ref({
-  name: '',
-  client_id: '',
-  description: '',
-  category: '',
-  amount: null,
-  contact_date: '',
-  start_date: '',
-  expected_completion_date: '',
-  completion_date: '',
-  payment_date: '',
-  status: 'contacted'
-})
 
 // Computed properties
 const filteredProjects = computed(() => {
@@ -553,7 +338,13 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('zh-TW')
 }
 
-// Edit modal methods
+// Edit method - navigate to edit page
+const editProject = (project) => {
+  if (!project?.id) return
+  navigateTo(`/projects/${project.id}`)
+}
+
+// Load clients for filter dropdown
 const loadClients = async () => {
   loadingClients.value = true
   
@@ -575,84 +366,6 @@ const loadClients = async () => {
     clients.value = []
   } finally {
     loadingClients.value = false
-  }
-}
-
-const handleEditProject = async (project) => {
-  if (!project?.id) return
-  
-  editingProject.value = project
-  
-  // Load clients if not already loaded
-  if (clients.value.length === 0) {
-    await loadClients()
-  }
-  
-  // Populate edit form with project data
-  editForm.value = {
-    name: project.name || '',
-    client_id: project.client_id || '',
-    description: project.description || '',
-    category: project.category || '',
-    amount: project.amount || null,
-    contact_date: project.contact_date ? new Date(project.contact_date).toISOString().split('T')[0] : '',
-    start_date: project.start_date ? new Date(project.start_date).toISOString().split('T')[0] : '',
-    expected_completion_date: project.expected_completion_date ? new Date(project.expected_completion_date).toISOString().split('T')[0] : '',
-    completion_date: project.completion_date ? new Date(project.completion_date).toISOString().split('T')[0] : '',
-    payment_date: project.payment_date ? new Date(project.payment_date).toISOString().split('T')[0] : '',
-    status: project.status || 'contacted'
-  }
-  
-  showEditModal.value = true
-}
-
-const closeEditModal = () => {
-  showEditModal.value = false
-  editingProject.value = null
-  editForm.value = {
-    name: '',
-    client_id: '',
-    description: '',
-    category: '',
-    amount: null,
-    contact_date: '',
-    start_date: '',
-    expected_completion_date: '',
-    completion_date: '',
-    payment_date: '',
-    status: 'contacted'
-  }
-}
-
-const submitEdit = async () => {
-  if (!editingProject.value?.id) return
-  
-  isUpdating.value = true
-  
-  try {
-    const response = await updateProject(editingProject.value.id, editForm.value)
-    
-    if (response.success && response.data) {
-      // Update the project in the local array
-      const index = projects.value.findIndex(p => p.id === editingProject.value.id)
-      if (index !== -1) {
-        // Extract the updated project data
-        const updatedProject = response.data.data || response.data
-        projects.value[index] = updatedProject
-      }
-      
-      closeEditModal()
-      
-      // Optionally reload projects to ensure data consistency
-      await loadProjects()
-    } else {
-      alert(response.error?.message || '更新失敗')
-    }
-  } catch (error) {
-    console.error('更新專案失敗:', error)
-    alert('更新專案失敗，請稍後再試')
-  } finally {
-    isUpdating.value = false
   }
 }
 

@@ -153,4 +153,11 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 業主管理頁面，各業主的查看專案點下去沒有反應
     - 側邊欄的收折，如果把側邊欄收起來，右側的navbar與內容會有跑版的現象，請frontend agent協助處理，
     - 執行 point 20
-71. 
+71. 完成以下功能
+    - 編輯專案請用新增專案那個頁面就好，不要用彈窗顯示
+    - 儀表板的收入趨勢並沒有圖表顯示
+    - 專案動態也是一片空白
+    - 執行 point 20
+72. 完成以下功能
+    - 請逐項確認測試功能的CI部分，目前部屬CI部分有跑但是會失敗
+    - 執行 point 20
