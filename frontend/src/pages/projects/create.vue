@@ -186,7 +186,7 @@
         <!-- 日期資訊 -->
         <div>
           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">日期資訊</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label for="contact_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 接洽日期 <span class="text-red-500">*</span>
@@ -211,8 +211,21 @@
               />
             </div>
             <div>
+              <label for="expected_completion_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                預計完成日期
+              </label>
+              <input
+                id="expected_completion_date"
+                v-model="form.expected_completion_date"
+                type="date"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div>
               <label for="completion_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                完成日期
+                實際完成日期
               </label>
               <input
                 id="completion_date"
@@ -299,6 +312,7 @@ const form = ref({
   amount: null,
   contact_date: '',
   start_date: '',
+  expected_completion_date: '',
   completion_date: '',
   payment_date: '',
   status: 'contacted'
@@ -419,7 +433,8 @@ const fillFakeData = () => {
   const today = new Date()
   const contactDate = new Date(today.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000) // 過去30天內
   const startDate = new Date(contactDate.getTime() + Math.random() * 14 * 24 * 60 * 60 * 1000) // 接洽後14天內開始
-  const completionDate = new Date(startDate.getTime() + (Math.random() * 60 + 30) * 24 * 60 * 60 * 1000) // 開始後30-90天完成
+  const expectedCompletionDate = new Date(startDate.getTime() + (Math.random() * 60 + 30) * 24 * 60 * 60 * 1000) // 開始後30-90天預計完成
+  const completionDate = new Date(expectedCompletionDate.getTime() + (Math.random() * 14 - 7) * 24 * 60 * 60 * 1000) // 預計完成日期前後7天內實際完成
   const paymentDate = new Date(completionDate.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000) // 完成後30天內收款
   
   // 填入表單資料
@@ -431,6 +446,7 @@ const fillFakeData = () => {
     amount: randomTemplate.amount,
     contact_date: contactDate.toISOString().split('T')[0],
     start_date: randomTemplate.status !== 'contacted' ? startDate.toISOString().split('T')[0] : '',
+    expected_completion_date: randomTemplate.status !== 'contacted' ? expectedCompletionDate.toISOString().split('T')[0] : '',
     completion_date: ['completed', 'paid'].includes(randomTemplate.status) ? completionDate.toISOString().split('T')[0] : '',
     payment_date: randomTemplate.status === 'paid' ? paymentDate.toISOString().split('T')[0] : '',
     status: randomTemplate.status

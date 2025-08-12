@@ -124,7 +124,11 @@
           <span class="text-sm text-gray-500 dark:text-gray-400">
             相關專案: {{ client?.projects_count || 0 }} 個
           </span>
-          <button class="text-sm text-primary-600 hover:text-primary-900 dark:text-primary-400">
+          <button 
+            @click="viewClientProjects(client?.id)"
+            class="text-sm text-primary-600 hover:text-primary-900 dark:text-primary-400 hover:underline"
+            :disabled="!client?.id"
+          >
             查看專案
           </button>
         </div>
@@ -271,6 +275,16 @@ const getContactIcon = (type) => {
     mobile: DevicePhoneMobileIcon
   }
   return icons[type] || PhoneIcon
+}
+
+const viewClientProjects = (clientId) => {
+  if (!clientId) {
+    alert('無效的業主ID')
+    return
+  }
+  
+  // Navigate to projects page with client filter
+  navigateTo(`/projects?client_id=${clientId}`)
 }
 
 // Load data on mount

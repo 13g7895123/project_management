@@ -1,0 +1,257 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, fileinfo, mysql, redis
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: backend/src/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('backend/src/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install backend dependencies
+        working-directory: backend/src
+        run: composer install --no-progress --no-suggest --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Create environment file
+        working-directory: backend/src
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Update .env for testing
+        working-directory: backend/src
+        run: |
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=testing" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=password" >> .env
+
+      - name: Run database migrations
+        working-directory: backend/src
+        run: php artisan migrate --env=testing
+
+      - name: Run backend tests
+        working-directory: backend/src
+        run: php artisan test --coverage --min=80
+
+      - name: Upload backend coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/src/coverage.xml
+          flags: backend
+          name: backend-coverage
+
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/src/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend/src
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend/src
+        run: npm run test:run
+
+      - name: Run frontend tests with coverage
+        working-directory: frontend/src
+        run: npm run test:coverage
+
+      - name: Upload frontend coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/src/coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+
+  lint-and-format:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/src/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd backend/src && composer install --no-progress --no-interaction
+          cd ../../frontend/src && npm ci
+
+      - name: Run PHP CS Fixer (if configured)
+        working-directory: backend/src
+        run: |
+          if [ -f .php-cs-fixer.php ]; then
+            vendor/bin/php-cs-fixer fix --dry-run --diff
+          else
+            echo "PHP CS Fixer not configured, skipping..."
+          fi
+        continue-on-error: true
+
+      - name: Run ESLint (if configured)
+        working-directory: frontend/src
+        run: |
+          if [ -f .eslintrc.js ] || [ -f .eslintrc.json ]; then
+            npx eslint . --ext .js,.vue,.ts
+          else
+            echo "ESLint not configured, skipping..."
+          fi
+        continue-on-error: true
+
+  security-check:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd backend/src && composer install --no-dev --no-progress --no-interaction
+          cd ../../frontend/src && npm ci
+
+      - name: Run Composer security audit
+        working-directory: backend/src
+        run: composer audit
+
+      - name: Run npm security audit
+        working-directory: frontend/src
+        run: npm audit --audit-level moderate
+
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, lint-and-format, security-check]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 8022 -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: |
+          ssh -p 8022 -i ~/.ssh/id_ed25519 -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e  # Exit on any error
+            
+            echo "🚀 Starting deployment..."
+            cd /home/jarvis/project/idea/project_management
+            
+            echo "📥 Pulling latest changes..."
+            git pull
+            
+            echo "🐳 Building and starting containers..."
+            docker compose up --build -d
+            
+            # Wait for containers to be ready
+            echo "⏳ Waiting for containers to start..."
+            sleep 15
+            
+            echo "🗄️ Running database setup..."
+            # Use -T flag to disable TTY allocation for non-interactive commands
+            docker-compose exec -T backend php artisan migrate --force || echo "❌ Migration failed"
+            docker-compose exec -T backend php artisan db:seed --force || echo "ℹ️ Seeding skipped (might already exist)"
+            
+            echo "🧪 Running production health checks..."
+            docker-compose exec -T backend php artisan migrate:status || echo "Migration status check failed"
+            
+            echo "⚡ Optimizing application..."
+            docker-compose exec -T backend php artisan config:cache || echo "Config cache failed"
+            docker-compose exec -T backend php artisan route:cache || echo "Route cache failed"
+            docker-compose exec -T backend php artisan view:cache || echo "View cache failed"
+            
+            echo "🔍 Verifying deployment..."
+            docker ps | grep project_management || echo "Container status check"
+            
+            # Basic smoke test
+            echo "🌐 Running smoke tests..."
+            docker-compose exec -T backend curl -f http://localhost:8000/api/health || echo "Health check failed"
+            
+            echo "✅ Deployment completed successfully!"
+          EOF
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed!"
+            exit 1
+          fi

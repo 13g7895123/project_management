@@ -36,8 +36,19 @@
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           收入趨勢
         </h3>
-        <div class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-          <p class="text-gray-500 dark:text-gray-400">月收入趨勢圖表 (待實作)</p>
+        <div v-if="loadingChart" class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+          <div class="text-center">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+              <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">載入中...</span>
+            </div>
+            <p class="mt-2 text-gray-500 dark:text-gray-400">載入收入趨勢...</p>
+          </div>
+        </div>
+        <div v-else-if="chartError" class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+          <p class="text-red-500 dark:text-red-400">{{ chartError }}</p>
+        </div>
+        <div v-else class="h-64">
+          <canvas ref="chartCanvas" class="w-full h-full"></canvas>
         </div>
       </div>
 
@@ -62,6 +73,41 @@
         </div>
       </div>
     </div>
+
+    <!-- Additional Revenue Information -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
+        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">待收款項</h4>
+        <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">
+          NT${{ (dashboardData.pending_revenue || 0).toLocaleString() }}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">已完成待收</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
+        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">潛在收入</h4>
+        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          NT${{ (dashboardData.potential_revenue || 0).toLocaleString() }}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">進行中專案</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
+        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">逾期專案</h4>
+        <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+          {{ dashboardData.overdue_projects || 0 }}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">超過預期完成日</p>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
+        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">即將到期</h4>
+        <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+          {{ dashboardData.upcoming_deadlines || 0 }}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">7天內到期</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -78,13 +124,20 @@ import {
   FolderIcon
 } from '@heroicons/vue/24/outline'
 
-const { getDashboardStats, getRecentActivities } = useDashboard()
+const { getDashboardStats, getRecentActivities, getMonthlyRevenueTrend } = useDashboard()
 
 // Reactive data
 const loading = ref(true)
 const error = ref(null)
 const dashboardData = ref({})
 const activities = ref([])
+
+// Chart data
+const loadingChart = ref(true)
+const chartError = ref(null)
+const chartCanvas = ref(null)
+const chartInstance = ref(null)
+const revenueData = ref([])
 
 // Computed stats
 const stats = computed(() => [
@@ -94,19 +147,19 @@ const stats = computed(() => [
     icon: 'FolderIcon' 
   },
   { 
-    name: '總收入', 
+    name: '已收入', 
     value: `NT$${(dashboardData.value.total_revenue || 0).toLocaleString()}`, 
     icon: 'CurrencyDollarIcon' 
+  },
+  { 
+    name: '預期總收入', 
+    value: `NT$${(dashboardData.value.expected_revenue || 0).toLocaleString()}`, 
+    icon: 'ChartBarIcon' 
   },
   { 
     name: '進行中專案', 
     value: dashboardData.value.in_progress_projects || 0, 
     icon: 'ClockIcon' 
-  },
-  { 
-    name: '活躍業主', 
-    value: dashboardData.value.total_clients || 0, 
-    icon: 'UsersIcon' 
   }
 ])
 
@@ -118,8 +171,13 @@ const loadDashboardData = async () => {
   try {
     // Load dashboard stats
     const statsResponse = await getDashboardStats()
-    if (statsResponse.success) {
-      dashboardData.value = statsResponse.data
+    if (statsResponse.success && statsResponse.data) {
+      const backendResponse = statsResponse.data
+      if (backendResponse.success) {
+        dashboardData.value = backendResponse.data
+      } else {
+        dashboardData.value = backendResponse
+      }
     } else {
       // Fallback to mock data for development
       dashboardData.value = {
@@ -131,17 +189,13 @@ const loadDashboardData = async () => {
     }
 
     // Load recent activities
-    const activitiesResponse = await getRecentActivities(4)
+    const activitiesResponse = await getRecentActivities(6)
     if (activitiesResponse.success && activitiesResponse.data) {
-      // Handle the response based on backend structure
-      // Backend returns: {success: true, data: [...]}
-      // useApi wrapper adds another layer: {success: true, data: {success: true, data: [...]}}
       const backendResponse = activitiesResponse.data
       
       if (backendResponse.success && Array.isArray(backendResponse.data)) {
         activities.value = backendResponse.data
       } else if (Array.isArray(backendResponse)) {
-        // Handle case where data is directly an array
         activities.value = backendResponse
       } else {
         activities.value = []
@@ -159,6 +213,91 @@ const loadDashboardData = async () => {
   }
 }
 
+// Chart methods
+const loadRevenueChart = async () => {
+  loadingChart.value = true
+  chartError.value = null
+
+  try {
+    const response = await getMonthlyRevenueTrend(6) // Get last 6 months
+    if (response.success && response.data) {
+      const backendResponse = response.data
+      if (backendResponse.success && Array.isArray(backendResponse.data)) {
+        revenueData.value = backendResponse.data
+        await nextTick()
+        initChart()
+      } else {
+        throw new Error('Invalid revenue data format')
+      }
+    } else {
+      throw new Error(response.error?.message || '載入收入趨勢失敗')
+    }
+  } catch (err) {
+    chartError.value = err.message || '載入收入趨勢失敗'
+    console.error('Chart loading error:', err)
+  } finally {
+    loadingChart.value = false
+  }
+}
+
+const initChart = async () => {
+  if (!chartCanvas.value || !revenueData.value.length) return
+
+  // Dynamically import Chart.js
+  const { Chart, registerables } = await import('chart.js')
+  Chart.register(...registerables)
+
+  // Destroy existing chart if it exists
+  if (chartInstance.value) {
+    chartInstance.value.destroy()
+  }
+
+  const ctx = chartCanvas.value.getContext('2d')
+  
+  const labels = revenueData.value.map(item => item.month_name || item.month)
+  const data = revenueData.value.map(item => item.revenue || 0)
+
+  chartInstance.value = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '月收入',
+        data: data,
+        borderColor: 'rgb(99, 102, 241)',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        tension: 0.1,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return 'NT$' + value.toLocaleString()
+            }
+          }
+        }
+      },
+      elements: {
+        point: {
+          radius: 4,
+          hoverRadius: 6
+        }
+      }
+    }
+  })
+}
+
 const iconComponents = {
   UsersIcon,
   CurrencyDollarIcon,
@@ -172,7 +311,15 @@ const getIcon = (iconName) => {
 }
 
 // Load data on mount
-onMounted(() => {
-  loadDashboardData()
+onMounted(async () => {
+  await loadDashboardData()
+  await loadRevenueChart()
+})
+
+// Cleanup chart on unmount
+onUnmounted(() => {
+  if (chartInstance.value) {
+    chartInstance.value.destroy()
+  }
 })
 </script>

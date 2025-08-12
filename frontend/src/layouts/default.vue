@@ -2,9 +2,10 @@
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <AppSidebar />
     <div 
-      class="min-h-screen flex flex-col main-content-area"
+      class="main-content-area transition-margin"
       :class="{
-        'sidebar-collapsed': sidebarCollapsed
+        'sidebar-collapsed': sidebarCollapsed,
+        'sidebar-transitioning': sidebarTransitioning
       }"
     >
       <AppNavbar />
@@ -18,7 +19,7 @@
 
 <script setup>
 const sidebarStore = useSidebarStore()
-const { sidebarCollapsed } = storeToRefs(sidebarStore)
+const { sidebarCollapsed, sidebarTransitioning } = storeToRefs(sidebarStore)
 
 // Add footbar state from settings
 const settingsStore = useSettingsStore()

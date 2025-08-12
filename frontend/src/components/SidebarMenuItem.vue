@@ -1,5 +1,9 @@
 <template>
-  <div class="relative">
+  <div 
+    class="relative"
+    @mouseenter="showTooltip = true"
+    @mouseleave="showTooltip = false"
+  >
     <button
       @click="toggleItem"
       class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group"
@@ -16,23 +20,44 @@
       />
       
       <!-- Text and Arrow (desktop) -->
-      <div v-if="!collapsed" class="flex items-center justify-between flex-1 ml-3">
-        <span class="font-medium">{{ item.name }}</span>
-        <ChevronDownIcon 
-          v-if="item.children"
-          class="w-4 h-4 transition-transform duration-200"
-          :class="{ 'rotate-180': isExpanded }"
-        />
-      </div>
+      <transition
+        enter-active-class="transition-all duration-300 delay-150"
+        enter-from-class="opacity-0 transform -translate-x-2"
+        enter-to-class="opacity-100 transform translate-x-0"
+        leave-active-class="transition-all duration-150"
+        leave-from-class="opacity-100 transform translate-x-0"
+        leave-to-class="opacity-0 transform -translate-x-2"
+      >
+        <div v-if="!collapsed" class="flex items-center justify-between flex-1 ml-3 overflow-hidden">
+          <span class="font-medium whitespace-nowrap">{{ item.name }}</span>
+          <ChevronDownIcon 
+            v-if="item.children"
+            class="w-4 h-4 transition-transform duration-300 flex-shrink-0"
+            :class="{ 'rotate-180': isExpanded }"
+          />
+        </div>
+      </transition>
     </button>
 
     <!-- Tooltip for collapsed state -->
-    <div
-      v-if="collapsed"
-      class="absolute left-full top-0 ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap"
+    <transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 transform scale-90 translate-x-1"
+      enter-to-class="opacity-100 transform scale-100 translate-x-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 transform scale-100 translate-x-0"
+      leave-to-class="opacity-0 transform scale-90 translate-x-1"
     >
-      {{ item.name }}
-    </div>
+      <div
+        v-if="collapsed && showTooltip"
+        class="absolute left-full top-1/2 ml-3 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg pointer-events-none z-50 whitespace-nowrap shadow-lg"
+        style="transform: translateY(-50%)"
+      >
+        {{ item.name }}
+        <!-- Arrow -->
+        <div class="absolute right-full top-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900 dark:border-r-gray-700" style="transform: translateY(-50%)"></div>
+      </div>
+    </transition>
 
     <!-- Submenu -->
     <transition
@@ -81,6 +106,7 @@ const props = defineProps({
 
 const route = useRoute()
 const isExpanded = ref(false)
+const showTooltip = ref(false)
 
 // Check if this item or any of its children is the current route
 const isCurrentRoute = computed(() => {

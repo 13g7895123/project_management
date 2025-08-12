@@ -138,3 +138,19 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
 64. 專案列表拿到的data依舊是空的，請重新確認，側邊欄的儀表板點下去也還是沒有反映
 65. 專案列表中還是沒有資料，請確認API是否有正確拿到資料庫的資料，目前資料庫確認是有資料的API路徑如下https://project.mercylife.cc/api/projects?search=&category=&status=
 66. 我看你的SQL最後是這樣select * from `projects` where `status` is null and `category` is null and (`name` like "%%" or `description` like "%%") order by `created_at` desc; 但根本就取不到任何資料，請幫我修正
+67. 專案的編輯按鈕目前沒有任何作用，幫我修正
+68. 完成以下功能 
+    - 目前儀錶板的資料似乎沒有連動到專案的資料，幫我更新實作
+    - 完成收入趨勢與專案動態
+    - 專案設定加入預計完成日的欄位，並需要加總預計的收入到儀表板中
+69. 完成以下功能 
+    - 幫我把當前完成的功能全部加上測試，前後端都要
+    - 幫我把測試加入自動部屬中，並寫一份docs\CI.md文件給我
+    - 前面似乎有看到PHP版本過舊的問題，幫我升級，並利用測試確保功能在升級後都可以正常運行，有錯誤請進行修正
+    - 側邊欄的收折，如果把側邊欄收起來，右側的navbar與內容會有跑版的現象，請frontend agent協助處理，
+    - 執行 point 20
+70. 完成以下功能
+    - 業主管理頁面，各業主的查看專案點下去沒有反應
+    - 側邊欄的收折，如果把側邊欄收起來，右側的navbar與內容會有跑版的現象，請frontend agent協助處理，
+    - 執行 point 20
+71. 

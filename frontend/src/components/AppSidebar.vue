@@ -2,49 +2,73 @@
   <div>
     <!-- Desktop Sidebar -->
     <aside
-      class="fixed top-0 left-0 h-full bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 z-40 hidden lg:block flex flex-col"
+      class="fixed top-0 left-0 h-full bg-white dark:bg-gray-800 shadow-lg transition-sidebar z-40 hidden lg:block flex flex-col"
       :class="[
-        sidebarCollapsed ? 'w-20' : 'w-70'
+        sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded',
+        { 'sidebar-transitioning': sidebarTransitioning }
       ]"
     >
       <!-- Logo/Brand -->
-      <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
-        <div v-if="!sidebarCollapsed" class="text-xl font-bold text-gray-800 dark:text-white">
-          Admin Panel
-        </div>
-        <div v-else class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-          <span class="text-white font-bold text-sm">A</span>
-        </div>
+      <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700 px-4">
+        <transition 
+          mode="out-in"
+          enter-active-class="transition-all duration-300"
+          enter-from-class="opacity-0 transform scale-90"
+          enter-to-class="opacity-100 transform scale-100"
+          leave-active-class="transition-all duration-300"
+          leave-from-class="opacity-100 transform scale-100"
+          leave-to-class="opacity-0 transform scale-90"
+        >
+          <div v-if="!sidebarCollapsed" key="expanded" class="text-xl font-bold text-gray-800 dark:text-white truncate">
+            Admin Panel
+          </div>
+          <div v-else key="collapsed" class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <span class="text-white font-bold text-sm">A</span>
+          </div>
+        </transition>
       </div>
 
       <!-- Navigation Menu -->
-      <nav class="flex-1 px-4 py-6 space-y-2">
+      <nav class="flex-1 px-4 py-6 space-y-2 overflow-hidden">
         <SidebarMenuItem
           v-for="item in menuItems"
           :key="item.name"
           :item="item"
           :collapsed="sidebarCollapsed"
+          class="transition-all duration-300"
         />
       </nav>
 
       <!-- Logout Button -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
         <button
-          class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+          class="w-full flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-300"
           :class="{ 'justify-center': sidebarCollapsed }"
         >
-          <ArrowRightOnRectangleIcon class="w-5 h-5" />
-          <span v-if="!sidebarCollapsed" class="ml-3">登出</span>
+          <ArrowRightOnRectangleIcon class="w-5 h-5 flex-shrink-0" />
+          <transition
+            enter-active-class="transition-all duration-300 delay-150"
+            enter-from-class="opacity-0 transform -translate-x-2"
+            enter-to-class="opacity-100 transform translate-x-0"
+            leave-active-class="transition-all duration-150"
+            leave-from-class="opacity-100 transform translate-x-0"
+            leave-to-class="opacity-0 transform -translate-x-2"
+          >
+            <span v-if="!sidebarCollapsed" class="ml-3 whitespace-nowrap">登出</span>
+          </transition>
         </button>
       </div>
 
       <!-- Collapse Toggle -->
       <button
         @click="toggleSidebar"
-        class="absolute -right-3 top-6 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+        :disabled="sidebarTransitioning"
+        class="absolute -right-3 top-6 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-110 transition-all duration-200 shadow-md"
+        :class="{ 'cursor-not-allowed opacity-50': sidebarTransitioning }"
+        :title="sidebarCollapsed ? '展開側邊欄' : '收起側邊欄'"
       >
         <ChevronLeftIcon 
-          class="w-4 h-4 text-gray-500 transition-transform duration-200"
+          class="w-4 h-4 text-gray-500 transition-transform duration-300"
           :class="{ 'rotate-180': sidebarCollapsed }"
         />
       </button>
@@ -59,7 +83,7 @@
 
     <!-- Mobile Sidebar -->
     <aside
-      class="fixed top-0 left-0 h-full w-70 bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 z-50 lg:hidden flex flex-col"
+      class="fixed top-0 left-0 h-full sidebar-expanded bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 z-50 lg:hidden flex flex-col sidebar-mobile"
       :class="[
         sidebarMobileOpen ? 'translate-x-0' : '-translate-x-full'
       ]"
@@ -110,7 +134,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const sidebarStore = useSidebarStore()
-const { sidebarCollapsed, sidebarMobileOpen } = storeToRefs(sidebarStore)
+const { sidebarCollapsed, sidebarMobileOpen, sidebarTransitioning } = storeToRefs(sidebarStore)
 const { toggleSidebar, closeMobileSidebar } = sidebarStore
 
 const settingsStore = useSettingsStore()

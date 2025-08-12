@@ -1,5 +1,5 @@
 <template>
-  <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between">
+  <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between navbar-container">
     <!-- Left side - Mobile hamburger or Breadcrumb -->
     <div class="flex items-center space-x-4">
       <!-- Mobile hamburger button -->
