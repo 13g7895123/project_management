@@ -33,8 +33,10 @@ export const useSettingsStore = defineStore('settings', () => {
       name: '設定',
       icon: 'CogIcon',
       children: [
+        { name: '設定總覽', href: '/settings' },
         { name: '主題設定', href: '/settings/theme' },
-        { name: '一般設定', href: '/settings' }
+        { name: '網站設定', href: '/settings/website' },
+        { name: '介面設定', href: '/settings/ui' }
       ]
     }
   ])

@@ -9,12 +9,24 @@ export const useTheme = () => {
 
   // Theme toggle function
   const toggleTheme = () => {
+    // Check if dark mode is enabled in website settings
+    const websiteSettingsStore = useWebsiteSettingsStore()
+    if (!websiteSettingsStore.enableDarkMode) {
+      return // Don't allow theme toggle if disabled
+    }
+    
     const newMode = colorMode.value === 'dark' ? 'light' : 'dark'
     setTheme(newMode)
   }
 
   // Set specific theme
   const setTheme = (mode) => {
+    // Check if dark mode is enabled in website settings
+    const websiteSettingsStore = useWebsiteSettingsStore()
+    if (!websiteSettingsStore.enableDarkMode && mode === 'dark') {
+      return // Don't allow setting dark mode if disabled
+    }
+    
     colorMode.preference = mode
     
     // Add smooth transition

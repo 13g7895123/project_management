@@ -128,3 +128,125 @@
 **已修復位置**：
 - `.github/workflows/ci-cd.yml`: CI/CD 流程中的測試命令
 - `docs/CI.md`: 文件中的範例命令
+
+### 前後端分離測試策略
+關於 point 87：前後端分離時，前端專案沒有 API，測試應該怎麼調整？
+
+**測試層級架構**：
+
+#### 1. 單元測試 (Unit Tests)
+**範圍**：測試獨立的函數和組件邏輯
+**方法**：
+- 使用 Mock API 請求（如現有的 `vi.fn()` 和 `vi.mock()`）
+- 測試 Composables 的業務邏輯
+- 測試元件的本地狀態和方法
+- 測試工具函數和輔助方法
+
+**範例**：
+```javascript
+// 測試 useProjects composable
+it('should handle API errors gracefully', () => {
+  mockApi.get.mockRejectedValue(new Error('Network error'))
+  // 測試錯誤處理邏輯
+})
+```
+
+#### 2. 整合測試 (Integration Tests)
+**範圍**：測試多個組件之間的協作
+**方法**：
+- 使用 Mock 後端服務或 JSON Server
+- 測試完整的用戶流程（如登入、建立專案）
+- 測試狀態管理和組件間通訊
+
+**工具建議**：
+```bash
+# 使用 MSW (Mock Service Worker) 模擬 API
+npm install -D msw
+# 或使用 JSON Server 提供假 API
+npm install -D json-server
+```
+
+#### 3. 端對端測試 (E2E Tests)
+**範圍**：測試完整的應用流程
+**方法**：
+- 使用測試環境的真實 API
+- 自動化測試用戶操作路徑
+- 驗證前後端整合正確性
+
+**工具選擇**：
+```bash
+# Cypress 或 Playwright 用於 E2E 測試
+npm install -D cypress
+# 或
+npm install -D @playwright/test
+```
+
+**測試環境配置**：
+
+#### 開發環境測試
+```javascript
+// vitest.config.js
+export default {
+  test: {
+    environment: 'happy-dom',
+    setupFiles: ['./tests/setup.ts'],
+    mockReset: true,
+  }
+}
+
+// tests/setup.ts - Mock 所有 API 請求
+global.$fetch = vi.fn()
+global.useRuntimeConfig = vi.fn(() => ({
+  public: { apiBaseUrl: 'http://localhost:8000/api' }
+}))
+```
+
+#### CI/CD 環境測試
+```yaml
+# .github/workflows/ci-cd.yml
+- name: Run frontend tests with mock APIs
+  run: |
+    npm run test:unit     # 單元測試（完全 Mock）
+    npm run test:integration  # 整合測試（假 API）
+
+- name: Run E2E tests (optional)
+  run: |
+    # 只在有測試環境 API 時執行
+    if [[ "${{ secrets.TEST_API_URL }}" ]]; then
+      npm run test:e2e
+    fi
+```
+
+**實作建議**：
+
+1. **分層測試金字塔**：
+   - 70% 單元測試（快速、獨立）
+   - 20% 整合測試（模擬 API 互動）
+   - 10% E2E 測試（真實環境驗證）
+
+2. **API 測試策略**：
+   - **開發階段**：使用 Mock 和假數據
+   - **CI/CD 階段**：使用獨立的測試 API 環境
+   - **部署前驗證**：使用 staging 環境進行 E2E 測試
+
+3. **測試資料管理**：
+   ```javascript
+   // tests/fixtures/mockData.js
+   export const mockProjects = [
+     { id: 1, name: 'Test Project', status: 'active' }
+   ]
+   
+   // tests/mocks/api.js
+   export const setupApiMocks = () => {
+     vi.mocked($fetch).mockImplementation((url) => {
+       if (url.includes('/projects')) return { data: mockProjects }
+       // 其他 API 端點 Mock
+     })
+   }
+   ```
+
+**現有專案優勢**：
+- 已建立完整的 Mock 架構
+- Composables 設計良好，易於測試
+- 測試隔離性佳，執行速度快
+- CI/CD 流程已整合前端測試

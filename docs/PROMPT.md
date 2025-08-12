@@ -243,4 +243,22 @@ npm error command failed
 npm error command sh -c nuxt prepare
 npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-08-12T12_06_58_784Z-debug-0.log
 Error: Process completed with exit code 1.
-83. 
+83. 目前側邊欄的hover會出現了，但是來不及滑上去就又消失了，幫我解決這個問題，完成後執行 point 20
+84. 不要在main.css加入以下css，寫進CLAUDE.md
+.sidebar-collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+85. 前端測試的部分API可以直接用真實的API網址嗎
+86. 後端測試出現以下錯誤
+Running backend tests...
+PHPUnit 10.5.48 by Sebastian Bergmann and contributors.
+
+Unknown option "--verbose"
+Error: Process completed with exit code 2.
+87. 可是如果前後端分離，前端專案並沒有api，那測試應該怎麼調整
+88. 完成以下功能
+    - 幫我移除一般設定的部分
+    - 用戶管理幫我保留admin那個帳號，其餘全部移除，且部屬後不再出現
+    - 修復主題設定的所有功能
+    - 幫我多一個網站設定的頁籤在設定中，他可以設定是否要多語系，亮案模式，搜尋，通知小鈴鐺，以及是否顯示Footer，需要完整的功能並與資料庫關聯，然後可以設定網站左上角的名稱顯示，包含主要名稱與次要名稱，或是可以用logo的圖片替代，同事這個也要連動網站的title，對應的是主要名稱，以及favicon也要
+    - 完成後執行point 20

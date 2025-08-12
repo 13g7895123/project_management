@@ -56,6 +56,7 @@
     <div class="flex items-center space-x-3">
       <!-- Search -->
       <button
+        v-if="enableSearch"
         @click="toggleSearch"
         class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 relative"
       >
@@ -63,7 +64,7 @@
       </button>
 
       <!-- Language -->
-      <div class="relative">
+      <div v-if="enableMultilingual" class="relative">
         <button
           @click="toggleLanguage"
           class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
@@ -99,6 +100,7 @@
 
       <!-- Theme toggle -->
       <button
+        v-if="enableDarkMode"
         @click="handleToggleTheme"
         class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
       >
@@ -107,7 +109,7 @@
       </button>
 
       <!-- Notifications -->
-      <div class="relative">
+      <div v-if="enableNotifications" class="relative">
         <button
           @click="toggleNotifications"
           class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 relative"
@@ -321,6 +323,10 @@ const notificationsStore = useNotificationsStore()
 const { recentNotifications, unreadCount, markAsRead, markAllAsRead, clearReadNotifications } = notificationsStore
 
 const { isDark, toggleTheme: handleToggleTheme } = useTheme()
+
+// Website settings
+const websiteSettingsStore = useWebsiteSettingsStore()
+const { enableSearch, enableMultilingual, enableNotifications, enableDarkMode } = storeToRefs(websiteSettingsStore)
 
 // Breadcrumb logic
 const pageTitle = computed(() => {

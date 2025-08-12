@@ -19,11 +19,31 @@
           leave-from-class="opacity-100 transform scale-100"
           leave-to-class="opacity-0 transform scale-90"
         >
-          <div v-if="!sidebarCollapsed" key="expanded" class="text-xl font-bold text-gray-800 dark:text-white truncate">
-            Admin Panel
+          <!-- Expanded state -->
+          <div v-if="!sidebarCollapsed" key="expanded" class="flex flex-col items-center">
+            <div v-if="showLogo && logoUrl" class="h-10 flex items-center">
+              <img :src="logoUrl" :alt="websiteName" class="h-8 object-contain" />
+            </div>
+            <div v-else class="text-center">
+              <div class="text-lg font-bold text-gray-800 dark:text-white truncate">
+                {{ displayName }}
+              </div>
+              <div v-if="displaySecondaryName" class="text-xs text-gray-600 dark:text-gray-400 truncate">
+                {{ displaySecondaryName }}
+              </div>
+            </div>
           </div>
-          <div v-else key="collapsed" class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
-            <span class="text-white font-bold text-sm">A</span>
+          
+          <!-- Collapsed state -->
+          <div v-else key="collapsed" class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div v-if="showLogo && logoUrl">
+              <img :src="logoUrl" :alt="websiteName" class="w-8 h-8 object-contain" />
+            </div>
+            <div v-else class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span class="text-white font-bold text-sm">
+                {{ (displayName || 'A').charAt(0).toUpperCase() }}
+              </span>
+            </div>
           </div>
         </transition>
       </div>
@@ -94,8 +114,18 @@
     >
       <!-- Logo/Brand -->
       <div class="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
-        <div class="text-xl font-bold text-gray-800 dark:text-white">
-          Admin Panel
+        <div class="flex items-center space-x-3">
+          <div v-if="showLogo && logoUrl" class="h-10 flex items-center">
+            <img :src="logoUrl" :alt="websiteName" class="h-8 object-contain" />
+          </div>
+          <div v-else>
+            <div class="text-lg font-bold text-gray-800 dark:text-white">
+              {{ displayName }}
+            </div>
+            <div v-if="displaySecondaryName" class="text-xs text-gray-600 dark:text-gray-400">
+              {{ displaySecondaryName }}
+            </div>
+          </div>
         </div>
         <button
           @click="closeMobileSidebar"
@@ -144,6 +174,9 @@ const { toggleSidebar, closeMobileSidebar } = sidebarStore
 
 const settingsStore = useSettingsStore()
 const { sidebarMenuItems } = storeToRefs(settingsStore)
+
+const websiteSettingsStore = useWebsiteSettingsStore()
+const { websiteName, showLogo, logoUrl, displayName, displaySecondaryName } = storeToRefs(websiteSettingsStore)
 
 const authStore = useAuthStore()
 const { isLoading } = storeToRefs(authStore)

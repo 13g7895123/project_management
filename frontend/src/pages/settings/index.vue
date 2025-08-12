@@ -21,23 +21,41 @@
           </p>
         </NuxtLink>
         
-        <div class="block p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+        <NuxtLink
+          to="/settings/website"
+          class="block p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 transition-colors duration-200"
+        >
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            一般設定
+            網站設定
           </h3>
           <p class="text-gray-600 dark:text-gray-300 text-sm">
-            基本應用程式設定
+            網站名稱、標誌、多語言及功能設定
           </p>
-        </div>
+        </NuxtLink>
         
-        <div class="block p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+        <NuxtLink
+          to="/settings/ui"
+          class="block p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 transition-colors duration-200"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            介面設定
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300 text-sm">
+            頁尾顯示和側邊選單設定
+          </p>
+        </NuxtLink>
+        
+        <NuxtLink
+          to="/settings/users"
+          class="block p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 transition-colors duration-200"
+        >
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             用戶管理
           </h3>
           <p class="text-gray-600 dark:text-gray-300 text-sm">
             管理用戶帳戶和權限
           </p>
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </div>

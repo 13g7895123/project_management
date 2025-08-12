@@ -21,7 +21,11 @@
 const sidebarStore = useSidebarStore()
 const { sidebarCollapsed, sidebarTransitioning } = storeToRefs(sidebarStore)
 
-// Add footbar state from settings
+// Website settings for footer
+const websiteSettingsStore = useWebsiteSettingsStore()
+const { showFooter } = storeToRefs(websiteSettingsStore)
+
+// Backward compatibility with old settings
 const settingsStore = useSettingsStore()
-const { showFootbar } = storeToRefs(settingsStore)
+const showFootbar = computed(() => showFooter.value)
 </script>
