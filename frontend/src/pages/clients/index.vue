@@ -63,14 +63,37 @@
       </div>
     </div>
 
+    <!-- Debug Information -->
+    <div v-if="!loading && !error" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-md p-4 mb-6">
+      <h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Debug Information:</h4>
+      <div class="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+        <p><strong>Raw clients array length:</strong> {{ clients.length }}</p>
+        <p><strong>Filtered clients length:</strong> {{ filteredClients.length }}</p>
+        <p><strong>Search query:</strong> "{{ searchQuery }}"</p>
+        <div class="mt-2">
+          <p><strong>Filtered Clients Data:</strong></p>
+          <pre class="mt-1 bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded text-xs overflow-auto max-h-32">{{ JSON.stringify(filteredClients, null, 2) }}</pre>
+        </div>
+        <div class="mt-2">
+          <p><strong>Raw Clients Data:</strong></p>
+          <pre class="mt-1 bg-yellow-100 dark:bg-yellow-800/30 p-2 rounded text-xs overflow-auto max-h-32">{{ JSON.stringify(clients, null, 2) }}</pre>
+        </div>
+      </div>
+    </div>
+
     <!-- Clients Grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-        v-for="client in filteredClients"
-        :key="client?.id || 'empty'"
+        v-for="(client, index) in filteredClients"
+        :key="client?.id || `client-${index}`"
         class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6 hover:shadow-md transition-shadow duration-200"
-        v-if="client"
       >
+        <!-- Debug client data -->
+        <div v-if="!client" class="bg-red-100 dark:bg-red-900/50 p-2 rounded mb-4">
+          <p class="text-red-800 dark:text-red-200 text-xs">Debug: Client is null/undefined at index {{ index }}</p>
+        </div>
+        
+        <div v-else>
         <!-- Client Header -->
         <div class="flex justify-between items-start mb-4">
           <div>
@@ -96,7 +119,7 @@
           <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">聯繫方式</h4>
           <div class="space-y-1">
             <div
-              v-for="contact in (client?.contacts || [])"
+              v-for="contact in (client?.contact_methods || [])"
               :key="contact?.id || 'empty'"
               class="flex items-center space-x-2 text-sm"
               v-if="contact"
@@ -125,6 +148,7 @@
         <div v-if="client?.notes" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">備註</h4>
           <p class="text-sm text-gray-600 dark:text-gray-300">{{ client.notes }}</p>
+        </div>
         </div>
       </div>
     </div>
@@ -168,13 +192,32 @@ const error = ref(null)
 
 // Computed properties
 const filteredClients = computed(() => {
-  if (!searchQuery.value) return clients.value
+  console.log('=== DEBUG: filteredClients computed ===')
+  console.log('Raw clients.value:', clients.value)
+  console.log('Search query:', searchQuery.value)
   
-  return clients.value.filter(client =>
-    client.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    client.how_we_met.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    (client.notes && client.notes.toLowerCase().includes(searchQuery.value.toLowerCase()))
-  )
+  if (!searchQuery.value) {
+    console.log('No search query, returning all clients:', clients.value)
+    return clients.value
+  }
+  
+  const filtered = clients.value.filter(client => {
+    if (!client) {
+      console.log('Found null/undefined client:', client)
+      return false
+    }
+    
+    const nameMatch = client.name ? client.name.toLowerCase().includes(searchQuery.value.toLowerCase()) : false
+    const metMatch = client.how_we_met ? client.how_we_met.toLowerCase().includes(searchQuery.value.toLowerCase()) : false
+    const notesMatch = client.notes ? client.notes.toLowerCase().includes(searchQuery.value.toLowerCase()) : false
+    
+    console.log(`Client ${client.id || 'unknown'} - name: ${nameMatch}, met: ${metMatch}, notes: ${notesMatch}`)
+    
+    return nameMatch || metMatch || notesMatch
+  })
+  
+  console.log('Filtered clients:', filtered)
+  return filtered
 })
 
 // Methods
@@ -187,21 +230,34 @@ const loadClients = async () => {
       search: searchQuery.value
     })
     
+    console.log('=== DEBUG: loadClients response ===')
+    console.log('Full response:', response)
+    console.log('Response success:', response.success)
+    console.log('Response data:', response.data)
+    
     if (response.success && response.data) {
       // Handle paginated response: response.data.data.data contains the actual client array
       // Backend structure: {success: true, data: {data: [...], ...pagination}, message}
       // After useApi wrapper: {success: true, data: {success: true, data: {data: [...]}}, error: null}
       const backendResponse = response.data
+      console.log('Backend response:', backendResponse)
+      console.log('Backend response success:', backendResponse.success)
+      console.log('Backend response data:', backendResponse.data)
+      
       if (backendResponse.success && backendResponse.data && backendResponse.data.data) {
         clients.value = backendResponse.data.data || []
+        console.log('Final clients.value:', clients.value)
+        console.log('Clients count:', clients.value.length)
       } else {
         // Handle case where backend response doesn't have expected structure
         clients.value = []
         error.value = backendResponse.message || '載入業主資料失敗：格式錯誤'
+        console.log('Backend response structure issue:', backendResponse)
       }
     } else {
       clients.value = []
       error.value = response.error?.message || '載入業主資料失敗'
+      console.log('API request failed:', response)
     }
   } catch (err) {
     console.error('Load clients error:', err)
