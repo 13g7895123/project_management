@@ -82,7 +82,11 @@
     </div>
 
     <!-- Clients Grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="!loading && !error" class="space-y-4">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        顯示 {{ filteredClients.length }} 個業主
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="(client, index) in filteredClients"
         :key="client?.id || `client-${index}`"
@@ -150,6 +154,7 @@
           <p class="text-sm text-gray-600 dark:text-gray-300">{{ client.notes }}</p>
         </div>
         </div>
+      </div>
       </div>
     </div>
 
