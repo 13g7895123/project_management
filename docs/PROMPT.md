@@ -171,3 +171,7 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 收入趨勢目前還是沒有看到相關圖表
     - seed是不是刪除後需要執行甚麼動作，我看部屬後原先的測試專案還是會出現，用戶也是
     - 執行 point 20
+75. 完成以下功能
+    - 修改密碼的功能API method有問題
+    - 收入趨勢目前還是沒有看到相關圖表
+    - 執行 point 20

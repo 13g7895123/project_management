@@ -54,7 +54,7 @@ export const useAuth = () => {
    * Change password
    */
   const changePassword = async (passwordData) => {
-    return await post('/auth/change-password', passwordData)
+    return await put('/auth/change-password', passwordData)
   }
 
   /**

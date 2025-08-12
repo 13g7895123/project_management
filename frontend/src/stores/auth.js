@@ -190,8 +190,8 @@ export const useAuthStore = defineStore('auth', () => {
   // 更改密碼
   const changePassword = async (passwordData) => {
     try {
-      const { post } = useApi()
-      const response = await post('/auth/change-password', passwordData)
+      const { put } = useApi()
+      const response = await put('/auth/change-password', passwordData)
       
       if (!response.success) {
         throw new Error(response.error?.message || '密碼更改失敗')
