@@ -38,8 +38,33 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+        <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">載入中...</span>
+      </div>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">正在載入業主資料...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 rounded-md p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ error }}</p>
+          <button @click="loadClients" class="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 underline">
+            重新載入
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Clients Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="client in filteredClients"
         :key="client?.id || 'empty'"
@@ -105,7 +130,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="filteredClients.length === 0" class="text-center py-12">
+    <div v-if="!loading && !error && filteredClients.length === 0" class="text-center py-12">
       <UsersIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
         {{ searchQuery ? '找不到符合條件的業主' : '尚未新增任何業主' }}
@@ -157,54 +182,34 @@ const loadClients = async () => {
   loading.value = true
   error.value = null
   
-  const response = await getClients({
-    search: searchQuery.value
-  })
-  
-  if (response.success) {
-    clients.value = response.data.data || response.data || []
-  } else {
-    error.value = response.error?.message || '載入業主資料失敗'
-    // Fallback to mock data for development
-    clients.value = [
-      {
-        id: 1,
-        name: 'ABC公司',
-        how_we_met: '朋友介紹',
-        notes: '重要客戶，主要業務為網站開發',
-        projects_count: 3,
-        contacts: [
-          { id: 1, type: 'phone', value: '02-1234-5678', is_primary: true },
-          { id: 2, type: 'email', value: 'contact@abc.com', is_primary: false },
-          { id: 3, type: 'line', value: 'abc_company', is_primary: false }
-        ]
-      },
-      {
-        id: 2,
-        name: 'XYZ企業',
-        how_we_met: '網路接洽',
-        notes: '需要定期維護服務',
-        projects_count: 2,
-        contacts: [
-          { id: 4, type: 'email', value: 'info@xyz.com', is_primary: true },
-          { id: 5, type: 'phone', value: '0912-345-678', is_primary: false }
-        ]
-      },
-      {
-        id: 3,
-        name: '123公司',
-        how_we_met: '展覽會',
-        notes: '中小企業，預算有限',
-        projects_count: 1,
-        contacts: [
-          { id: 6, type: 'phone', value: '04-5678-9012', is_primary: true },
-          { id: 7, type: 'wechat', value: 'company123', is_primary: false }
-        ]
+  try {
+    const response = await getClients({
+      search: searchQuery.value
+    })
+    
+    if (response.success && response.data) {
+      // Handle paginated response: response.data.data.data contains the actual client array
+      // Backend structure: {success: true, data: {data: [...], ...pagination}, message}
+      // After useApi wrapper: {success: true, data: {success: true, data: {data: [...]}}, error: null}
+      const backendResponse = response.data
+      if (backendResponse.success && backendResponse.data && backendResponse.data.data) {
+        clients.value = backendResponse.data.data || []
+      } else {
+        // Handle case where backend response doesn't have expected structure
+        clients.value = []
+        error.value = backendResponse.message || '載入業主資料失敗：格式錯誤'
       }
-    ]
+    } else {
+      clients.value = []
+      error.value = response.error?.message || '載入業主資料失敗'
+    }
+  } catch (err) {
+    console.error('Load clients error:', err)
+    clients.value = []
+    error.value = '載入業主資料時發生錯誤，請稍後再試'
+  } finally {
+    loading.value = false
   }
-  
-  loading.value = false
 }
 
 const clearSearch = () => {
@@ -213,15 +218,30 @@ const clearSearch = () => {
 }
 
 const handleDeleteClient = async (clientId) => {
-  if (!confirm('確定要刪除此業主嗎？')) return
+  if (!clientId) {
+    alert('無效的業主ID')
+    return
+  }
   
-  const response = await deleteClient(clientId)
+  if (!confirm('確定要刪除此業主嗎？此操作無法復原。')) return
   
-  if (response.success) {
-    // Remove from local array
-    clients.value = clients.value.filter(client => client.id !== clientId)
-  } else {
-    alert(response.error?.message || '刪除失敗')
+  try {
+    const response = await deleteClient(clientId)
+    
+    if (response.success) {
+      // Remove from local array
+      clients.value = clients.value.filter(client => client.id !== clientId)
+      
+      // Show success message
+      const successMessage = response.data?.message || '業主刪除成功'
+      alert(successMessage)
+    } else {
+      const errorMessage = response.error?.message || response.data?.message || '刪除失敗'
+      alert(errorMessage)
+    }
+  } catch (err) {
+    console.error('Delete client error:', err)
+    alert('刪除業主時發生錯誤，請稍後再試')
   }
 }
 

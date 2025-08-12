@@ -28,6 +28,18 @@
       </button>
     </div>
 
+    <!-- Loading Clients Message -->
+    <div v-if="loadingClients" class="bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <div class="h-5 w-5 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></div>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-blue-800 dark:text-blue-200">正在載入業主列表...</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Success/Error Messages -->
     <div v-if="successMessage" class="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md p-4">
       <div class="flex">
@@ -79,17 +91,39 @@
               <label for="client" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 業主 <span class="text-red-500">*</span>
               </label>
-              <select
-                id="client"
-                v-model="form.client_id"
-                required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">請選擇業主</option>
-                <option v-for="client in clients" :key="client?.id || 'empty'" :value="client?.id">
-                  {{ client?.name || '未知業主' }}
-                </option>
-              </select>
+              <div class="relative">
+                <select
+                  id="client"
+                  v-model="form.client_id"
+                  required
+                  :disabled="loadingClients"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <option value="" disabled>
+                    {{ loadingClients ? '載入中...' : '請選擇業主' }}
+                  </option>
+                  <option v-for="client in clients" :key="client?.id || 'empty'" :value="client?.id">
+                    {{ client?.name || '未知業主' }}
+                  </option>
+                </select>
+                <div v-if="loadingClients" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div class="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent" role="status">
+                    <span class="sr-only">載入中...</span>
+                  </div>
+                </div>
+              </div>
+              <p v-if="clientsError" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                {{ clientsError }}
+                <button @click="loadClients" class="ml-2 underline hover:no-underline">
+                  重新載入
+                </button>
+              </p>
+              <p v-else-if="!loadingClients && clients.length === 0" class="mt-1 text-sm text-yellow-600 dark:text-yellow-400">
+                尚無業主資料，請先
+                <NuxtLink to="/clients/create" class="underline hover:no-underline">
+                  新增業主
+                </NuxtLink>
+              </p>
             </div>
           </div>
         </div>
@@ -253,6 +287,8 @@ const { getClients } = useClients()
 
 // 業主列表
 const clients = ref([])
+const loadingClients = ref(false)
+const clientsError = ref('')
 
 // 表單資料
 const form = ref({
@@ -274,16 +310,37 @@ const successMessage = ref('')
 
 // 載入業主列表
 const loadClients = async () => {
+  loadingClients.value = true
+  clientsError.value = ''
+  
   try {
-    const response = await getClients()
-    if (response.success) {
-      clients.value = response.data.data
+    const response = await getClients({ per_page: 100 }) // Get more clients for dropdown
+    
+    if (response.success && response.data) {
+      // Handle paginated response: response.data.data.data contains the actual client array
+      // Backend structure: {success: true, data: {data: [...], ...pagination}, message}
+      // After useApi wrapper: {success: true, data: {success: true, data: {data: [...]}}, error: null}
+      const backendResponse = response.data
+      if (backendResponse.success && backendResponse.data && backendResponse.data.data) {
+        clients.value = backendResponse.data.data || []
+        console.log('Loaded clients:', clients.value.length)
+      } else {
+        // Handle case where backend response doesn't have expected structure
+        clients.value = []
+        clientsError.value = backendResponse.message || '載入業主資料失敗：格式錯誤'
+        console.error('Unexpected backend response structure:', backendResponse)
+      }
     } else {
       clients.value = []
+      clientsError.value = response.error?.message || '載入業主資料失敗'
+      console.error('API request failed:', response)
     }
   } catch (error) {
     console.error('載入業主失敗:', error)
     clients.value = []
+    clientsError.value = '載入業主資料時發生錯誤，請稍後再試'
+  } finally {
+    loadingClients.value = false
   }
 }
 
