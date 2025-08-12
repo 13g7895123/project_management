@@ -82,6 +82,75 @@ Route::get('test', function () {
     ]);
 });
 
+Route::get('test/projects', function () {
+    try {
+        // Test database connectivity and get projects data
+        $projects = \DB::table('projects')->get();
+        $projectsCount = $projects->count();
+        
+        // Get user distribution
+        $userDistribution = \DB::table('projects')
+            ->select('user_id', \DB::raw('count(*) as count'))
+            ->groupBy('user_id')
+            ->get();
+            
+        // Get users info
+        $users = \DB::table('users')->select('id', 'name', 'email', 'role')->get();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Projects test data retrieved successfully',
+            'data' => [
+                'total_projects' => $projectsCount,
+                'user_distribution' => $userDistribution,
+                'users' => $users,
+                'sample_projects' => $projects->take(3),
+                'timestamp' => now()
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Projects test failed',
+            'error' => $e->getMessage(),
+            'timestamp' => now()
+        ], 500);
+    }
+});
+
+Route::get('test/projects/auth-test', function () {
+    try {
+        // Temporary test route to check projects without authentication
+        $projectController = new \App\Http\Controllers\Api\ProjectController();
+        
+        // Create a mock request
+        $request = new \Illuminate\Http\Request();
+        $request->replace([
+            'search' => '',
+            'category' => '',
+            'status' => ''
+        ]);
+        
+        // Call the index method directly
+        $response = $projectController->index($request);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Direct controller test',
+            'response_data' => $response->getData(),
+            'timestamp' => now()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Direct controller test failed',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'timestamp' => now()
+        ], 500);
+    }
+});
+
 Route::get('database/setup', function () {
     try {
         // Check database connection
