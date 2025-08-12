@@ -46,25 +46,18 @@ class ProjectController extends Controller
                     ->get();
                 \Log::info('ProjectController: Projects by user_id', ['distribution' => $allProjectsGrouped]);
                 
-                // TEMPORARY: Show all projects regardless of role for debugging
-                \Log::info('ProjectController: TEMPORARILY showing all projects for debugging');
-                // Comment out role-based filtering for now
-                /*
-                // Admin users can see all projects, regular users only see their own
-                if ($user->role !== 'admin') {
-                    $query->where('user_id', $user->id);
-                    \Log::info('ProjectController: Regular user - filtering by user_id', ['user_id' => $user->id]);
-                } else {
+                // Role-based filtering: Admin sees all, users see only their own
+                if ($user->role === 'admin' || $user->isAdmin()) {
                     \Log::info('ProjectController: Admin user - showing all projects');
                     // Admin can see all projects, no filtering needed
+                } else {
+                    $query->where('user_id', $user->id);
+                    \Log::info('ProjectController: Regular user - filtering by user_id', ['user_id' => $user->id]);
                 }
-                */
             } else {
-                \Log::info('ProjectController: User not authenticated');
-                // TEMPORARY: For debugging, let's see if this is an auth issue
-                // Comment out the restriction temporarily
-                // $query->whereRaw('1 = 0'); // This will return no results
-                \Log::info('ProjectController: TEMPORARILY allowing unauthenticated access for debugging');
+                \Log::info('ProjectController: User not authenticated - returning empty result for security');
+                // If not authenticated, return empty result for security
+                $query->whereRaw('1 = 0'); // This will return no results
             }
 
             // Apply filters
