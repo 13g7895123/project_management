@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Route;
 
 // Authentication routes (public)
 Route::post('auth/login', [AuthController::class, 'login']);
-Route::post('auth/register', [AuthController::class, 'register']);
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {

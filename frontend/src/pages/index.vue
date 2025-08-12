@@ -209,14 +209,14 @@ const loadDashboardData = async () => {
       } else if (Array.isArray(backendResponse)) {
         activities.value = backendResponse
       } else {
-        // Fallback to mock activities data
-        console.warn('Using fallback activities data')
-        activities.value = generateMockActivities()
+        // If unexpected format, set empty activities
+        console.warn('Unexpected activities format, showing empty activities')
+        activities.value = []
       }
     } else {
-      // Fallback to mock activities data
-      console.warn('Activities API failed, using fallback data')
-      activities.value = generateMockActivities()
+      // If API fails, set empty activities
+      console.warn('Activities API failed, showing empty activities')
+      activities.value = []
     }
   } catch (err) {
     error.value = err.message || '載入數據失敗'
@@ -239,33 +239,18 @@ const loadRevenueChart = async () => {
     if (response.success && response.data) {
       const backendResponse = response.data
       if (backendResponse.success && Array.isArray(backendResponse.data)) {
-        // Check if we have real revenue data or all zeros
-        const hasRealData = backendResponse.data.some(item => item.revenue > 0)
-        if (hasRealData) {
-          revenueData.value = backendResponse.data
-        } else {
-          // If all revenue is zero, show mock data for demo purposes
-          console.info('No revenue data in database, displaying demo data for preview')
-          revenueData.value = generateMockRevenueData()
-        }
+        revenueData.value = backendResponse.data
       } else if (Array.isArray(backendResponse.data)) {
-        // Check if we have real revenue data or all zeros  
-        const hasRealData = backendResponse.data.some(item => item.revenue > 0)
-        if (hasRealData) {
-          revenueData.value = backendResponse.data
-        } else {
-          console.info('No revenue data in database, displaying demo data for preview')
-          revenueData.value = generateMockRevenueData()
-        }
+        revenueData.value = backendResponse.data
       } else {
-        // Fallback to mock data if API response is unexpected
-        console.warn('Using fallback revenue data due to unexpected format')
-        revenueData.value = generateMockRevenueData()
+        // If API response is unexpected format, create empty data
+        console.warn('Unexpected API response format, showing empty chart')
+        revenueData.value = []
       }
     } else {
-      // Fallback to mock data if API fails
-      console.warn('Revenue API failed, using fallback data')
-      revenueData.value = generateMockRevenueData()
+      // If API fails, create empty data
+      console.warn('Revenue API failed, showing empty chart')
+      revenueData.value = []
     }
     
     await nextTick()
@@ -276,41 +261,11 @@ const loadRevenueChart = async () => {
     }, 100)
   } catch (err) {
     console.error('Chart loading error:', err)
-    // Use fallback data even on error
-    revenueData.value = generateMockRevenueData()
-    await nextTick()
-    setTimeout(() => {
-      initChart()
-      loadingChart.value = false
-    }, 100)
+    chartError.value = `載入收入趨勢失敗: ${err.message}`
+    loadingChart.value = false
   }
 }
 
-// Generate mock revenue data as fallback
-const generateMockRevenueData = () => {
-  const months = ['2024-07', '2024-08', '2024-09', '2024-10', '2024-11', '2024-12']
-  const monthNames = ['七月', '八月', '九月', '十月', '十一月', '十二月']
-  
-  return months.map((month, index) => ({
-    month: month,
-    month_name: monthNames[index],
-    revenue: Math.floor(Math.random() * 100000) + 20000 // Random revenue between 20k-120k
-  }))
-}
-
-// Generate mock activities data as fallback
-const generateMockActivities = () => {
-  const mockActivities = [
-    { id: 1, description: '新增專案「電商平台重構」', time: '2 小時前' },
-    { id: 2, description: '更新專案「自動化部署腳本」狀態為進行中', time: '4 小時前' },
-    { id: 3, description: '完成專案「雲端伺服器架設」', time: '1 天前' },
-    { id: 4, description: '收到專案「企業管理系統」款項', time: '2 天前' },
-    { id: 5, description: '新增業主「科技公司 ABC」', time: '3 天前' },
-    { id: 6, description: '開始執行專案「行動 App 開發」', time: '1 週前' }
-  ]
-  
-  return mockActivities
-}
 
 const initChart = async () => {
   // Wait for canvas element to be available

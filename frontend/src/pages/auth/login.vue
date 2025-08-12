@@ -107,17 +107,6 @@
           </button>
 
           <!-- Register Link with enhanced styling -->
-          <div class="text-center pt-4 border-t border-gray-200 dark:border-slate-600">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ t('auth.no_account') }}
-              <NuxtLink 
-                to="/auth/register" 
-                class="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200 underline-offset-4 hover:underline"
-              >
-                {{ t('auth.register') }}
-              </NuxtLink>
-            </p>
-          </div>
         </form>
         
         <!-- Footer info -->

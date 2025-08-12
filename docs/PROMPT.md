@@ -183,3 +183,9 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 76的第二點報了錯誤，"No revenue data found, using fallback data for demo"，"Chart canvas not available"
     - 用戶資料幫我保留目前正常使用的資料即可，其餘的幫我從SEED全部刪除，我不要部屬後又有那些資料，請用與專案一樣的方式移除
     - 執行 point 20
+78. 完成以下功能
+    - 目前有出現圖表了，但上面的資料與API資料並沒有匹配
+    - 用戶資料幫我保留帳號為admin，權限為管理員那一筆即可，其餘的通通移除，包含SEED，不要部屬後又出現
+    - 另外，儀表板的預期總收入公式幫我確認一下，為當前未完成的所有收入總合，潛在收入則為進行中的專案，我目前看到洽談中的也被計算進去了
+    - 移除註冊功能
+    - 執行 point 20

@@ -50,40 +50,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 註冊功能
-  const register = async (userData) => {
-    try {
-      isLoading.value = true
-      
-      // 使用API composable進行註冊
-      const { post } = useApi()
-      const response = await post('/auth/register', userData)
-      
-      if (!response.success) {
-        const errorMessage = response.error?.message || '註冊失敗'
-        throw new Error(errorMessage)
-      }
-      
-      const { user: registeredUser, token: userToken } = response.data.data
-      
-      // 設定用戶資料和token
-      user.value = registeredUser
-      token.value = userToken
-      
-      // 儲存到 localStorage
-      if (process.client) {
-        localStorage.setItem(TOKEN_KEY, userToken)
-        localStorage.setItem(USER_KEY, JSON.stringify(registeredUser))
-      }
-      
-      return { success: true, user: registeredUser, token: userToken }
-    } catch (error) {
-      console.error('Registration error:', error)
-      throw new Error(error.message || '註冊失敗')
-    } finally {
-      isLoading.value = false
-    }
-  }
 
   // 登出功能
   const logout = async (skipApiCall = false) => {
@@ -240,7 +206,6 @@ export const useAuthStore = defineStore('auth', () => {
     
     // 認證方法
     login,
-    register,
     logout,
     initializeAuth,
     fetchUser,

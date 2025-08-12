@@ -24,8 +24,8 @@ class DashboardController extends Controller
             'paid_projects' => Project::where('status', 'paid')->count(),
             'total_revenue' => Project::where('status', 'paid')->sum('amount'),
             'pending_revenue' => Project::whereIn('status', ['completed'])->sum('amount'),
-            'potential_revenue' => Project::whereIn('status', ['contacted', 'in_progress'])->sum('amount'),
-            'expected_revenue' => Project::whereIn('status', ['contacted', 'in_progress', 'completed'])->sum('amount'),
+            'potential_revenue' => Project::where('status', 'in_progress')->sum('amount'),
+            'expected_revenue' => Project::whereIn('status', ['contacted', 'in_progress'])->sum('amount'),
             'projects_with_expected_date' => Project::whereNotNull('expected_completion_date')->count(),
             'overdue_projects' => Project::where('status', 'in_progress')
                 ->whereNotNull('expected_completion_date')
