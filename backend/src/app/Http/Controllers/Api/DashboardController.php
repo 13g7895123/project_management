@@ -208,10 +208,11 @@ class DashboardController extends Controller
      */
     public function revenueTrend(Request $request): JsonResponse
     {
-        $months = min($request->get('months', 12), 24);
-        
+        // Fixed range: last 6 months + next 1 month = 7 months total
         $data = [];
-        for ($i = $months - 1; $i >= 0; $i--) {
+        
+        // Generate data for last 6 months + next 1 month
+        for ($i = 5; $i >= -1; $i--) {
             $date = Carbon::now()->subMonths($i);
             $monthStart = $date->copy()->startOfMonth();
             $monthEnd = $date->copy()->endOfMonth();
@@ -221,7 +222,7 @@ class DashboardController extends Controller
                 ->whereBetween('payment_date', [$monthStart, $monthEnd])
                 ->sum('amount');
             
-            // Expected revenue for future months (projects with expected completion dates)
+            // Expected revenue (projects with expected completion dates)
             $expectedRevenue = 0;
             if ($date->isAfter(Carbon::now()->startOfMonth())) {
                 // For future months, calculate expected revenue from projects expected to complete

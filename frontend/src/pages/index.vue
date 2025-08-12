@@ -234,7 +234,7 @@ const loadRevenueChart = async () => {
 
   try {
     console.log('Calling getMonthlyRevenueTrend API')
-    const response = await getMonthlyRevenueTrend(6) // Get last 6 months
+    const response = await getMonthlyRevenueTrend() // Get last 6 months + next 1 month
     console.log('API response received:', response)
     if (response.success && response.data) {
       const backendResponse = response.data
