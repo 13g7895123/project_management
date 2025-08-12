@@ -161,3 +161,6 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
 72. 完成以下功能
     - 請逐項確認測試功能的CI部分，目前部屬CI部分有跑但是會失敗
     - 執行 point 20
+73. 完成以下功能
+    -幫我移除seed中的測試專案，用戶管理也保留system admin就好，其餘通通刪除，登入頁面也不要提示帳號資訊了
+    - 執行 point 20

@@ -85,25 +85,6 @@
             </div>
           </div>
 
-          <!-- Demo Accounts with enhanced styling -->
-          <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-xl p-5 backdrop-blur-sm">
-            <div class="flex items-center mb-3">
-              <svg class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300">{{ t('auth.demo_accounts') }}</h4>
-            </div>
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.admin_account') }}:</span>
-                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">admin / password</code>
-              </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-medium text-blue-700 dark:text-blue-400">{{ t('auth.email_login') }}:</span>
-                <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded text-blue-800 dark:text-blue-200">admin@example.com / password</code>
-              </div>
-            </div>
-          </div>
 
           <!-- Enhanced Submit Button -->
           <button
