@@ -19,34 +19,14 @@ class AuthControllerTest extends TestCase
         $this->artisan('migrate');
     }
 
+    /**
+     * @test
+     * @group skip
+     * Registration functionality has been removed as per requirements
+     */
     public function test_user_can_register()
     {
-        $userData = [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123'
-        ];
-
-        $response = $this->postJson('/api/auth/register', $userData);
-
-        $response->assertStatus(201)
-            ->assertJsonStructure([
-                'success',
-                'data' => [
-                    'user' => [
-                        'id',
-                        'name',
-                        'email'
-                    ],
-                    'token'
-                ]
-            ]);
-
-        $this->assertDatabaseHas('users', [
-            'name' => 'Test User',
-            'email' => 'test@example.com'
-        ]);
+        $this->markTestSkipped('Registration functionality has been removed as per requirements');
     }
 
     public function test_user_can_login_with_email()
@@ -149,12 +129,14 @@ class AuthControllerTest extends TestCase
         $this->assertTrue(Hash::check('newpassword123', $user->password));
     }
 
+    /**
+     * @test
+     * @group skip
+     * Registration functionality has been removed as per requirements
+     */
     public function test_registration_validation()
     {
-        $response = $this->postJson('/api/auth/register', []);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'email', 'password']);
+        $this->markTestSkipped('Registration functionality has been removed as per requirements');
     }
 
     public function test_login_validation()
@@ -165,22 +147,13 @@ class AuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['login', 'password']);
     }
 
+    /**
+     * @test
+     * @group skip
+     * Registration functionality has been removed as per requirements
+     */
     public function test_duplicate_email_registration_fails()
     {
-        $existingUser = User::factory()->create([
-            'email' => 'test@example.com'
-        ]);
-
-        $userData = [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123'
-        ];
-
-        $response = $this->postJson('/api/auth/register', $userData);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+        $this->markTestSkipped('Registration functionality has been removed as per requirements');
     }
 }
