@@ -199,3 +199,47 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
 81. 完成以下功能
     - 側邊欄收起的時候，有兩層的項目看不到下面那一層的選項，會被遮住
     - 執行 point 20
+82. 前端測試出現以下錯誤訊息
+  at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+
+  [cause]: [ { Error: Cannot find module './parser.linux-x64-gnu.node'
+  Require stack:
+  - /home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
+      at Module._load (node:internal/modules/cjs/loader:981:27)
+      at Module.require (node:internal/modules/cjs/loader:1231:19)
+      at require (node:internal/modules/helpers:177:18)
+      at requireNative (/home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js:224:16)
+      at Object.<anonymous> (/home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js:345:17)
+      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+      at Module.load (node:internal/modules/cjs/loader:1203:32)
+      at Module._load (node:internal/modules/cjs/loader:1019:12)
+    code: 'MODULE_NOT_FOUND',
+    requireStack:
+     [ '/home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js' ] },
+  { Error: Cannot find module '@oxc-parser/binding-linux-x64-gnu'
+  Require stack:
+  - /home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
+      at Module._load (node:internal/modules/cjs/loader:981:27)
+      at Module.require (node:internal/modules/cjs/loader:1231:19)
+      at require (node:internal/modules/helpers:177:18)
+      at requireNative (/home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js:229:16)
+      at Object.<anonymous> (/home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js:345:17)
+      at Module._compile (node:internal/modules/cjs/loader:1364:14)
+      at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+      at Module.load (node:internal/modules/cjs/loader:1203:32)
+      at Module._load (node:internal/modules/cjs/loader:1019:12)
+    code: 'MODULE_NOT_FOUND',
+    requireStack:
+     [ '/home/runner/work/project_management/project_management/frontend/src/node_modules/oxc-parser/bindings.js' ] } ]
+ 
+
+Error:  Failed to load native binding
+npm error code 1
+npm error path /home/runner/work/project_management/project_management/frontend/src
+npm error command failed
+npm error command sh -c nuxt prepare
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-08-12T12_06_58_784Z-debug-0.log
+Error: Process completed with exit code 1.
