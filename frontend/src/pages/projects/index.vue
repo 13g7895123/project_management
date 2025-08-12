@@ -157,7 +157,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                NT${{ (project?.amount || 0).toLocaleString() }}
+                {{ formatTWD(project?.amount || 0) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -197,6 +197,7 @@ import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 const { getProjects, deleteProject } = useProjects()
 const { getClients } = useClients()
+const { formatTWD } = useCurrency()
 
 // Reactive data
 const projects = ref([])

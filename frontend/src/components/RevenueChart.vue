@@ -33,6 +33,7 @@ const chartCanvas = ref(null)
 const chartInstance = ref(null)
 const loading = ref(true)
 const error = ref(null)
+const { formatChartCurrency } = useCurrency()
 
 const initChart = async () => {
   loading.value = true
@@ -113,7 +114,7 @@ const initChart = async () => {
               beginAtZero: true,
               ticks: {
                 callback: function(value) {
-                  return 'NT$' + value.toLocaleString()
+                  return formatChartCurrency(value)
                 }
               }
             }

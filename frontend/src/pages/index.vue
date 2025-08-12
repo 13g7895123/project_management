@@ -102,7 +102,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
         <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">待收款項</h4>
         <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-          NT${{ (dashboardData.pending_revenue || 0).toLocaleString() }}
+          {{ formatTWD(dashboardData.pending_revenue || 0) }}
         </p>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">已完成待收</p>
       </div>
@@ -110,7 +110,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
         <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">潛在收入</h4>
         <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-          NT${{ (dashboardData.potential_revenue || 0).toLocaleString() }}
+          {{ formatTWD(dashboardData.potential_revenue || 0) }}
         </p>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">進行中專案</p>
       </div>
@@ -149,6 +149,7 @@ import {
 // import { Chart, registerables } from 'chart.js'
 
 const { getDashboardStats, getRecentActivities, getMonthlyRevenueTrend } = useDashboard()
+const { formatTWD } = useCurrency()
 
 // Reactive data
 const loading = ref(true)
@@ -170,12 +171,12 @@ const stats = computed(() => [
   },
   { 
     name: '已收入', 
-    value: `NT$${(dashboardData.value.total_revenue || 0).toLocaleString()}`, 
+    value: formatTWD(dashboardData.value.total_revenue || 0), 
     icon: 'CurrencyDollarIcon' 
   },
   { 
     name: '預期總收入', 
-    value: `NT$${(dashboardData.value.expected_revenue || 0).toLocaleString()}`, 
+    value: formatTWD(dashboardData.value.expected_revenue || 0), 
     icon: 'ChartBarIcon' 
   },
   { 
