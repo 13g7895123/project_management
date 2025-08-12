@@ -140,6 +140,9 @@ php artisan key:generate --env=testing
 
 # 執行測試
 php artisan test
+
+# 執行詳細測試輸出
+php artisan test -v
 ```
 
 #### 前端測試環境設置
@@ -214,7 +217,7 @@ gh run view [run-id]
 
 # 本地除錯
 docker-compose logs [service-name]
-php artisan test --verbose
+php artisan test -v
 npm run test -- --reporter=verbose
 ```
 
