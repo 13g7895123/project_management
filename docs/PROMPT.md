@@ -189,3 +189,6 @@ target backend: failed to solve: process "/bin/sh -c composer dump-autoload --no
     - 另外，儀表板的預期總收入公式幫我確認一下，為當前未完成的所有收入總合，潛在收入則為進行中的專案，我目前看到洽談中的也被計算進去了
     - 移除註冊功能
     - 執行 point 20
+79. 完成以下功能
+    - 收入趨勢幫我多加入一條預期收入的資料
+    - 執行 point 20

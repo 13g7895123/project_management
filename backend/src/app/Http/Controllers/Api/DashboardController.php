@@ -216,14 +216,26 @@ class DashboardController extends Controller
             $monthStart = $date->copy()->startOfMonth();
             $monthEnd = $date->copy()->endOfMonth();
             
-            $revenue = Project::where('status', 'paid')
+            // Actual revenue (paid projects)
+            $actualRevenue = Project::where('status', 'paid')
                 ->whereBetween('payment_date', [$monthStart, $monthEnd])
                 ->sum('amount');
+            
+            // Expected revenue for future months (projects with expected completion dates)
+            $expectedRevenue = 0;
+            if ($date->isAfter(Carbon::now()->startOfMonth())) {
+                // For future months, calculate expected revenue from projects expected to complete
+                $expectedRevenue = Project::whereIn('status', ['contacted', 'in_progress'])
+                    ->whereNotNull('expected_completion_date')
+                    ->whereBetween('expected_completion_date', [$monthStart, $monthEnd])
+                    ->sum('amount');
+            }
                 
             $data[] = [
                 'month' => $date->format('Y-m'),
                 'month_name' => $date->format('Y年n月'),
-                'revenue' => $revenue
+                'revenue' => $actualRevenue,
+                'expected_revenue' => $expectedRevenue
             ];
         }
 

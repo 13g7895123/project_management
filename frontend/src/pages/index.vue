@@ -305,21 +305,30 @@ const initChart = async () => {
     const ctx = chartCanvas.value.getContext('2d')
     
     const labels = revenueData.value.map(item => item.month_name || item.month)
-    const data = revenueData.value.map(item => item.revenue || 0)
+    const actualRevenue = revenueData.value.map(item => item.revenue || 0)
+    const expectedRevenue = revenueData.value.map(item => item.expected_revenue || 0)
     
-    console.log('Creating chart with data:', { labels, data })
+    console.log('Creating chart with data:', { labels, actualRevenue, expectedRevenue })
 
   chartInstance.value = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
-        label: '月收入',
-        data: data,
+        label: '實際收入',
+        data: actualRevenue,
         borderColor: 'rgb(99, 102, 241)',
         backgroundColor: 'rgba(99, 102, 241, 0.1)',
         tension: 0.1,
         fill: true
+      }, {
+        label: '預期收入',
+        data: expectedRevenue,
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        borderDash: [5, 5],
+        tension: 0.1,
+        fill: false
       }]
     },
     options: {
@@ -327,7 +336,12 @@ const initChart = async () => {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20
+          }
         }
       },
       scales: {
