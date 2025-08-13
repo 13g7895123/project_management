@@ -381,3 +381,5 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
 114. 目前進首頁還是一樣會有這個問題，"Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
 115. 如果chart.js無法正常使用，是否可以替換成別的圖表工具替代，並完整移除chart.js
 116. 幫我確認frontend底下沒有src這個資料夾後，- 執行point 20，請記得要push
+117. 幫我右上角的系統名稱後面加入時間，完成後執行point 20，請記得要push
+118. 自從我把frontend的src內容改到frontend裡面，vps上面的內容就沒有再更新過了，可以幫我檢查一下是否哪裡有問題嗎

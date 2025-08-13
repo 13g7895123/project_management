@@ -43,7 +43,8 @@
       "Bash(npm install:*)",
       "Bash(npx vitest run:*)",
       "Bash(npm ci:*)",
-      "Bash(vendor/bin/phpunit:*)"
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   }

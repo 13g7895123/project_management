@@ -19,8 +19,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Set proper permissions for node_modules/.bin
+# Set proper permissions for node_modules/.bin and make sure nuxt is executable
 RUN chmod -R 755 node_modules/.bin 2>/dev/null || true
+RUN if [ -f node_modules/.bin/nuxt ]; then chmod +x node_modules/.bin/nuxt; fi
 
 # Set production environment variables for build
 ENV NODE_ENV=production

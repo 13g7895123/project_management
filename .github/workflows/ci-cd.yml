@@ -132,10 +132,14 @@ jobs:
         run: |
           # Clear npm cache to avoid native binding issues
           npm cache clean --force
+          # Remove existing node_modules to ensure clean install
+          rm -rf node_modules || true
           # Install dependencies with rebuild for native modules
           npm ci --force
-          # Try to rebuild native modules if they exist
-          npm rebuild --if-present || echo "No native modules to rebuild"
+          # Set proper permissions for node_modules/.bin
+          chmod -R 755 node_modules/.bin || true
+          # Make sure nuxt binary is executable
+          if [ -f node_modules/.bin/nuxt ]; then chmod +x node_modules/.bin/nuxt; fi
 
       - name: Prepare Nuxt
         working-directory: frontend
@@ -175,7 +179,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd backend/src && composer install --no-progress --no-interaction
-          cd ../../frontend && npm cache clean --force && npm ci --force
+          cd ../../frontend && npm cache clean --force && rm -rf node_modules && npm ci --force && chmod -R 755 node_modules/.bin
 
       - name: Run PHP CS Fixer (if configured)
         working-directory: backend/src
@@ -220,7 +224,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd backend/src && composer install --no-dev --no-progress --no-interaction
-          cd ../../frontend && npm cache clean --force && npm ci --force
+          cd ../../frontend && npm cache clean --force && rm -rf node_modules && npm ci --force && chmod -R 755 node_modules/.bin
 
       - name: Run Composer security audit
         working-directory: backend/src
@@ -260,7 +264,9 @@ jobs:
             
             echo "🐳 Building and starting containers..."
             docker compose down || true
-            docker compose up --build -d
+            # Force rebuild without cache to ensure fresh build
+            docker compose build --no-cache
+            docker compose up -d
             
             # Wait for containers to be ready
             echo "⏳ Waiting for containers to start..."
