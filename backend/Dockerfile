@@ -56,9 +56,20 @@ RUN php artisan key:generate --force
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Set permissions
+# Create storage directories and set permissions
+RUN mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/storage/framework/{cache,sessions,views,testing} \
+    && mkdir -p /var/www/html/storage/app/public \
+    && mkdir -p /var/www/html/bootstrap/cache
+
+# Set proper ownership and permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Create log file with proper permissions
+RUN touch /var/www/html/storage/logs/laravel.log \
+    && chown www-data:www-data /var/www/html/storage/logs/laravel.log \
+    && chmod 664 /var/www/html/storage/logs/laravel.log
 
 # Configure PHP-FPM
 COPY php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
