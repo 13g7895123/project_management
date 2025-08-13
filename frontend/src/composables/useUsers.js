@@ -2,7 +2,7 @@
  * User Management API composable
  */
 export const useUsers = () => {
-  const { get, post, put, patch, del } = useApi()
+  const { get, post, put, patch, delete: del } = useApi()
 
   /**
    * Get all users with pagination and filtering

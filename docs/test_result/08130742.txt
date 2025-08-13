@@ -1,0 +1,411 @@
+Running backend tests...
+Using PHPUnit directly
+PHPUnit 10.5.48 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.23
+Configuration: /home/runner/work/project_management/project_management/backend/src/phpunit.xml
+
+.FEEEEEF.EEEEE..EEEEEEEEE.                                        26 / 26 (100%)
+
+Time: 00:00.883, Memory: 42.50 MB
+
+Auth Controller (Tests\Feature\AuthController)
+ ✘ User can register
+   │
+   │ Expected response status code [201] but received 404.
+   │ Failed asserting that 404 is identical to 201.
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:148
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:33
+   │
+ ✘ User can login with email
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Dr. Jarod Dickens DVM, test@example.com, 2025-08-12 23:38:52, $2y$04$/rRLotgEPljh.nUD3qM87eIdm8/yCSgcxRjWPFY1u1oi9csErzHvq, ay8oh3k2Vu, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:54
+   │
+ ✘ User cannot login with invalid credentials
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Mr. Emerson Hegmann Jr., test@example.com, 2025-08-12 23:38:52, $2y$04$WLqZgg9Azx1pY1dLmf.c/eJsMWDCCEXnXW/SuK6pvcYrFUi5szz6q, 6vqVdbhP8c, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:82
+   │
+ ✘ Authenticated user can get profile
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Kamron Nitzsche, iquitzon@example.com, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, qcjMp5xelZ, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:100
+   │
+ ✘ User can logout
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Mr. Kristoffer Towne III, kaci92@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, 71POjar5GE, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:119
+   │
+ ✘ User can change password
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Dr. Olga Toy PhD, tjaskolski@example.net, 2025-08-12 23:38:52, $2y$04$cv8H/Vd4QNPiL7V7QT7Fr.CQN6aIWBgZ8SA4qD8Gr8L1K.9FXiz72, UkXSeHORSn, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:131
+   │
+ ✘ Registration validation
+   │
+   │ Expected response status code [422] but received 404.
+   │ Failed asserting that 404 is identical to 422.
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:148
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:156
+   │
+ ✔ Login validation
+ ✘ Duplicate email registration fails
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Maida Monahan DDS, test@example.com, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, dfTArZGW6V, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:170
+   │
+
+Dashboard Controller (Tests\Feature\DashboardController)
+ ✘ Dashboard stats returns correct data
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Justen Rolfson, candice.steuber@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, JalL5zcIKY, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:25
+   │
+ ✘ Dashboard activities returns recent projects
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Amani King, mohammad.swaniawski@example.com, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, Xc2N8MnDvq, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:90
+   │
+ ✘ Revenue trend returns monthly data
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Prof. Corrine Dietrich PhD, bruen.maureen@example.net, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, Ek0zbLUIg8, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:125
+   │
+ ✘ Project status distribution
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Miss Joanne Conroy, brath@example.net, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, 5MKLiwx4p7, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:158
+   │
+ ✔ Unauthenticated user cannot access dashboard
+
+Example (Tests\Feature\Example)
+ ✔ Api health endpoint returns successful response
+
+Example (Tests\Unit\Example)
+ ✔ That true is true
+
+Project Controller (Tests\Feature\ProjectController)
+ ✘ Authenticated user can get projects list
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Prof. Trisha Lindgren, elsa04@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, RZjQE4qCEb, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:25
+   │
+ ✘ Admin can see all projects
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Kevon Gutkowski, rbednar@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, dmN4DNxwHd, admin, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:58
+   │
+ ✘ Regular user can only see own projects
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Kylee Cronin, lesch.jordy@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, O5t9lWciQJ, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:85
+   │
+ ✘ Can create project
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Prof. Francis Schulist, qkiehn@example.net, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, 4VgvyYKOoF, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:113
+   │
+ ✘ Can update project
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Modesto Kunde, mckenzie.aaron@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, YgCBWeJNvP, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:152
+   │
+ ✘ Can delete project
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Priscilla Fahey, eulalia.beatty@example.com, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, cjp9HLVbWd, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:180
+   │
+ ✘ Project validation rules
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Gino McClure, eileen71@example.com, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, YcFQsg7bmK, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:200
+   │
+ ✘ Project search functionality
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Jensen Block, jstark@example.com, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, PLiuf90qzv, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:211
+   │
+ ✘ Project status filter
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_active' in 'field list' (Connection: mysql, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `is_active`, `updated_at`, `created_at`) values (Berniece Okuneva DDS, bernadine66@example.org, 2025-08-12 23:38:52, $2y$04$r2TKpyYexYnogy2ncsT4Nupmimf4GYqZgWWMEHxu0AMkwuzu5A4ky, Qqk5gbOisk, user, 1, 2025-08-12 23:38:52, 2025-08-12 23:38:52))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:238
+   │
+ ✔ Unauthenticated user cannot access projects
+
+ERRORS!
+Tests: 26, Assertions: 10, Errors: 19, Failures: 2.
+Error: Process completed with exit code 2.

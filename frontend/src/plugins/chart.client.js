@@ -5,21 +5,37 @@ export default defineNuxtPlugin(async () => {
   // Only run on client side
   if (process.client) {
     try {
-      // Import Chart.js with all components
-      const chartModule = await import('chart.js')
-      const { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } = chartModule
+      // Import Chart.js with auto-registration
+      const chartJsModule = await import('chart.js/auto')
+      const Chart = chartJsModule.default || chartJsModule.Chart
       
-      // Register all required components
-      Chart.register(
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        LineElement,
-        Title,
-        Tooltip,
-        Legend,
-        Filler
-      )
+      // If auto import doesn't work, try manual registration
+      if (!Chart) {
+        const {
+          Chart: ChartClass,
+          CategoryScale,
+          LinearScale,
+          PointElement,
+          LineElement,
+          Title,
+          Tooltip,
+          Legend,
+          Filler
+        } = await import('chart.js')
+        
+        ChartClass.register(
+          CategoryScale,
+          LinearScale,
+          PointElement,
+          LineElement,
+          Title,
+          Tooltip,
+          Legend,
+          Filler
+        )
+        
+        Chart = ChartClass
+      }
       
       // Make Chart.js globally available
       return {

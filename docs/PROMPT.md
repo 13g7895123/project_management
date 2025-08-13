@@ -297,3 +297,18 @@ Error: The process '/usr/bin/bash' failed with exit code 1
         }
 
         ❯ tests/composables/useApi.test.ts:71:26
+97. 完成以下功能
+    - 前台儀表板有錯誤，"Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
+    - 後端測試問題如下
+    Run echo "Running backend tests..."
+    Running backend tests...
+    Using PHPUnit directly
+    /home/runner/work/_temp/400bc13c-131f-4e14-bfd3-766fe51a09e1.sh: line 5: vendor/bin/phpunit: Permission denied
+98. 後端測試看起來有正常運行，但是測試結果有不少ERROR，我貼在docs\test_result\08130742.txt中，麻煩幫我研究並修正其錯誤
+99. 使用者列表中的使用者刪除會報錯誤，幫我排除，完成後執行point 20
+100. 後端測試看起來有正常運行，但是測試結果有不少ERROR，我貼在docs\test_result\08130756.txt中，麻煩幫我研究並修正其錯誤，完成後執行point 20
+101. 刪除使用者會跳出這個錯誤，"Failed to delete user: TypeError: S is not a function"，完成後執行point 20
+102. 修正以下錯誤
+    - 刪除使用者會出現這個錯誤，"CE6LKD02.js:1 Failed to delete user: TypeError: E is not a function"
+    - 儀錶板的chart載入有問題，"Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
+    - 執行point 20，請記得要push

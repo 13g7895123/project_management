@@ -43,11 +43,6 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       include: ['chart.js']
-    },
-    build: {
-      rollupOptions: {
-        external: ['chart.js']
-      }
     }
   },
   // Disable problematic nuxt-icon server bundle

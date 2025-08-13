@@ -1,0 +1,287 @@
+Running backend tests...
+Using PHPUnit directly
+PHPUnit 10.5.48 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.23
+Configuration: /home/runner/work/project_management/project_management/backend/src/phpunit.xml
+
+.S..F..S.SEEEE..EEEEEE.EE.                                        26 / 26 (100%)
+
+Time: 00:00.893, Memory: 44.50 MB
+
+Auth Controller (Tests\Feature\AuthController)
+ ↩ User can register
+ ✔ User can login with email
+ ✔ User cannot login with invalid credentials
+ ✘ Authenticated user can get profile
+   │
+   │ Failed asserting that an array has the key 'id'.
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Testing/AssertableJsonString.php:292
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Testing/AssertableJsonString.php:277
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Testing/AssertableJsonString.php:290
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:804
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/AuthControllerTest.php:87
+   │
+ ✔ User can logout
+ ✔ User can change password
+ ↩ Registration validation
+ ✔ Login validation
+ ↩ Duplicate email registration fails
+
+Dashboard Controller (Tests\Feature\DashboardController)
+ ✘ Dashboard stats returns correct data
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (6, Koss, Effertz and Kessler, {"email":"shea.wilderman@gulgowski.biz","phone":"872.503.6465","line":"mosciski.garfield"}, 舊客戶推薦, 1, 2024-11-27 18:58:00, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:26
+   │
+ ✘ Dashboard activities returns recent projects
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (7, Kunze-Ondricka, {"email":"glenna53@haag.com","phone":"919-961-7111","line":"ludwig47"}, 展覽會, 1, 2024-10-31 06:58:48, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:91
+   │
+ ✘ Revenue trend returns monthly data
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (8, Heller, Rogahn and Bradtke, {"email":"windler.anabelle@raynor.com","phone":"407.785.2577","line":"bauch.iva"}, 其他, 1, 2024-10-29 16:54:28, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:126
+   │
+ ✘ Project status distribution
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (9, Fay PLC, {"email":"leanne.stehr@cassin.com","phone":"+1.650.741.0698","line":"mayer.richard"}, 舊客戶推薦, 1, 2025-06-02 13:28:41, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/DashboardControllerTest.php:159
+   │
+ ✔ Unauthenticated user cannot access dashboard
+
+Example (Tests\Feature\Example)
+ ✔ Api health endpoint returns successful response
+
+Example (Tests\Unit\Example)
+ ✔ That true is true
+
+Project Controller (Tests\Feature\ProjectController)
+ ✘ Authenticated user can get projects list
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (10, Trantow-Kulas, {"email":"flatley.alverta@nader.info","phone":"+17168361603","line":"elyssa63"}, 其他, 1, 2024-10-19 22:27:29, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:26
+   │
+ ✘ Admin can see all projects
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (11, Nolan-Larkin, {"email":"gswift@rowe.net","phone":"+16514354176","line":"erika29"}, 舊客戶推薦, 1, 2024-10-14 14:40:12, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:61
+   │
+ ✘ Regular user can only see own projects
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (13, McCullough and Sons, {"email":"thurman.strosin@smitham.com","phone":"+1.848.893.9019","line":"daniel.skylar"}, 社群媒體, 1, 2025-01-27 06:38:37, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:88
+   │
+ ✘ Can create project
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (15, Wisoky-Wisoky, {"email":"agustina49@fay.com","phone":"1-406-756-7472","line":"heller.delmer"}, 網路搜尋, 1, 2025-06-17 18:34:42, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:114
+   │
+ ✘ Can update project
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (16, Skiles-Lemke, {"email":"grover31@schiller.info","phone":"+19206205165","line":"harber.geovany"}, 網路搜尋, 1, 2024-10-11 17:25:27, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:153
+   │
+ ✘ Can delete project
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (17, Rippin-Crona, {"email":"shyanne38@mcglynn.com","phone":"281-310-8804","line":"gutmann.flavie"}, 朋友介紹, 1, 2025-01-09 08:31:29, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:181
+   │
+ ✔ Project validation rules
+ ✘ Project search functionality
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (19, Bednar, Kerluke and Gerhold, {"email":"gertrude83@gutkowski.com","phone":"1-864-767-5790","line":"padberg.velda"}, 社群媒體, 1, 2025-01-13 14:54:35, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:212
+   │
+ ✘ Project status filter
+   │
+   │ Illuminate\Database\QueryException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'contact_methods' in 'field list' (Connection: mysql, SQL: insert into `clients` (`user_id`, `name`, `contact_methods`, `how_we_met`, `is_active`, `created_at`, `updated_at`) values (20, Cormier Group, {"email":"elissa96@prosacco.org","phone":"918-889-8069","line":"mellie.gaylord"}, 朋友介紹, 1, 2025-06-30 16:20:43, 2025-08-12 23:48:11))
+   │
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Connection.php:783
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:34
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Processors/MySqlProcessor.php:35
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3549
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1982
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1334
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1299
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1138
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:338
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php:240
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:333
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:287
+   │ /home/runner/work/project_management/project_management/backend/src/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factories/Factory.php:281
+   │ /home/runner/work/project_management/project_management/backend/src/tests/Feature/ProjectControllerTest.php:239
+   │
+ ✔ Unauthenticated user cannot access projects
+
+ERRORS!
+Tests: 26, Assertions: 34, Errors: 12, Failures: 1, Skipped: 3.
+Error: Process completed with exit code 2.
