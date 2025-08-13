@@ -25,11 +25,16 @@ class ProjectFactory extends Factory
         $paymentDate = null;
         
         if ($startDate) {
-            $expectedCompletionDate = fake()->optional(0.8)->dateTimeBetween($startDate, '+3 months');
-            $completionDate = fake()->optional(0.4)->dateTimeBetween($startDate, '+4 months');
+            if (fake()->boolean(80)) { // 80% chance
+                $expectedCompletionDate = fake()->dateTimeBetween($startDate, '+3 months');
+            }
             
-            if ($completionDate && $completionDate instanceof \DateTime) {
-                $paymentDate = fake()->optional(0.5)->dateTimeBetween($completionDate, '+1 month');
+            if (fake()->boolean(40)) { // 40% chance
+                $completionDate = fake()->dateTimeBetween($startDate, '+4 months');
+                
+                if (fake()->boolean(50)) { // 50% chance if completion date exists
+                    $paymentDate = fake()->dateTimeBetween($completionDate, '+1 month');
+                }
             }
         }
 
@@ -41,6 +46,9 @@ class ProjectFactory extends Factory
             $status = 'completed';
         } elseif ($startDate) {
             $status = 'in_progress';
+        } else {
+            // 20% chance of pending_evaluation status for projects without start date
+            $status = fake()->boolean(20) ? 'pending_evaluation' : 'contacted';
         }
 
         return [
@@ -62,7 +70,7 @@ class ProjectFactory extends Factory
             'name' => fake()->catchPhrase() . ' 專案',
             'description' => fake()->paragraph(3),
             'category' => fake()->randomElement(['website', 'script', 'server', 'custom']),
-            'amount' => fake()->numberBetween(10000, 500000),
+            'amount' => $status === 'pending_evaluation' ? null : fake()->numberBetween(10000, 500000),
             'contact_date' => $contactDate,
             'start_date' => $startDate,
             'expected_completion_date' => $expectedCompletionDate,
@@ -74,6 +82,21 @@ class ProjectFactory extends Factory
             'created_at' => $contactDate,
             'updated_at' => fake()->dateTimeBetween($contactDate, 'now')
         ];
+    }
+
+    /**
+     * Indicate that the project is pending evaluation.
+     */
+    public function pendingEvaluation(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'pending_evaluation',
+            'amount' => null,
+            'start_date' => null,
+            'expected_completion_date' => null,
+            'completion_date' => null,
+            'payment_date' => null,
+        ]);
     }
 
     /**

@@ -39,8 +39,9 @@ const initChart = async () => {
   loading.value = true
   error.value = null
   
-  // Wait for DOM to be ready
+  // Wait for DOM to be ready with a small delay
   await nextTick()
+  await new Promise(resolve => setTimeout(resolve, 100))
   
   if (!chartCanvas.value) {
     console.error('Canvas element not found')
@@ -159,14 +160,18 @@ const initChart = async () => {
 // Watch for data changes
 watch(() => props.revenueData, (newData) => {
   if (newData && newData.length > 0) {
-    initChart()
+    nextTick(() => {
+      initChart()
+    })
   }
-}, { immediate: true })
+}, { immediate: false }) // Set to false to avoid double initialization
 
 onMounted(() => {
-  if (props.revenueData && props.revenueData.length > 0) {
-    initChart()
-  }
+  nextTick(() => {
+    if (props.revenueData && props.revenueData.length > 0) {
+      initChart()
+    }
+  })
 })
 
 onUnmounted(() => {

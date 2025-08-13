@@ -319,3 +319,8 @@ Error: The process '/usr/bin/bash' failed with exit code 1
     - 儀錶板的收入趨勢一樣顯示Canvas element not found這個錯誤提示
     - 專案的狀態幫我新增一個項目"待評估"，該項目可以不用填金額，因為未評估不知道金額多少錢，請完整檢查前端到後端的功能
     - 後端測試看起來有正常運行，但是測試結果有不少ERROR，我貼在docs\test_result\08130932.txt中，麻煩幫我研究並修正其錯誤，完成後執行point 20
+105. 完成以下項目
+    - 專案的狀態如果是待評估，後台那邊會因為amount這個欄位不可以為NULL導致錯誤，幫我調整一下
+    - 儀錶板的收入趨勢一樣顯示Canvas element not found這個錯誤提示，如果需要進一步的資訊提供再告訴我
+    - 後端測試看起來有正常運行，但是測試結果有ERROR，我貼在docs\test_result\08130954.txt中，麻煩幫我研究並修正其錯誤
+    - 執行point 20

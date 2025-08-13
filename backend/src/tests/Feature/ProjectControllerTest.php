@@ -161,6 +161,7 @@ class ProjectControllerTest extends TestCase
         $updateData = [
             'name' => 'Updated Project Name',
             'status' => 'in_progress',
+            'amount' => 50000,
             'expected_completion_date' => '2025-03-01'
         ];
 
@@ -203,7 +204,7 @@ class ProjectControllerTest extends TestCase
         $response = $this->postJson('/api/projects', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'client_id', 'category', 'amount', 'contact_date', 'status']);
+            ->assertJsonValidationErrors(['name', 'client_id', 'category', 'contact_date', 'status']);
     }
 
     public function test_project_search_functionality()
