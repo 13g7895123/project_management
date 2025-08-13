@@ -188,7 +188,7 @@ jobs:
         continue-on-error: true
 
       - name: Run ESLint (if configured)
-        working-directory: frontend/src
+        working-directory: frontend
         run: |
           if [ -f .eslintrc.js ] || [ -f .eslintrc.json ]; then
             npx eslint . --ext .js,.vue,.ts

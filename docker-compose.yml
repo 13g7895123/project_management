@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # =============================================================================
   # Frontend Service (Nuxt 3)
@@ -21,7 +19,7 @@ services:
       - NUXT_PUBLIC_BACKEND_PORT=443
       - BACKEND_API_URL=https://project.mercylife.cc/api
     volumes:
-      - ./frontend:/app/src:ro
+      - ./frontend:/app:ro
     depends_on:
       - backend
     networks:
