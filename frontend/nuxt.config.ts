@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   ],
   // Transpile Chart.js for better compatibility
   build: {
-    transpile: ['chart.js']
+    transpile: ['chart.js', 'chart.js/auto']
   },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
@@ -49,7 +49,8 @@ export default defineNuxtConfig({
   // Build optimization - ensure chart.js can be dynamically imported
   vite: {
     optimizeDeps: {
-      include: ['chart.js/auto', 'chart.js']
+      include: ['chart.js/auto', 'chart.js'],
+      exclude: []
     },
     server: {
       allowedHosts: [

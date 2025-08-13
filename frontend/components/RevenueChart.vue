@@ -88,33 +88,21 @@ const initChart = async () => {
       return
     }
 
-    // Try to get Chart.js from multiple sources
+    // Get Chart.js from Nuxt plugin only
     let Chart = null
     
     try {
-      // First try to get from Nuxt plugin
-      const nuxtApp = useNuxtApp()
-      Chart = nuxtApp.$Chart
-      console.log('Chart from plugin:', !!Chart)
+      // Get Chart.js from the Nuxt plugin
+      const { $Chart } = useNuxtApp()
+      Chart = $Chart
+      console.log('Chart from plugin available:', !!Chart)
     } catch (e) {
-      console.log('Plugin not available, trying direct import')
-    }
-    
-    // If plugin didn't provide Chart, try direct import
-    if (!Chart) {
-      try {
-        console.log('Attempting direct Chart.js import...')
-        const chartModule = await import('chart.js/auto')
-        Chart = chartModule.default || chartModule.Chart || chartModule
-        console.log('Direct import successful:', !!Chart)
-      } catch (importError) {
-        console.error('Direct import failed:', importError)
-        throw new Error(`Failed to load Chart.js: ${importError.message}`)
-      }
+      console.error('Failed to get Chart.js from plugin:', e)
+      throw new Error('Chart.js plugin not available')
     }
     
     if (!Chart) {
-      throw new Error('Chart.js is not available from any source')
+      throw new Error('Chart.js is not loaded. Please ensure the Chart.js plugin is properly configured.')
     }
 
     // Destroy existing chart if it exists
