@@ -377,4 +377,7 @@ Dockerfile:30
   32 |     # Production stage
 --------------------
 target frontend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 126
-112. 出現這個錯誤 "Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
+113. 出現這個錯誤 "Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
+114. 目前進首頁還是一樣會有這個問題，"Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
+115. 如果chart.js無法正常使用，是否可以替換成別的圖表工具替代，並完整移除chart.js
+116. 幫我確認frontend底下沒有src這個資料夾後，- 執行point 20，請記得要push
