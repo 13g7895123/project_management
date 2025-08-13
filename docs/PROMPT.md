@@ -334,3 +334,19 @@ Error: The process '/usr/bin/bash' failed with exit code 1
     - 儀錶板的收入趨勢一樣顯示Canvas element not found，幫我完整看過整個專案，找出問題點並解決他
 109. 鑒於儀錶板的收入趨勢一直顯示Canvas element not found，無法修理好，我特地於本地開了一個domain "project.local"，讓他proxy "localhost:3000"的環境，並代理後端API，讓windows地端環境可以使用，幫我修好這個問題，儲存後直接更新即可，這應該是前端修改就好
 110. 我在網站設定中的功能設定裡，調整了功能但api報錯，這支API"/api/website-settings"報了"The logo data field must be a string."這個error，修正完執行point 20
+111. 前端測試出現了這個"Run actions/setup-node@v4
+  with:
+    node-version: 20
+    cache: npm
+    cache-dependency-path: frontend/src/package-lock.json
+    always-auth: false
+    check-latest: false
+    token: ***
+Found in cache @ /opt/hostedtoolcache/node/20.19.4/x64
+Environment details
+  node: v20.19.4
+  npm: 10.8.2
+  yarn: 1.22.22
+/opt/hostedtoolcache/node/20.19.4/x64/bin/npm config get cache
+/home/runner/.npm
+Error: Some specified paths were not resolved, unable to cache dependencies."
