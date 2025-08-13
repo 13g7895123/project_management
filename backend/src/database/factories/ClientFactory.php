@@ -33,11 +33,6 @@ class ClientFactory extends Factory
                 ])->id;
             },
             'name' => fake()->company(),
-            'contact_methods' => json_encode([
-                'email' => fake()->companyEmail(),
-                'phone' => fake()->phoneNumber(),
-                'line' => fake()->userName()
-            ]),
             'how_we_met' => fake()->randomElement([
                 '朋友介紹',
                 '網路搜尋',
@@ -46,6 +41,7 @@ class ClientFactory extends Factory
                 '舊客戶推薦',
                 '其他'
             ]),
+            'notes' => fake()->optional()->sentence(),
             'is_active' => true,
             'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
             'updated_at' => now()
@@ -60,5 +56,39 @@ class ClientFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
+    }
+
+    /**
+     * Create client with contact methods.
+     */
+    public function withContactMethods(): static
+    {
+        return $this->afterCreating(function ($client) {
+            // Create some contact methods for the client
+            $contactMethods = [
+                [
+                    'type' => 'email',
+                    'value' => fake()->companyEmail(),
+                    'is_primary' => true,
+                    'is_active' => true,
+                ],
+                [
+                    'type' => 'phone',
+                    'value' => fake()->phoneNumber(),
+                    'is_primary' => false,
+                    'is_active' => true,
+                ],
+                [
+                    'type' => 'line',
+                    'value' => fake()->userName(),
+                    'is_primary' => false,
+                    'is_active' => true,
+                ]
+            ];
+
+            foreach ($contactMethods as $method) {
+                $client->contactMethods()->create($method);
+            }
+        });
     }
 }

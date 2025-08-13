@@ -87,9 +87,14 @@ class AuthControllerTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    'id',
-                    'name',
-                    'email'
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                        'username',
+                        'role',
+                        'status'
+                    ]
                 ]
             ]);
     }
