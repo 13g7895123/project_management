@@ -21,9 +21,28 @@
       </div>
     </div>
     
-    <!-- Canvas for Chart -->
-    <div v-show="!loading && !error" class="h-full w-full relative">
-      <canvas ref="chartCanvas" class="w-full h-full"></canvas>
+    <!-- ApexCharts Container -->
+    <div v-show="!loading && !error" class="h-full w-full">
+      <ClientOnly>
+        <apexchart 
+          ref="chartRef"
+          :options="chartOptions" 
+          :series="chartSeries" 
+          type="line" 
+          height="240"
+          width="100%"
+        />
+        <template #fallback>
+          <div class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+            <div class="text-center">
+              <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">載入中...</span>
+              </div>
+              <p class="mt-2 text-gray-500 dark:text-gray-400">載入圖表中...</p>
+            </div>
+          </div>
+        </template>
+      </ClientOnly>
     </div>
   </div>
 </template>
@@ -36,11 +55,115 @@ const props = defineProps({
   }
 })
 
-const chartCanvas = ref(null)
-const chartInstance = ref(null)
+const chartRef = ref(null)
 const loading = ref(true)
 const error = ref(null)
 const { formatChartCurrency } = useCurrency()
+
+// ApexCharts Configuration
+const chartOptions = computed(() => ({
+  chart: {
+    id: 'revenue-trend-chart',
+    type: 'line',
+    height: 240,
+    toolbar: {
+      show: false
+    },
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 800
+    }
+  },
+  xaxis: {
+    categories: props.revenueData.map(item => item.month_name || item.month),
+    labels: {
+      style: {
+        colors: '#6B7280',
+        fontSize: '12px'
+      }
+    }
+  },
+  yaxis: {
+    labels: {
+      formatter: function (value) {
+        return formatChartCurrency(value)
+      },
+      style: {
+        colors: '#6B7280',
+        fontSize: '12px'
+      }
+    }
+  },
+  colors: ['#6366F1', '#22C55E'],
+  stroke: {
+    curve: 'smooth',
+    width: [3, 3],
+    dashArray: [0, 5]
+  },
+  fill: {
+    type: ['gradient', 'solid'],
+    gradient: {
+      shade: 'light',
+      type: 'vertical',
+      shadeIntensity: 0.25,
+      gradientToColors: undefined,
+      inverseColors: false,
+      opacityFrom: 0.5,
+      opacityTo: 0.1,
+      stops: [0, 100]
+    },
+    opacity: [0.8, 0.3]
+  },
+  grid: {
+    borderColor: '#E5E7EB',
+    strokeDashArray: 4,
+    xaxis: {
+      lines: {
+        show: false
+      }
+    }
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left',
+    fontSize: '14px',
+    fontWeight: 500,
+    markers: {
+      width: 12,
+      height: 12,
+      radius: 6
+    }
+  },
+  tooltip: {
+    theme: 'light',
+    y: {
+      formatter: function (value) {
+        return formatChartCurrency(value)
+      }
+    }
+  },
+  dataLabels: {
+    enabled: false
+  }
+}))
+
+const chartSeries = computed(() => {
+  if (!props.revenueData || props.revenueData.length === 0) {
+    return []
+  }
+
+  return [
+    {
+      name: '實際收入',
+      data: props.revenueData.map(item => item.revenue || 0)
+    },
+    {
+      name: '預期收入',
+      data: props.revenueData.map(item => item.expected_revenue || 0)
+    }
+  ]
+})
 
 const initChart = async () => {
   loading.value = true
@@ -54,132 +177,23 @@ const initChart = async () => {
       return
     }
     
-    console.log('Starting chart initialization...')
+    console.log('Starting ApexCharts initialization...')
     
-    // Wait for DOM to be ready and hydration to complete
+    // Wait for DOM to be ready
     await nextTick()
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    // Multiple attempts to find canvas element with retry logic
-    let attempts = 0
-    const maxAttempts = 10
-    
-    while (!chartCanvas.value && attempts < maxAttempts) {
-      console.log(`Canvas element check attempt ${attempts + 1}/${maxAttempts}`)
-      await new Promise(resolve => setTimeout(resolve, 100))
-      attempts++
-    }
-    
-    // Final check for canvas element
-    if (!chartCanvas.value) {
-      console.error('Canvas element not found after multiple attempts')
-      error.value = 'Canvas element not found'
-      loading.value = false
-      return
-    }
-    
-    console.log('Canvas element found successfully')
+    await new Promise(resolve => setTimeout(resolve, 100))
     
     // Check if we have revenue data
     if (!props.revenueData || props.revenueData.length === 0) {
-      console.warn('No revenue data found, using fallback data for demo')
-      // Don't show error, just keep loading state off but no chart
+      console.warn('No revenue data found')
       loading.value = false
       return
     }
 
-    // Get Chart.js from Nuxt plugin only
-    let Chart = null
-    
-    try {
-      // Get Chart.js from the Nuxt plugin
-      const { $Chart } = useNuxtApp()
-      Chart = $Chart
-      console.log('Chart from plugin available:', !!Chart)
-    } catch (e) {
-      console.error('Failed to get Chart.js from plugin:', e)
-      throw new Error('Chart.js plugin not available')
-    }
-    
-    if (!Chart) {
-      throw new Error('Chart.js is not loaded. Please ensure the Chart.js plugin is properly configured.')
-    }
-
-    // Destroy existing chart if it exists
-    if (chartInstance.value) {
-      chartInstance.value.destroy()
-      chartInstance.value = null
-    }
-
-    // Get context
-    const ctx = chartCanvas.value.getContext('2d')
-    if (!ctx) {
-      throw new Error('Cannot get 2D context from canvas')
-    }
-    
-    const labels = props.revenueData.map(item => item.month_name || item.month)
-    const actualRevenue = props.revenueData.map(item => item.revenue || 0)
-    const expectedRevenue = props.revenueData.map(item => item.expected_revenue || 0)
-
-    console.log('Creating chart with data:', { labels, actualRevenue, expectedRevenue })
-
-    chartInstance.value = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: '實際收入',
-          data: actualRevenue,
-          borderColor: 'rgb(99, 102, 241)',
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
-          tension: 0.1,
-          fill: true
-        }, {
-          label: '預期收入',
-          data: expectedRevenue,
-          borderColor: 'rgb(34, 197, 94)',
-          backgroundColor: 'rgba(34, 197, 94, 0.1)',
-          borderDash: [5, 5],
-          tension: 0.1,
-          fill: false
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: {
-              usePointStyle: true,
-              padding: 20
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return formatChartCurrency(value)
-              }
-            }
-          }
-        },
-        elements: {
-          point: {
-            radius: 4,
-            hoverRadius: 6
-          }
-        }
-      }
-    })
-    
-    console.log('Chart created successfully')
+    console.log('ApexCharts initialized successfully with data:', props.revenueData)
     loading.value = false
   } catch (err) {
-    console.error('Error creating chart:', err)
+    console.error('Error initializing ApexCharts:', err)
     error.value = `圖表載入失敗: ${err.message}`
     loading.value = false
   }
@@ -191,7 +205,6 @@ const retryChart = async () => {
   error.value = null
   loading.value = true
   
-  // Give a brief moment before retrying
   await new Promise(resolve => setTimeout(resolve, 500))
   await initChart()
 }
@@ -201,12 +214,12 @@ watch(() => props.revenueData, async (newData) => {
   console.log('Revenue data changed:', newData)
   if (newData && newData.length > 0) {
     await nextTick()
-    await initChart()
+    loading.value = false
   }
-}, { immediate: false })
+}, { immediate: false, deep: true })
 
 onMounted(async () => {
-  console.log('RevenueChart mounted')
+  console.log('RevenueChart mounted with ApexCharts')
   
   // Only proceed if we're on the client
   if (!process.client) {
@@ -215,16 +228,22 @@ onMounted(async () => {
     return
   }
   
-  // Wait for hydration and DOM to be fully ready
-  await new Promise(resolve => setTimeout(resolve, 800))
-  
-  // Always try to initialize chart, even without data (will show empty state gracefully)
+  // Wait for hydration
+  await new Promise(resolve => setTimeout(resolve, 300))
   await initChart()
 })
-
-onUnmounted(() => {
-  if (chartInstance.value) {
-    chartInstance.value.destroy()
-  }
-})
 </script>
+
+<style scoped>
+/* ApexCharts specific styles */
+:deep(.apexcharts-tooltip) {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.apexcharts-legend) {
+  padding: 0 !important;
+  margin-bottom: 10px !important;
+}
+</style>

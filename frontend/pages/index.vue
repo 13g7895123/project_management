@@ -154,7 +154,6 @@ import {
   ClockIcon,
   FolderIcon
 } from '@heroicons/vue/24/outline'
-// import { Chart, registerables } from 'chart.js'
 
 const { getDashboardStats, getRecentActivities, getMonthlyRevenueTrend } = useDashboard()
 const { formatTWD } = useCurrency()

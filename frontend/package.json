@@ -16,10 +16,11 @@
     "@heroicons/vue": "^2.1.5",
     "@nuxt/ui": "^2.18.7",
     "@pinia/nuxt": "^0.5.5",
-    "chart.js": "^4.5.0",
+    "apexcharts": "^5.3.3",
     "nuxt": "^3.13.0",
     "pinia": "^2.2.4",
-    "vue": "latest"
+    "vue": "latest",
+    "vue3-apexcharts": "^1.8.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "^1.5.2",

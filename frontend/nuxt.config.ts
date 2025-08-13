@@ -6,11 +6,11 @@ export default defineNuxtConfig({
     '@pinia/nuxt'
   ],
   plugins: [
-    '~/plugins/chart.client.js'
+    '~/plugins/apexcharts.client.js'
   ],
-  // Transpile Chart.js for better compatibility
+  // Transpile ApexCharts for better compatibility
   build: {
-    transpile: ['chart.js', 'chart.js/auto']
+    transpile: ['vue3-apexcharts']
   },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
@@ -46,10 +46,10 @@ export default defineNuxtConfig({
     storageKey: 'nuxt-color-mode',
     dataValue: 'theme' // This sets data-theme attribute
   },
-  // Build optimization - ensure chart.js can be dynamically imported
+  // Build optimization - ensure apexcharts can be imported correctly
   vite: {
     optimizeDeps: {
-      include: ['chart.js/auto', 'chart.js'],
+      include: ['apexcharts', 'vue3-apexcharts'],
       exclude: []
     },
     server: {
