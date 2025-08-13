@@ -8,6 +8,10 @@ export default defineNuxtConfig({
   plugins: [
     '~/plugins/chart.client.js'
   ],
+  // Transpile Chart.js for better compatibility
+  build: {
+    transpile: ['chart.js']
+  },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     // Private keys (only available on server-side)
@@ -45,13 +49,21 @@ export default defineNuxtConfig({
   // Build optimization - ensure chart.js can be dynamically imported
   vite: {
     optimizeDeps: {
-      include: ['chart.js']
+      include: ['chart.js/auto', 'chart.js']
     },
     server: {
       allowedHosts: [
         'project.local'
       ],
     },
+    build: {
+      rollupOptions: {
+        external: [],
+        output: {
+          globals: {}
+        }
+      }
+    }
   },
   // Disable problematic nuxt-icon server bundle
   icon: {

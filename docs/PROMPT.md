@@ -377,3 +377,4 @@ Dockerfile:30
   32 |     # Production stage
 --------------------
 target frontend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 126
+112. 出現這個錯誤 "Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
