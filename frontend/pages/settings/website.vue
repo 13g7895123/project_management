@@ -280,6 +280,30 @@
               />
             </button>
           </div>
+          
+          <!-- Time Display -->
+          <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <div>
+              <h4 class="font-medium text-gray-900 dark:text-white">時間顯示</h4>
+              <p class="text-sm text-gray-600 dark:text-gray-400">在側邊欄系統名稱旁顯示即時時間</p>
+            </div>
+            <button
+              @click="toggleTime"
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              :class="[
+                showTime 
+                  ? 'bg-primary-500' 
+                  : 'bg-gray-200 dark:bg-gray-700'
+              ]"
+            >
+              <span
+                class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+                :class="[
+                  showTime ? 'translate-x-6' : 'translate-x-1'
+                ]"
+              />
+            </button>
+          </div>
         </div>
       </div>
       
@@ -344,6 +368,7 @@ const {
   enableSearch,
   enableNotifications,
   showFooter,
+  showTime,
   enableDarkMode
 } = storeToRefs(websiteSettingsStore)
 
@@ -385,6 +410,11 @@ const toggleFooter = () => {
   
   // Also update the settings store for backward compatibility
   settingsStore.showFootbar = showFooter.value
+}
+
+const toggleTime = () => {
+  showTime.value = !showTime.value
+  websiteSettingsStore.saveSettings()
 }
 
 const handleLogoUpload = async (event) => {

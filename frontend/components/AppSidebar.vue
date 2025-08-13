@@ -26,7 +26,7 @@
             </div>
             <div v-else class="text-center">
               <div class="text-lg font-bold text-gray-800 dark:text-white truncate">
-                {{ displayName }} {{ currentTime }}
+                {{ displayName }}{{ showTime ? ` ${currentTime}` : '' }}
               </div>
               <div v-if="displaySecondaryName" class="text-xs text-gray-600 dark:text-gray-400 truncate">
                 {{ displaySecondaryName }}
@@ -120,7 +120,7 @@
           </div>
           <div v-else>
             <div class="text-lg font-bold text-gray-800 dark:text-white">
-              {{ displayName }} {{ currentTime }}
+              {{ displayName }}{{ showTime ? ` ${currentTime}` : '' }}
             </div>
             <div v-if="displaySecondaryName" class="text-xs text-gray-600 dark:text-gray-400">
               {{ displaySecondaryName }}
@@ -176,7 +176,7 @@ const settingsStore = useSettingsStore()
 const { sidebarMenuItems } = storeToRefs(settingsStore)
 
 const websiteSettingsStore = useWebsiteSettingsStore()
-const { websiteName, showLogo, logoUrl, displayName, displaySecondaryName } = storeToRefs(websiteSettingsStore)
+const { websiteName, showLogo, logoUrl, displayName, displaySecondaryName, showTime } = storeToRefs(websiteSettingsStore)
 
 const authStore = useAuthStore()
 const { isLoading } = storeToRefs(authStore)
@@ -198,10 +198,40 @@ const updateTime = () => {
   currentTime.value = now.toLocaleTimeString('zh-TW', options)
 }
 
-// 初始化時間並每秒更新
-onMounted(() => {
+// 初始化時間並每秒更新 - 只有在需要顯示時間時才運行
+let timeInterval = null
+
+const startTimeUpdates = () => {
+  if (timeInterval) return // 避免重複設置
   updateTime()
-  setInterval(updateTime, 1000)
+  timeInterval = setInterval(updateTime, 1000)
+}
+
+const stopTimeUpdates = () => {
+  if (timeInterval) {
+    clearInterval(timeInterval)
+    timeInterval = null
+  }
+}
+
+// 監視 showTime 變化
+watch(showTime, (newVal) => {
+  if (newVal) {
+    startTimeUpdates()
+  } else {
+    stopTimeUpdates()
+  }
+}, { immediate: true })
+
+onMounted(() => {
+  // 初始設置基於 showTime 的狀態
+  if (showTime.value) {
+    startTimeUpdates()
+  }
+})
+
+onUnmounted(() => {
+  stopTimeUpdates()
 })
 
 const handleLogout = async () => {

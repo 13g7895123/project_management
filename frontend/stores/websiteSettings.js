@@ -13,9 +13,12 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   const enableSearch = ref(true)
   const enableNotifications = ref(true)
   const showFooter = ref(true)
+  const showTime = ref(false) // Control time display, default disabled
   
   // Theme settings integration
   const enableDarkMode = ref(true)
+  const themeMode = ref('system')
+  const primaryColor = ref('#6366f1')
   
   // Load settings from API or localStorage fallback
   const loadSettings = async () => {
@@ -38,7 +41,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           enableSearch.value = apiSettings.search_enabled !== undefined ? apiSettings.search_enabled : true
           enableNotifications.value = apiSettings.notifications_enabled !== undefined ? apiSettings.notifications_enabled : true
           showFooter.value = apiSettings.footer_enabled !== undefined ? apiSettings.footer_enabled : true
+          showTime.value = apiSettings.time_enabled !== undefined ? apiSettings.time_enabled : false
           enableDarkMode.value = apiSettings.dark_mode_enabled !== undefined ? apiSettings.dark_mode_enabled : true
+          themeMode.value = apiSettings.theme_mode || 'system'
+          primaryColor.value = apiSettings.primary_color || '#6366f1'
           
           // Save to localStorage as backup
           saveToLocalStorage()
@@ -69,7 +75,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           enableSearch.value = settings.enableSearch !== undefined ? settings.enableSearch : true
           enableNotifications.value = settings.enableNotifications !== undefined ? settings.enableNotifications : true
           showFooter.value = settings.showFooter !== undefined ? settings.showFooter : true
+          showTime.value = settings.showTime !== undefined ? settings.showTime : false
           enableDarkMode.value = settings.enableDarkMode !== undefined ? settings.enableDarkMode : true
+          themeMode.value = settings.themeMode || 'system'
+          primaryColor.value = settings.primaryColor || '#6366f1'
           
           // Update document title
           updateDocumentTitle()
@@ -97,7 +106,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
         enableSearch: enableSearch.value,
         enableNotifications: enableNotifications.value,
         showFooter: showFooter.value,
-        enableDarkMode: enableDarkMode.value
+        showTime: showTime.value,
+        enableDarkMode: enableDarkMode.value,
+        themeMode: themeMode.value,
+        primaryColor: primaryColor.value
       }
       
       localStorage.setItem('website-settings', JSON.stringify(settings))
@@ -118,7 +130,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           search_enabled: Boolean(enableSearch.value),
           notifications_enabled: Boolean(enableNotifications.value),
           footer_enabled: Boolean(showFooter.value),
-          dark_mode_enabled: Boolean(enableDarkMode.value)
+          time_enabled: Boolean(showTime.value),
+          dark_mode_enabled: Boolean(enableDarkMode.value),
+          theme_mode: themeMode.value,
+          primary_color: primaryColor.value
         }
 
         // Save to API
@@ -154,7 +169,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           enableSearch: enableSearch.value,
           enableNotifications: enableNotifications.value,
           showFooter: showFooter.value,
-          enableDarkMode: enableDarkMode.value
+          showTime: showTime.value,
+          enableDarkMode: enableDarkMode.value,
+          themeMode: themeMode.value,
+          primaryColor: primaryColor.value
         }
       }))
     }
@@ -250,7 +268,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
     enableSearch.value = true
     enableNotifications.value = true
     showFooter.value = true
+    showTime.value = false
     enableDarkMode.value = true
+    themeMode.value = 'system'
+    primaryColor.value = '#6366f1'
     
     await saveSettings()
   }
@@ -281,7 +302,10 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
     enableSearch,
     enableNotifications,
     showFooter,
+    showTime,
     enableDarkMode,
+    themeMode,
+    primaryColor,
     
     // Computed
     displayName,

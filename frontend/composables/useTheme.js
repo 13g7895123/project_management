@@ -1,6 +1,7 @@
 export const useTheme = () => {
   const colorMode = useColorMode()
   const themeStore = useThemeStore()
+  const websiteSettingsStore = useWebsiteSettingsStore()
 
   // Computed properties for reactive theme state
   const isDark = computed(() => colorMode.value === 'dark')
@@ -21,13 +22,15 @@ export const useTheme = () => {
 
   // Set specific theme
   const setTheme = (mode) => {
-    // Check if dark mode is enabled in website settings
-    const websiteSettingsStore = useWebsiteSettingsStore()
     if (!websiteSettingsStore.enableDarkMode && mode === 'dark') {
       return // Don't allow setting dark mode if disabled
     }
     
     colorMode.preference = mode
+    
+    // Save theme mode to website settings
+    websiteSettingsStore.themeMode = mode
+    websiteSettingsStore.saveSettings()
     
     // Add smooth transition
     if (process.client) {
@@ -46,6 +49,11 @@ export const useTheme = () => {
   // Initialize theme on first load
   const initializeTheme = () => {
     if (process.client) {
+      // Initialize theme mode from website settings
+      if (websiteSettingsStore.themeMode && websiteSettingsStore.themeMode !== colorMode.preference) {
+        colorMode.preference = websiteSettingsStore.themeMode
+      }
+      
       // Initialize primary color
       themeStore.initializePrimaryColor()
       

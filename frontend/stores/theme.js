@@ -1,5 +1,6 @@
 export const useThemeStore = defineStore('theme', () => {
-  const primaryColor = ref('#6366f1')
+  const websiteSettingsStore = useWebsiteSettingsStore()
+  const { primaryColor } = storeToRefs(websiteSettingsStore)
   
   // Generate color variations from primary color
   const generateColorVariations = (baseColor) => {
@@ -39,7 +40,9 @@ export const useThemeStore = defineStore('theme', () => {
   }
   
   const setPrimaryColor = (color) => {
-    primaryColor.value = color
+    // Update through website settings store to sync with API
+    websiteSettingsStore.primaryColor = color
+    websiteSettingsStore.saveSettings()
     
     // Only manipulate DOM on client side
     if (process.client) {
@@ -55,8 +58,7 @@ export const useThemeStore = defineStore('theme', () => {
         document.documentElement.style.setProperty(`--primary-${key}`, value)
       })
       
-      // Store in localStorage for persistence
-      localStorage.setItem('admin-template-primary-color', color)
+      // Color is now stored via API through websiteSettingsStore
       
       // Force style recalculation and then remove transition class
       setTimeout(() => {
@@ -74,14 +76,9 @@ export const useThemeStore = defineStore('theme', () => {
   // Initialize primary color on client side
   const initializePrimaryColor = () => {
     if (process.client) {
-      // Initialize primary color
-      const savedColor = localStorage.getItem('admin-template-primary-color')
-      if (savedColor) {
-        setPrimaryColor(savedColor)
-      } else {
-        // Set default color variations
-        setPrimaryColor(primaryColor.value)
-      }
+      // Initialize primary color from website settings
+      // The websiteSettingsStore will load from API
+      setPrimaryColor(primaryColor.value || '#6366f1')
     }
   }
   

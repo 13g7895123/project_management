@@ -42,10 +42,13 @@ class WebsiteSettingsController extends Controller
                 'search_enabled' => 'sometimes|boolean',
                 'notifications_enabled' => 'sometimes|boolean',
                 'footer_enabled' => 'sometimes|boolean',
+                'time_enabled' => 'sometimes|boolean',
                 'website_primary_name' => 'sometimes|string|max:255',
                 'website_secondary_name' => 'sometimes|string|max:255',
                 'logo_data' => 'sometimes|nullable|string',
                 'favicon_data' => 'sometimes|nullable|string',
+                'theme_mode' => 'sometimes|string|in:light,dark,system',
+                'primary_color' => 'sometimes|string|max:7',
             ]);
 
             if ($validator->fails()) {
@@ -62,10 +65,13 @@ class WebsiteSettingsController extends Controller
                 'search_enabled' => ['type' => 'boolean', 'description' => '啟用搜尋功能'],
                 'notifications_enabled' => ['type' => 'boolean', 'description' => '啟用通知功能'],
                 'footer_enabled' => ['type' => 'boolean', 'description' => '顯示頁尾'],
+                'time_enabled' => ['type' => 'boolean', 'description' => '顯示時間'],
                 'website_primary_name' => ['type' => 'string', 'description' => '網站主要名稱'],
                 'website_secondary_name' => ['type' => 'string', 'description' => '網站副名稱'],
                 'logo_data' => ['type' => 'text', 'description' => 'Logo 圖片資料'],
                 'favicon_data' => ['type' => 'text', 'description' => 'Favicon 資料'],
+                'theme_mode' => ['type' => 'string', 'description' => '主題模式'],
+                'primary_color' => ['type' => 'string', 'description' => '主要顏色'],
             ];
 
             foreach ($request->all() as $key => $value) {
@@ -136,10 +142,13 @@ class WebsiteSettingsController extends Controller
                 'search_enabled' => true,
                 'notifications_enabled' => true,
                 'footer_enabled' => true,
+                'time_enabled' => false,
                 'website_primary_name' => '專案管理系統',
                 'website_secondary_name' => 'Project Management',
                 'logo_data' => '',
                 'favicon_data' => '',
+                'theme_mode' => 'system',
+                'primary_color' => '#6366f1',
             ];
 
             $settingsMap = [
@@ -148,10 +157,13 @@ class WebsiteSettingsController extends Controller
                 'search_enabled' => ['type' => 'boolean', 'description' => '啟用搜尋功能'],
                 'notifications_enabled' => ['type' => 'boolean', 'description' => '啟用通知功能'],
                 'footer_enabled' => ['type' => 'boolean', 'description' => '顯示頁尾'],
+                'time_enabled' => ['type' => 'boolean', 'description' => '顯示時間'],
                 'website_primary_name' => ['type' => 'string', 'description' => '網站主要名稱'],
                 'website_secondary_name' => ['type' => 'string', 'description' => '網站副名稱'],
                 'logo_data' => ['type' => 'text', 'description' => 'Logo 圖片資料'],
                 'favicon_data' => ['type' => 'text', 'description' => 'Favicon 資料'],
+                'theme_mode' => ['type' => 'string', 'description' => '主題模式'],
+                'primary_color' => ['type' => 'string', 'description' => '主要顏色'],
             ];
 
             foreach ($defaultSettings as $key => $value) {
