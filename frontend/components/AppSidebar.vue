@@ -26,7 +26,7 @@
             </div>
             <div v-else class="text-center">
               <div class="text-lg font-bold text-gray-800 dark:text-white truncate">
-                {{ displayName }}
+                {{ displayName }} {{ currentTime }}
               </div>
               <div v-if="displaySecondaryName" class="text-xs text-gray-600 dark:text-gray-400 truncate">
                 {{ displaySecondaryName }}
@@ -120,7 +120,7 @@
           </div>
           <div v-else>
             <div class="text-lg font-bold text-gray-800 dark:text-white">
-              {{ displayName }}
+              {{ displayName }} {{ currentTime }}
             </div>
             <div v-if="displaySecondaryName" class="text-xs text-gray-600 dark:text-gray-400">
               {{ displaySecondaryName }}
@@ -183,6 +183,26 @@ const { isLoading } = storeToRefs(authStore)
 const { logout } = authStore
 
 const menuItems = computed(() => sidebarMenuItems.value)
+
+// 即時時間顯示
+const currentTime = ref('')
+
+const updateTime = () => {
+  const now = new Date()
+  const options = {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }
+  currentTime.value = now.toLocaleTimeString('zh-TW', options)
+}
+
+// 初始化時間並每秒更新
+onMounted(() => {
+  updateTime()
+  setInterval(updateTime, 1000)
+})
 
 const handleLogout = async () => {
   try {
