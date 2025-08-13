@@ -20,9 +20,18 @@ class ProjectFactory extends Factory
     {
         $contactDate = fake()->dateTimeBetween('-6 months', 'now');
         $startDate = fake()->optional(0.7)->dateTimeBetween($contactDate, '+2 weeks');
-        $expectedCompletionDate = $startDate ? fake()->optional(0.8)->dateTimeBetween($startDate, '+3 months') : null;
-        $completionDate = $startDate ? fake()->optional(0.4)->dateTimeBetween($startDate, '+4 months') : null;
-        $paymentDate = $completionDate ? fake()->optional(0.5)->dateTimeBetween($completionDate, '+1 month') : null;
+        $expectedCompletionDate = null;
+        $completionDate = null;
+        $paymentDate = null;
+        
+        if ($startDate) {
+            $expectedCompletionDate = fake()->optional(0.8)->dateTimeBetween($startDate, '+3 months');
+            $completionDate = fake()->optional(0.4)->dateTimeBetween($startDate, '+4 months');
+            
+            if ($completionDate) {
+                $paymentDate = fake()->optional(0.5)->dateTimeBetween($completionDate, '+1 month');
+            }
+        }
 
         // Determine status based on dates
         $status = 'contacted';

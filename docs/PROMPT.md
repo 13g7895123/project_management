@@ -312,3 +312,6 @@ Error: The process '/usr/bin/bash' failed with exit code 1
     - 刪除使用者會出現這個錯誤，"CE6LKD02.js:1 Failed to delete user: TypeError: E is not a function"
     - 儀錶板的chart載入有問題，"Failed to load Chart.js: TypeError: Failed to resolve module specifier 'chart.js'"
     - 執行point 20，請記得要push
+103. 修正以下錯誤
+    - Canvas element not found
+    - 後端測試看起來有正常運行，但是測試結果有不少ERROR，我貼在docs\test_result\08130842.txt中，麻煩幫我研究並修正其錯誤，完成後執行point 20

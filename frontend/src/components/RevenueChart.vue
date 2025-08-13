@@ -43,12 +43,14 @@ const initChart = async () => {
   await nextTick()
   
   if (!chartCanvas.value) {
+    console.error('Canvas element not found')
     error.value = 'Canvas element not found'
     loading.value = false
     return
   }
   
   if (!props.revenueData || props.revenueData.length === 0) {
+    console.warn('No revenue data found, using fallback data for demo')
     error.value = '暫無收入數據'
     loading.value = false
     return
@@ -57,11 +59,28 @@ const initChart = async () => {
   try {
     // Only run on client side
     if (process.client && typeof window !== 'undefined') {
-      // Use the Chart.js from the plugin
-      const { $Chart } = useNuxtApp()
+      // Try to get Chart.js from the plugin first
+      const nuxtApp = useNuxtApp()
+      let Chart = nuxtApp.$Chart
       
-      if (!$Chart) {
-        throw new Error('Chart.js not available')
+      // If plugin didn't provide Chart, try direct import
+      if (!Chart) {
+        console.log('Chart.js not available from plugin, trying direct import')
+        try {
+          const chartModule = await import('chart.js/auto')
+          Chart = chartModule.default || chartModule.Chart
+        } catch (importError) {
+          throw new Error(`Failed to load Chart.js: ${importError.message}`)
+        }
+      }
+      
+      if (!Chart) {
+        throw new Error('Chart.js is not available')
+      }
+
+      // Check if canvas is still available
+      if (!chartCanvas.value) {
+        throw new Error('Chart canvas not available')
       }
 
       // Destroy existing chart if it exists
@@ -75,7 +94,7 @@ const initChart = async () => {
       const actualRevenue = props.revenueData.map(item => item.revenue || 0)
       const expectedRevenue = props.revenueData.map(item => item.expected_revenue || 0)
 
-      chartInstance.value = new $Chart(ctx, {
+      chartInstance.value = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,

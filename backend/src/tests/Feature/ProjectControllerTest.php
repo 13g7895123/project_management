@@ -76,7 +76,7 @@ class ProjectControllerTest extends TestCase
         $response = $this->getJson('/api/projects');
 
         $response->assertStatus(200);
-        $data = $response->json('data.data.data');
+        $data = $response->json('data.data');
         $this->assertCount(2, $data);
     }
 
@@ -103,7 +103,7 @@ class ProjectControllerTest extends TestCase
         $response = $this->getJson('/api/projects');
 
         $response->assertStatus(200);
-        $data = $response->json('data.data.data');
+        $data = $response->json('data.data');
         $this->assertCount(1, $data);
         $this->assertEquals($project1->id, $data[0]['id']);
     }
@@ -228,7 +228,7 @@ class ProjectControllerTest extends TestCase
         $response = $this->getJson('/api/projects?search=Website');
 
         $response->assertStatus(200);
-        $data = $response->json('data.data.data');
+        $data = $response->json('data.data');
         $this->assertCount(1, $data);
         $this->assertEquals('Website Development', $data[0]['name']);
     }
@@ -255,7 +255,7 @@ class ProjectControllerTest extends TestCase
         $response = $this->getJson('/api/projects?status=contacted');
 
         $response->assertStatus(200);
-        $data = $response->json('data.data.data');
+        $data = $response->json('data.data');
         $this->assertCount(1, $data);
         $this->assertEquals('contacted', $data[0]['status']);
     }

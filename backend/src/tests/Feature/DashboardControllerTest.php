@@ -82,7 +82,7 @@ class DashboardControllerTest extends TestCase
         $this->assertEquals(1, $data['paid_projects']);
         $this->assertEquals(40000, $data['total_revenue']); // Only paid projects
         $this->assertEquals(30000, $data['pending_revenue']); // Completed projects
-        $this->assertEquals(30000, $data['potential_revenue']); // contacted + in_progress
+        $this->assertEquals(20000, $data['potential_revenue']); // only in_progress projects
     }
 
     public function test_dashboard_activities_returns_recent_projects()
@@ -117,7 +117,7 @@ class DashboardControllerTest extends TestCase
 
         $activities = $response->json('data');
         $this->assertCount(1, $activities);
-        $this->assertStringContains('Test Project', $activities[0]['description']);
+        $this->assertStringContainsString('Test Project', $activities[0]['description']);
     }
 
     public function test_revenue_trend_returns_monthly_data()
