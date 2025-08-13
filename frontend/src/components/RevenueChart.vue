@@ -39,12 +39,22 @@ const initChart = async () => {
   loading.value = true
   error.value = null
   
-  // Wait for DOM to be ready with a small delay
+  // Wait for DOM to be ready with multiple checks
   await nextTick()
-  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  // Try multiple times to find the canvas element
+  let attempts = 0
+  const maxAttempts = 10
+  
+  while (!chartCanvas.value && attempts < maxAttempts) {
+    console.log(`Waiting for canvas element, attempt ${attempts + 1}`)
+    await new Promise(resolve => setTimeout(resolve, 200))
+    await nextTick()
+    attempts++
+  }
   
   if (!chartCanvas.value) {
-    console.error('Canvas element not found')
+    console.error('Canvas element not found after multiple attempts')
     error.value = 'Canvas element not found'
     loading.value = false
     return
@@ -164,14 +174,17 @@ watch(() => props.revenueData, (newData) => {
       initChart()
     })
   }
-}, { immediate: false }) // Set to false to avoid double initialization
+}, { immediate: false })
 
 onMounted(() => {
-  nextTick(() => {
-    if (props.revenueData && props.revenueData.length > 0) {
-      initChart()
-    }
-  })
+  // Wait a bit longer for hydration to complete
+  setTimeout(() => {
+    nextTick(() => {
+      if (props.revenueData && props.revenueData.length > 0) {
+        initChart()
+      }
+    })
+  }, 300)
 })
 
 onUnmounted(() => {

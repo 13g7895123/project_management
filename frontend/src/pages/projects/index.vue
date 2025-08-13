@@ -59,6 +59,7 @@
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
           >
             <option value="">全部狀態</option>
+            <option value="pending_evaluation">待評估</option>
             <option value="contacted">已接洽</option>
             <option value="in_progress">進行中</option>
             <option value="completed">已完成</option>
@@ -316,6 +317,7 @@ const getCategoryClass = (category) => {
 
 const getStatusLabel = (status) => {
   const labels = {
+    pending_evaluation: '待評估',
     contacted: '已接洽',
     in_progress: '進行中',
     completed: '已完成',
@@ -326,6 +328,7 @@ const getStatusLabel = (status) => {
 
 const getStatusClass = (status) => {
   const classes = {
+    pending_evaluation: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     contacted: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
     in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',

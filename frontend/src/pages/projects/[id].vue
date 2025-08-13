@@ -258,6 +258,7 @@
             v-model="form.status"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
           >
+            <option value="pending_evaluation">待評估</option>
             <option value="contacted">已接洽</option>
             <option value="in_progress">進行中</option>
             <option value="completed">已完成</option>

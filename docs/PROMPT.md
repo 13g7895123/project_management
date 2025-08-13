@@ -324,3 +324,7 @@ Error: The process '/usr/bin/bash' failed with exit code 1
     - 儀錶板的收入趨勢一樣顯示Canvas element not found這個錯誤提示，如果需要進一步的資訊提供再告訴我
     - 後端測試看起來有正常運行，但是測試結果有ERROR，我貼在docs\test_result\08130954.txt中，麻煩幫我研究並修正其錯誤
     - 執行point 20
+106. 完成以下項目
+    - 專案的狀態在編輯的下拉選單，沒有待評估的選項
+    - 另外在專案列表待評估會顯示code，應該是語系資料沒有更新
+    - 儀錶板的收入趨勢一樣顯示Canvas element not found，這個問題幫我讀取d098098e86a257a99bd8aab8c235ba9bcf0ab6ae這個SHA的分支，看能否看出當初調整了甚麼，並修復他
