@@ -5,6 +5,9 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@pinia/nuxt'
   ],
+  plugins: [
+    '~/plugins/chart.client.js'
+  ],
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     // Private keys (only available on server-side)
