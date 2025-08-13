@@ -7,17 +7,17 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
-COPY src/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 # Build stage
 FROM base AS builder
 WORKDIR /app
-COPY src/package*.json ./
+COPY package*.json ./
 RUN npm ci
 
 # Copy source code
-COPY src/ .
+COPY . .
 
 # Set production environment variables for build
 ENV NODE_ENV=production

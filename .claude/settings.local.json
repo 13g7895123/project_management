@@ -42,7 +42,8 @@
       "WebFetch(domain:project.mercylife.cc)",
       "Bash(npm install:*)",
       "Bash(npx vitest run:*)",
-      "Bash(npm ci:*)"
+      "Bash(npm ci:*)",
+      "Bash(vendor/bin/phpunit:*)"
     ],
     "deny": []
   }

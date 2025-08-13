@@ -328,3 +328,9 @@ Error: The process '/usr/bin/bash' failed with exit code 1
     - 專案的狀態在編輯的下拉選單，沒有待評估的選項
     - 另外在專案列表待評估會顯示code，應該是語系資料沒有更新
     - 儀錶板的收入趨勢一樣顯示Canvas element not found，這個問題幫我讀取d098098e86a257a99bd8aab8c235ba9bcf0ab6ae這個SHA的分支，看能否看出當初調整了甚麼，並修復他
+107. 後端測試看起來有正常運行，但是測試結果有ERROR，我貼在docs\test_result\08131239.txt中，麻煩幫我研究並修正其錯誤，完成後執行point 20
+108. 完成以下項目
+    - 編輯專案時的規則需要與新增一樣，當專案狀態為待評估，可以不用填入專案金額
+    - 儀錶板的收入趨勢一樣顯示Canvas element not found，幫我完整看過整個專案，找出問題點並解決他
+109. 鑒於儀錶板的收入趨勢一直顯示Canvas element not found，無法修理好，我特地於本地開了一個domain "project.local"，讓他proxy "localhost:3000"的環境，並代理後端API，讓windows地端環境可以使用，幫我修好這個問題，儲存後直接更新即可，這應該是前端修改就好
+110. 我在網站設定中的功能設定裡，調整了功能但api報錯，這支API"/api/website-settings"報了"The logo data field must be a string."這個error，修正完執行point 20

@@ -44,8 +44,8 @@ class WebsiteSettingsController extends Controller
                 'footer_enabled' => 'sometimes|boolean',
                 'website_primary_name' => 'sometimes|string|max:255',
                 'website_secondary_name' => 'sometimes|string|max:255',
-                'logo_data' => 'sometimes|string',
-                'favicon_data' => 'sometimes|string',
+                'logo_data' => 'sometimes|nullable|string',
+                'favicon_data' => 'sometimes|nullable|string',
             ]);
 
             if ($validator->fails()) {

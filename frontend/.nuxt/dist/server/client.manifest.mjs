@@ -1,0 +1,1 @@
+export { default } from "file:///D:/Jarvis/10_idea/project_management/frontend/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"

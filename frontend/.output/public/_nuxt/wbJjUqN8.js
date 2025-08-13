@@ -1,0 +1,1 @@
+import{a3 as a,b as r,f as n,S as o,e as i}from"./uGLhbxAz.js";const c={class:"flex items-center justify-center min-h-screen"},m={__name:"index",async setup(l){let e,t;return[e,t]=a(()=>o("/")),await e,t(),(_,s)=>(i(),r("div",c,s[0]||(s[0]=[n("div",{class:"animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"},null,-1)])))}};export{m as default};

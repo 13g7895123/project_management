@@ -1,0 +1,1 @@
+import{a4 as o,E as s,a5 as i,S as r}from"./uGLhbxAz.js";const d=o(async n=>{let e,t;const a=s();if([e,t]=i(()=>a.initializeAuth()),await e,t(),a.isLoggedIn)return console.log("[Guest Middleware] User is authenticated, redirecting to home"),r("/")});export{d as default};

@@ -21,7 +21,7 @@ services:
       - NUXT_PUBLIC_BACKEND_PORT=443
       - BACKEND_API_URL=https://project.mercylife.cc/api
     volumes:
-      - ./frontend/src:/app/src:ro
+      - ./frontend:/app/src:ro
     depends_on:
       - backend
     networks:
