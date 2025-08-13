@@ -19,6 +19,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Set proper permissions for node_modules/.bin
+RUN chmod -R 755 node_modules/.bin 2>/dev/null || true
+
 # Set production environment variables for build
 ENV NODE_ENV=production
 ENV NUXT_PUBLIC_API_BASE_URL=https://project.mercylife.cc/api

@@ -350,3 +350,30 @@ Environment details
 /opt/hostedtoolcache/node/20.19.4/x64/bin/npm config get cache
 /home/runner/.npm
 Error: Some specified paths were not resolved, unable to cache dependencies."
+112. 現在cicd會出現這個錯誤，我只有把frontend src那一層拿掉而已#25 [frontend builder 5/5] RUN npm run build
+#25 0.426 
+#25 0.426 > build
+#25 0.426 > nuxt build
+#25 0.426 
+#25 0.432 sh: nuxt: Permission denied
+#25 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 126
+#26 [backend stage-0  9/25] COPY --chown=www-data:www-data src/ /var/www/html
+#26 CANCELED
+------
+ > [frontend builder 5/5] RUN npm run build:
+0.426 
+0.426 > build
+0.426 > nuxt build
+0.426 
+0.432 sh: nuxt: Permission denied
+------
+WARNING: The "PUSHER_PORT" variable is not set. Defaulting to a blank string.
+Dockerfile:30
+--------------------
+  28 |     
+  29 |     # Build the application
+  30 | >>> RUN npm run build
+  31 |     
+  32 |     # Production stage
+--------------------
+target frontend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 126
