@@ -30,10 +30,12 @@ class ProjectFactory extends Factory
             }
             
             if (fake()->boolean(40)) { // 40% chance
-                $completionDate = fake()->dateTimeBetween($startDate, '+4 months');
+                // Ensure completion date is between start date and now + 2 months
+                $completionDate = fake()->dateTimeBetween($startDate, 'now +2 months');
                 
-                if (fake()->boolean(50)) { // 50% chance if completion date exists
-                    $paymentDate = fake()->dateTimeBetween($completionDate, '+1 month');
+                if (fake()->boolean(50) && $completionDate <= new \DateTime('now')) { 
+                    // Only generate payment date if completion is in the past
+                    $paymentDate = fake()->dateTimeBetween($completionDate, 'now +1 month');
                 }
             }
         }
@@ -122,7 +124,7 @@ class ProjectFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => 'in_progress',
             'start_date' => $startDate,
-            'expected_completion_date' => fake()->dateTimeBetween($startDate, '+2 months'),
+            'expected_completion_date' => fake()->dateTimeBetween($startDate, 'now +2 months'),
             'completion_date' => null,
             'payment_date' => null,
         ]);
@@ -135,10 +137,11 @@ class ProjectFactory extends Factory
     {
         $startDate = fake()->dateTimeBetween('-4 months', '-1 month');
         $completionDate = fake()->dateTimeBetween($startDate, 'now');
+        $expectedDate = fake()->dateTimeBetween($startDate, $completionDate);
         return $this->state(fn (array $attributes) => [
             'status' => 'completed',
             'start_date' => $startDate,
-            'expected_completion_date' => fake()->dateTimeBetween($startDate, $completionDate),
+            'expected_completion_date' => $expectedDate,
             'completion_date' => $completionDate,
             'payment_date' => null,
         ]);
@@ -152,10 +155,11 @@ class ProjectFactory extends Factory
         $startDate = fake()->dateTimeBetween('-6 months', '-2 months');
         $completionDate = fake()->dateTimeBetween($startDate, '-1 month');
         $paymentDate = fake()->dateTimeBetween($completionDate, 'now');
+        $expectedDate = fake()->dateTimeBetween($startDate, $completionDate);
         return $this->state(fn (array $attributes) => [
             'status' => 'paid',
             'start_date' => $startDate,
-            'expected_completion_date' => fake()->dateTimeBetween($startDate, $completionDate),
+            'expected_completion_date' => $expectedDate,
             'completion_date' => $completionDate,
             'payment_date' => $paymentDate,
         ]);
