@@ -154,15 +154,22 @@ class ProjectController extends Controller
             'client_id' => 'required|exists:clients,id',
             'description' => 'nullable|string',
             'category' => 'required|in:website,script,server,custom',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'nullable|numeric|min:0',
             'contact_date' => 'required|date',
             'start_date' => 'nullable|date',
             'expected_completion_date' => 'nullable|date',
             'completion_date' => 'nullable|date',
             'payment_date' => 'nullable|date',
-            'status' => 'required|in:contacted,in_progress,completed,paid',
+            'status' => 'required|in:pending_evaluation,contacted,in_progress,completed,paid',
             'priority' => 'nullable|in:low,medium,high',
         ]);
+
+        // Make amount required for all statuses except pending_evaluation
+        if ($validated['status'] !== 'pending_evaluation') {
+            $request->validate([
+                'amount' => 'required|numeric|min:0',
+            ]);
+        }
 
         // Add user_id for current authenticated user (or default to 1 for now)
         $validated['user_id'] = auth()->id() ?? 1;
@@ -202,15 +209,29 @@ class ProjectController extends Controller
             'client_id' => 'sometimes|exists:clients,id',
             'description' => 'nullable|string',
             'category' => 'sometimes|in:website,script,server,custom',
-            'amount' => 'sometimes|numeric|min:0',
+            'amount' => 'nullable|numeric|min:0',
             'contact_date' => 'sometimes|date',
             'start_date' => 'nullable|date',
             'expected_completion_date' => 'nullable|date',
             'completion_date' => 'nullable|date',
             'payment_date' => 'nullable|date',
-            'status' => 'sometimes|in:contacted,in_progress,completed,paid',
+            'status' => 'sometimes|in:pending_evaluation,contacted,in_progress,completed,paid',
             'priority' => 'nullable|in:low,medium,high',
         ]);
+
+        // Make amount required for all statuses except pending_evaluation
+        if (isset($validated['status']) && $validated['status'] !== 'pending_evaluation') {
+            $request->validate([
+                'amount' => 'required|numeric|min:0',
+            ]);
+        } elseif (!isset($validated['status']) && $project->status !== 'pending_evaluation') {
+            // If status is not being updated but current status requires amount
+            if (isset($validated['amount'])) {
+                $request->validate([
+                    'amount' => 'required|numeric|min:0',
+                ]);
+            }
+        }
 
         $project->update($validated);
         $project->load(['client', 'user']);
@@ -242,7 +263,7 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $validated = $request->validate([
-            'status' => 'required|in:contacted,in_progress,completed,paid'
+            'status' => 'required|in:pending_evaluation,contacted,in_progress,completed,paid'
         ]);
 
         $project->update($validated);

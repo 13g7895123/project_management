@@ -75,6 +75,7 @@ class Project extends Model
     public function getStatusLabel(): string
     {
         $labels = [
+            'pending_evaluation' => '待評估',
             'contacted' => '已接洽',
             'in_progress' => '進行中',
             'completed' => '已完成',
@@ -112,6 +113,8 @@ class Project extends Model
     public function getProgressPercentage(): int
     {
         switch ($this->status) {
+            case 'pending_evaluation':
+                return 10;
             case 'contacted':
                 return 25;
             case 'in_progress':

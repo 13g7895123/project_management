@@ -150,7 +150,7 @@ class DashboardControllerTest extends TestCase
             ]);
 
         $data = $response->json('data');
-        $this->assertCount(6, $data);
+        $this->assertCount(7, $data); // 6 past months + 1 future month
     }
 
     public function test_project_status_distribution()

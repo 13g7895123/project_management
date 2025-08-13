@@ -53,7 +53,7 @@
             <button @click="retryChart" class="mt-2 text-primary-600 hover:text-primary-700 text-sm underline">重試</button>
           </div>
         </div>
-        <div v-else class="h-64">
+        <div v-else-if="revenueData && revenueData.length > 0" class="h-64">
           <ClientOnly>
             <RevenueChart :revenue-data="revenueData" />
             <template #fallback>
@@ -67,6 +67,14 @@
               </div>
             </template>
           </ClientOnly>
+        </div>
+        <div v-else class="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+          <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <p class="text-gray-500 dark:text-gray-400">暫無收入數據</p>
+          </div>
         </div>
       </div>
 

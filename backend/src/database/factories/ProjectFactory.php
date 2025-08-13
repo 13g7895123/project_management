@@ -28,7 +28,7 @@ class ProjectFactory extends Factory
             $expectedCompletionDate = fake()->optional(0.8)->dateTimeBetween($startDate, '+3 months');
             $completionDate = fake()->optional(0.4)->dateTimeBetween($startDate, '+4 months');
             
-            if ($completionDate) {
+            if ($completionDate && $completionDate instanceof \DateTime) {
                 $paymentDate = fake()->optional(0.5)->dateTimeBetween($completionDate, '+1 month');
             }
         }

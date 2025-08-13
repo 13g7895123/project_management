@@ -315,3 +315,7 @@ Error: The process '/usr/bin/bash' failed with exit code 1
 103. 修正以下錯誤
     - Canvas element not found
     - 後端測試看起來有正常運行，但是測試結果有不少ERROR，我貼在docs\test_result\08130842.txt中，麻煩幫我研究並修正其錯誤，完成後執行point 20
+104. 完成以下項目
+    - 儀錶板的收入趨勢一樣顯示Canvas element not found這個錯誤提示
+    - 專案的狀態幫我新增一個項目"待評估"，該項目可以不用填金額，因為未評估不知道金額多少錢，請完整檢查前端到後端的功能
+    - 後端測試看起來有正常運行，但是測試結果有不少ERROR，我貼在docs\test_result\08130932.txt中，麻煩幫我研究並修正其錯誤，完成後執行point 20
