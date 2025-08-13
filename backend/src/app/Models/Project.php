@@ -18,6 +18,9 @@ class Project extends Model
         'description',
         'category',
         'amount',
+        'requires_deposit',
+        'deposit_amount',
+        'deposit_received_date',
         'contact_date',
         'start_date',
         'expected_completion_date',
@@ -30,6 +33,9 @@ class Project extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'requires_deposit' => 'boolean',
+        'deposit_amount' => 'decimal:2',
+        'deposit_received_date' => 'date',
         'contact_date' => 'date',
         'start_date' => 'date',
         'expected_completion_date' => 'date',
@@ -105,6 +111,46 @@ class Project extends Model
     public function getFormattedAmountAttribute(): string
     {
         return 'NT$' . number_format($this->amount);
+    }
+
+    /**
+     * 格式化訂金顯示
+     */
+    public function getFormattedDepositAmountAttribute(): ?string
+    {
+        return $this->deposit_amount ? 'NT$' . number_format($this->deposit_amount) : null;
+    }
+
+    /**
+     * 檢查是否已收到訂金
+     */
+    public function hasReceivedDeposit(): bool
+    {
+        return $this->requires_deposit && !is_null($this->deposit_received_date);
+    }
+
+    /**
+     * 剩餘應收金額（扣除訂金）
+     */
+    public function getRemainingAmountAttribute(): ?float
+    {
+        if (!$this->amount) return null;
+        
+        $remaining = $this->amount;
+        if ($this->requires_deposit && $this->deposit_amount && $this->hasReceivedDeposit()) {
+            $remaining -= $this->deposit_amount;
+        }
+        
+        return max(0, $remaining);
+    }
+
+    /**
+     * 格式化剩餘金額顯示
+     */
+    public function getFormattedRemainingAmountAttribute(): ?string
+    {
+        $remaining = $this->getRemainingAmountAttribute();
+        return $remaining !== null ? 'NT$' . number_format($remaining) : null;
     }
 
     /**

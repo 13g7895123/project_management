@@ -143,43 +143,100 @@
         </div>
 
         <!-- 專案分類與金額 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              專案類別 <span class="text-red-500">*</span>
-            </label>
-            <select
-              id="category"
-              v-model="form.category"
-              required
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">請選擇類別</option>
-              <option value="website">網站</option>
-              <option value="script">腳本</option>
-              <option value="server">伺服器</option>
-              <option value="custom">自訂</option>
-            </select>
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">專案資訊</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                專案類別 <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="category"
+                v-model="form.category"
+                required
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">請選擇類別</option>
+                <option value="website">網站</option>
+                <option value="script">腳本</option>
+                <option value="server">伺服器</option>
+                <option value="custom">自訂</option>
+              </select>
+            </div>
+            <div>
+              <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                專案金額 <span v-if="form.status !== 'pending_evaluation'" class="text-red-500">*</span>
+                <span v-if="form.status === 'pending_evaluation'" class="text-gray-500 text-xs">(待評估狀態可選填)</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                  NT$
+                </span>
+                <input
+                  id="amount"
+                  v-model.number="form.amount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  :required="form.status !== 'pending_evaluation'"
+                  class="w-full pl-12 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                  :placeholder="form.status === 'pending_evaluation' ? '待評估時可選填' : '0'"
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              專案金額 <span v-if="form.status !== 'pending_evaluation'" class="text-red-500">*</span>
-              <span v-if="form.status === 'pending_evaluation'" class="text-gray-500 text-xs">(待評估狀態可選填)</span>
-            </label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                NT$
-              </span>
+        </div>
+
+        <!-- 訂金設定 -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">訂金設定</h3>
+          <div class="space-y-4">
+            <!-- 是否收取訂金 -->
+            <div class="flex items-center">
               <input
-                id="amount"
-                v-model.number="form.amount"
-                type="number"
-                min="0"
-                step="1"
-                :required="form.status !== 'pending_evaluation'"
-                class="w-full pl-12 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                :placeholder="form.status === 'pending_evaluation' ? '待評估時可選填' : '0'"
+                id="requires_deposit"
+                v-model="form.requires_deposit"
+                type="checkbox"
+                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
               />
+              <label for="requires_deposit" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                收取訂金
+              </label>
+            </div>
+            
+            <!-- 訂金金額與收款日期 -->
+            <div v-if="form.requires_deposit" class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-6">
+              <div>
+                <label for="deposit_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  訂金金額 <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                    NT$
+                  </span>
+                  <input
+                    id="deposit_amount"
+                    v-model.number="form.deposit_amount"
+                    type="number"
+                    min="0"
+                    step="1"
+                    :required="form.requires_deposit"
+                    class="w-full pl-12 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="請輸入訂金金額"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="deposit_received_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  訂金收款日期
+                </label>
+                <input
+                  id="deposit_received_date"
+                  v-model="form.deposit_received_date"
+                  type="date"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -320,6 +377,9 @@ const form = ref({
   description: '',
   category: '',
   amount: null,
+  requires_deposit: false,
+  deposit_amount: null,
+  deposit_received_date: '',
   contact_date: '',
   start_date: '',
   expected_completion_date: '',
@@ -352,6 +412,9 @@ const loadProject = async () => {
         description: projectData.description || '',
         category: projectData.category || '',
         amount: projectData.amount || null,
+        requires_deposit: projectData.requires_deposit || false,
+        deposit_amount: projectData.deposit_amount || null,
+        deposit_received_date: projectData.deposit_received_date ? new Date(projectData.deposit_received_date).toISOString().split('T')[0] : '',
         contact_date: projectData.contact_date ? new Date(projectData.contact_date).toISOString().split('T')[0] : '',
         start_date: projectData.start_date ? new Date(projectData.start_date).toISOString().split('T')[0] : '',
         expected_completion_date: projectData.expected_completion_date ? new Date(projectData.expected_completion_date).toISOString().split('T')[0] : '',
