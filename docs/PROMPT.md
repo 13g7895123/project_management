@@ -402,3 +402,6 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
     - 專案的部分，幫我多一個是否收取訂金的功能，如果有勾選的話，需要填入訂金金額
     - 幫我針對@PROMPT.md有新提出的功能，更新進CLAUDE.md
     - 執行point 20
+125. 完成以下功能
+    - 移除左上角title後面的時間
+    - 執行point 20

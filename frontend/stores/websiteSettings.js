@@ -13,7 +13,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   const enableSearch = ref(true)
   const enableNotifications = ref(true)
   const showFooter = ref(true)
-  const showTime = ref(false) // Control time display, default disabled
+  const showTime = ref(false) // Time display permanently disabled
   
   // Theme settings integration
   const enableDarkMode = ref(true)
