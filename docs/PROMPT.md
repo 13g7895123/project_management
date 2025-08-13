@@ -384,3 +384,4 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
 117. 幫我右上角的系統名稱後面加入時間，完成後執行point 20，請記得要push
 118. 自從我把frontend的src內容改到frontend裡面，vps上面的內容就沒有再更新過了，可以幫我檢查一下是否哪裡有問題嗎
 119. 你全部推上去他還是一樣沒更新，然後多處API更是直接呈現502的狀態，你到底有沒有辦法
+120. 後端完全沒法動彈了，全部都502，有辦法修嗎

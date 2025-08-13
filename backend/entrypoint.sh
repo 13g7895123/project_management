@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "🚀 Starting Laravel application setup..."
 
@@ -7,73 +6,25 @@ echo "🚀 Starting Laravel application setup..."
 mkdir -p storage/logs storage/framework/{cache,sessions,views} bootstrap/cache
 mkdir -p /var/run/php
 
-# Initialize storage structure if using mounted volumes
-if [ ! -d "storage/app" ]; then
-    mkdir -p storage/app/public
-fi
-if [ ! -d "storage/framework" ]; then
-    mkdir -p storage/framework/{cache,sessions,views,testing}
-fi
-if [ ! -d "storage/logs" ]; then
-    mkdir -p storage/logs
-fi
-
 # Set proper permissions
-chown -R www-data:www-data storage bootstrap/cache /var/run/php
-chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache /var/run/php || true
+chmod -R 775 storage bootstrap/cache || true
 
-# Wait for database with improved error handling
-echo "⏳ Waiting for database connection..."
-MAX_RETRIES=30
-RETRY_COUNT=0
-
-while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    if php artisan migrate:status > /dev/null 2>&1; then
-        echo "✅ Database connection established"
-        break
-    else
-        echo "Database not ready (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES), waiting..."
-        sleep 3
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-    fi
-done
-
-if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-    echo "❌ Database connection timeout after $MAX_RETRIES attempts"
-    echo "Please check database configuration:"
-    echo "  - DB_HOST: $DB_HOST"
-    echo "  - DB_PORT: $DB_PORT"
-    echo "  - DB_DATABASE: $DB_DATABASE"
-    exit 1
-fi
-
-# Check if we should run migrations
-echo "🔄 Checking migration status..."
+# Try database operations but don't fail if they don't work
+echo "🔄 Attempting database operations..."
 if php artisan migrate:status > /dev/null 2>&1; then
-    echo "✅ Migration status OK"
-    
-    echo "Running migrations..."
-    if php artisan migrate --force; then
-        echo "✅ Migrations completed"
-    else
-        echo "⚠️ Migrations failed, but continuing..."
-    fi
-
-    echo "🌱 Running seeders..."
-    if php artisan db:seed --force; then
-        echo "✅ Seeders completed"
-    else
-        echo "ℹ️ Seeding skipped (might already exist)"
-    fi
+    echo "✅ Database accessible, running migrations..."
+    php artisan migrate --force || echo "⚠️ Migration failed, continuing..."
+    php artisan db:seed --force || echo "ℹ️ Seeding skipped, continuing..."
 else
-    echo "⚠️ Database not ready for migrations, skipping..."
+    echo "⚠️ Database not accessible, skipping database operations..."
 fi
 
-# Cache configuration
-echo "🔧 Optimizing application..."
-php artisan config:cache || echo "⚠️ Config cache failed"
-php artisan route:cache || echo "⚠️ Route cache failed" 
-php artisan view:cache || echo "⚠️ View cache failed"
+# Cache configuration - don't fail if these don't work
+echo "🔧 Attempting to optimize application..."
+php artisan config:cache || echo "ℹ️ Config cache skipped"
+php artisan route:cache || echo "ℹ️ Route cache skipped"
+php artisan view:cache || echo "ℹ️ View cache skipped"
 
 echo "🎉 Laravel setup completed successfully!"
 echo "Starting services..."
