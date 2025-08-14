@@ -52,6 +52,9 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           // Update document elements
           updateDocumentTitle()
           updateFavicon()
+          
+          // Apply theme settings
+          applyThemeSettings()
           return
         }
       } catch (error) {
@@ -140,6 +143,9 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
         const response = await updateSettings(apiPayload)
         if (response.success) {
           console.log('Settings saved to API successfully')
+          
+          // Apply theme changes immediately after successful save
+          applyThemeSettings()
         } else {
           console.warn('Failed to save settings to API:', response.message)
         }
@@ -175,6 +181,69 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           primaryColor: primaryColor.value
         }
       }))
+    }
+  }
+
+  // Apply theme settings to DOM
+  const applyThemeSettings = () => {
+    if (process.client) {
+      // Apply theme mode
+      const html = document.documentElement
+      
+      if (themeMode.value === 'dark' || 
+          (themeMode.value === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        html.classList.add('dark')
+      } else {
+        html.classList.remove('dark')
+      }
+      
+      // Apply primary color
+      if (primaryColor.value) {
+        html.style.setProperty('--primary-color', primaryColor.value)
+        
+        // Generate color variations
+        const generateColorVariations = (baseColor) => {
+          const hex = baseColor.replace('#', '')
+          const r = parseInt(hex.substr(0, 2), 16)
+          const g = parseInt(hex.substr(2, 2), 16)
+          const b = parseInt(hex.substr(4, 2), 16)
+          
+          const lighten = (amount) => {
+            const newR = Math.min(255, Math.floor(r + (255 - r) * amount))
+            const newG = Math.min(255, Math.floor(g + (255 - g) * amount))
+            const newB = Math.min(255, Math.floor(b + (255 - b) * amount))
+            return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`
+          }
+          
+          const darken = (amount) => {
+            const newR = Math.max(0, Math.floor(r * (1 - amount)))
+            const newG = Math.max(0, Math.floor(g * (1 - amount)))
+            const newB = Math.max(0, Math.floor(b * (1 - amount)))
+            return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`
+          }
+          
+          return {
+            50: lighten(0.95),
+            100: lighten(0.9),
+            200: lighten(0.75),
+            300: lighten(0.6),
+            400: lighten(0.3),
+            500: baseColor,
+            600: darken(0.15),
+            700: darken(0.3),
+            800: darken(0.45),
+            900: darken(0.6)
+          }
+        }
+        
+        const variations = generateColorVariations(primaryColor.value)
+        Object.entries(variations).forEach(([key, value]) => {
+          html.style.setProperty(`--primary-${key}`, value)
+        })
+      }
+      
+      // Force a repaint
+      document.body.offsetHeight
     }
   }
   
@@ -319,6 +388,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
     updateFavicon,
     uploadLogo,
     uploadFavicon,
-    resetToDefaults
+    resetToDefaults,
+    applyThemeSettings
   }
 })

@@ -413,3 +413,7 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
     - 設定總覽幫我做一個匯出資料的設定，需要同時包含專案、業主、用戶的資料
     - 設定總覽幫我做一個匯入資料的設定，需要同時包含專案、業主、用戶的資料，且匯入同時需檢查是否與系統規則匹配，不匹配的資料，請幫我指出問題
     - 執行point 20
+127. 完成以下功能
+    - /settings在完成上一個功能後報了以下錯誤，"useNotifications is not defined"
+    - 幫我修復主機上面主題設定的錯誤，目前點了都沒有套用，跟SSR會有相關嗎
+    - 執行point 20

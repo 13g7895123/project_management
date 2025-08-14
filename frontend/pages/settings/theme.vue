@@ -132,20 +132,63 @@ const primaryColors = [
   { name: 'Gray', value: '#6b7280' }
 ]
 
-const setThemeMode = (mode) => {
-  colorMode.preference = mode
+const { setTheme } = useTheme()
+const websiteSettingsStore = useWebsiteSettingsStore()
+
+const setThemeMode = async (mode) => {
+  // Use the theme composable which properly saves to database
+  setTheme(mode)
+  
+  // Also update website settings store
+  websiteSettingsStore.themeMode = mode
+  await websiteSettingsStore.saveSettings()
 }
 
-const setPrimaryColor = (color) => {
+const setPrimaryColor = async (color) => {
   customColor.value = color
   setThemePrimaryColor(color)
+  
+  // Ensure the color is saved to database
+  websiteSettingsStore.primaryColor = color
+  await websiteSettingsStore.saveSettings()
 }
 
 // Watch for color mode changes to ensure reactivity
-watch(() => colorMode.preference, () => {
+watch(() => colorMode.preference, async (newMode) => {
   // Force component re-render to reflect theme changes
-  nextTick(() => {
+  await nextTick()
+  
+  // Ensure the change is persisted
+  if (process.client) {
+    websiteSettingsStore.themeMode = newMode
+    await websiteSettingsStore.saveSettings()
+    
+    // Force DOM update
     document.body.offsetHeight
-  })
+    
+    // Trigger global theme change event
+    window.dispatchEvent(new CustomEvent('theme-changed', { 
+      detail: { mode: newMode } 
+    }))
+  }
+})
+
+// Initialize theme on mount
+onMounted(async () => {
+  if (process.client) {
+    // Load settings from API
+    await websiteSettingsStore.loadSettings()
+    
+    // Apply the saved theme
+    if (websiteSettingsStore.themeMode && websiteSettingsStore.themeMode !== colorMode.preference) {
+      colorMode.preference = websiteSettingsStore.themeMode
+    }
+    
+    // Apply the saved primary color
+    if (websiteSettingsStore.primaryColor) {
+      customColor.value = websiteSettingsStore.primaryColor
+      setThemePrimaryColor(websiteSettingsStore.primaryColor)
+    }
+  }
 })
 </script>
