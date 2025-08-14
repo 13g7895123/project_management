@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class ProjectController extends Controller
@@ -496,5 +498,143 @@ class ProjectController extends Controller
             'success' => true,
             'message' => '專案里程碑刪除成功'
         ]);
+    }
+
+    /**
+     * Import projects from array data
+     */
+    public function import(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'projects' => 'required|array',
+                'projects.*.name' => 'required|string|max:255',
+                'projects.*.description' => 'nullable|string',
+                'projects.*.category' => 'required|string|in:website,script,server,custom',
+                'projects.*.status' => 'required|string|in:pending,negotiating,in_progress,completed,paid,evaluation',
+                'projects.*.amount' => 'nullable|numeric|min:0',
+                'projects.*.contact_date' => 'required|date',
+                'projects.*.start_date' => 'nullable|date',
+                'projects.*.completion_date' => 'nullable|date',
+                'projects.*.expected_completion_date' => 'nullable|date',
+                'projects.*.payment_date' => 'nullable|date',
+                'projects.*.requires_deposit' => 'nullable|boolean',
+                'projects.*.deposit_amount' => 'nullable|numeric|min:0',
+                'projects.*.deposit_received_date' => 'nullable|date',
+                'projects.*.client_id' => 'nullable|exists:clients,id',
+                'projects.*.client_name' => 'nullable|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $projects = $request->input('projects');
+            $imported = 0;
+            $skipped = 0;
+            $errors = [];
+            $currentUser = auth()->user();
+
+            foreach ($projects as $index => $projectData) {
+                try {
+                    // Find or create client if provided
+                    $clientId = null;
+                    
+                    if (!empty($projectData['client_id'])) {
+                        // Verify client exists and belongs to current user
+                        $client = Client::where('id', $projectData['client_id'])
+                            ->where('user_id', $currentUser->id)
+                            ->first();
+                        
+                        if ($client) {
+                            $clientId = $client->id;
+                        } else {
+                            $errors[] = "Row {$index}: Client ID {$projectData['client_id']} not found or doesn't belong to user";
+                        }
+                    } elseif (!empty($projectData['client_name'])) {
+                        // Try to find client by name, or create new one
+                        $client = Client::where('name', $projectData['client_name'])
+                            ->where('user_id', $currentUser->id)
+                            ->first();
+                            
+                        if (!$client) {
+                            $client = Client::create([
+                                'name' => $projectData['client_name'],
+                                'user_id' => $currentUser->id,
+                                'how_met' => 'Imported with project'
+                            ]);
+                        }
+                        
+                        $clientId = $client->id;
+                    }
+
+                    // Check if project already exists
+                    $existingProject = Project::where('user_id', $currentUser->id)
+                        ->where('name', $projectData['name'])
+                        ->where('contact_date', $projectData['contact_date'])
+                        ->first();
+
+                    if ($existingProject) {
+                        $skipped++;
+                        $errors[] = "Row {$index}: Project '{$projectData['name']}' with same contact date already exists";
+                        continue;
+                    }
+
+                    // Validate amount is required unless status is evaluation
+                    if ($projectData['status'] !== 'evaluation' && empty($projectData['amount'])) {
+                        $errors[] = "Row {$index}: Amount is required for projects not in evaluation status";
+                        $skipped++;
+                        continue;
+                    }
+
+                    // Create new project
+                    $project = Project::create([
+                        'name' => $projectData['name'],
+                        'description' => $projectData['description'] ?? null,
+                        'category' => $projectData['category'],
+                        'status' => $projectData['status'],
+                        'amount' => $projectData['status'] === 'evaluation' ? null : $projectData['amount'],
+                        'contact_date' => $projectData['contact_date'],
+                        'start_date' => $projectData['start_date'] ?? null,
+                        'completion_date' => $projectData['completion_date'] ?? null,
+                        'expected_completion_date' => $projectData['expected_completion_date'] ?? null,
+                        'payment_date' => $projectData['payment_date'] ?? null,
+                        'requires_deposit' => $projectData['requires_deposit'] ?? false,
+                        'deposit_amount' => $projectData['deposit_amount'] ?? null,
+                        'deposit_received_date' => $projectData['deposit_received_date'] ?? null,
+                        'client_id' => $clientId,
+                        'user_id' => $currentUser->id,
+                    ]);
+
+                    $imported++;
+
+                } catch (\Exception $e) {
+                    $errors[] = "Row {$index}: " . $e->getMessage();
+                    $skipped++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Import completed. Imported: {$imported}, Skipped: {$skipped}",
+                'data' => [
+                    'imported' => $imported,
+                    'skipped' => $skipped,
+                    'total' => count($projects),
+                    'errors' => $errors
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Import failed',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
     }
 }

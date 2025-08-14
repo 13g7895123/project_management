@@ -436,4 +436,89 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Import users from array data
+     */
+    public function import(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'users' => 'required|array',
+                'users.*.name' => 'required|string|max:255',
+                'users.*.email' => 'required|email|max:255',
+                'users.*.username' => 'nullable|string|max:255',
+                'users.*.role' => 'nullable|string|in:admin,user',
+                'users.*.status' => 'nullable|string|in:active,inactive',
+                'users.*.password' => 'nullable|string|min:8',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $users = $request->input('users');
+            $imported = 0;
+            $skipped = 0;
+            $errors = [];
+
+            foreach ($users as $index => $userData) {
+                try {
+                    // Check if user already exists
+                    $existingUser = User::where('email', $userData['email'])
+                        ->orWhere(function($query) use ($userData) {
+                            if (!empty($userData['username'])) {
+                                $query->where('username', $userData['username']);
+                            }
+                        })
+                        ->first();
+
+                    if ($existingUser) {
+                        $skipped++;
+                        $errors[] = "Row {$index}: User with email '{$userData['email']}' already exists";
+                        continue;
+                    }
+
+                    // Create new user
+                    $user = User::create([
+                        'name' => $userData['name'],
+                        'email' => $userData['email'],
+                        'username' => $userData['username'] ?? null,
+                        'role' => $userData['role'] ?? 'user',
+                        'status' => $userData['status'] ?? 'active',
+                        'password' => Hash::make($userData['password'] ?? 'password123'),
+                        'email_verified_at' => now(),
+                    ]);
+
+                    $imported++;
+
+                } catch (\Exception $e) {
+                    $errors[] = "Row {$index}: " . $e->getMessage();
+                    $skipped++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Import completed. Imported: {$imported}, Skipped: {$skipped}",
+                'data' => [
+                    'imported' => $imported,
+                    'skipped' => $skipped,
+                    'total' => count($users),
+                    'errors' => $errors
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Import failed',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
 }

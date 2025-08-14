@@ -220,6 +220,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('clients/{client}/contacts', [ClientController::class, 'addContact']);
     Route::put('clients/{client}/contacts/{contact}', [ClientController::class, 'updateContact']);
     Route::delete('clients/{client}/contacts/{contact}', [ClientController::class, 'deleteContact']);
+    Route::post('clients/import', [ClientController::class, 'import']); // Import clients
     Route::apiResource('clients', ClientController::class);
 
     // Projects routes - specific routes must come before resource routes
@@ -227,6 +228,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('projects/category/{category}', [ProjectController::class, 'byCategory']);
     Route::get('projects/status/{status}', [ProjectController::class, 'byStatus']);
     Route::get('projects/export/{format}', [ProjectController::class, 'export']);
+    Route::post('projects/import', [ProjectController::class, 'import']); // Import projects
     Route::put('projects/{project}/status', [ProjectController::class, 'updateStatus']);
     Route::get('projects/{project}/milestones', [ProjectController::class, 'milestones']);
     Route::post('projects/{project}/milestones', [ProjectController::class, 'createMilestone']);
@@ -254,6 +256,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('users')->middleware('admin')->group(function () {
         Route::get('/', [UserController::class, 'index']); // List users with pagination/filtering
         Route::post('/', [UserController::class, 'store']); // Create new user
+        Route::post('/import', [UserController::class, 'import']); // Import users
         Route::get('/{id}', [UserController::class, 'show']); // Show specific user
         Route::put('/{id}', [UserController::class, 'update']); // Update user
         Route::delete('/{id}', [UserController::class, 'destroy']); // Soft delete user

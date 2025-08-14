@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
@@ -433,5 +434,109 @@ class ClientController extends Controller
             'success' => true,
             'message' => '聯繫方式刪除成功'
         ]);
+    }
+
+    /**
+     * Import clients from array data
+     */
+    public function import(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'clients' => 'required|array',
+                'clients.*.name' => 'required|string|max:255',
+                'clients.*.how_met' => 'nullable|string|max:500',
+                'clients.*.contact_methods' => 'nullable|array',
+                'clients.*.contact_methods.*.type' => 'required|string|max:50',
+                'clients.*.contact_methods.*.value' => 'required|string|max:255',
+                'clients.*.contact_methods.*.is_primary' => 'nullable|boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $clients = $request->input('clients');
+            $imported = 0;
+            $skipped = 0;
+            $errors = [];
+            $currentUser = auth()->user();
+
+            foreach ($clients as $index => $clientData) {
+                try {
+                    // Check if client already exists for this user
+                    $existingClient = Client::where('user_id', $currentUser->id)
+                        ->where('name', $clientData['name'])
+                        ->first();
+
+                    if ($existingClient) {
+                        $skipped++;
+                        $errors[] = "Row {$index}: Client '{$clientData['name']}' already exists";
+                        continue;
+                    }
+
+                    // Create new client
+                    $client = Client::create([
+                        'name' => $clientData['name'],
+                        'how_met' => $clientData['how_met'] ?? null,
+                        'user_id' => $currentUser->id,
+                    ]);
+
+                    // Add contact methods if provided
+                    if (!empty($clientData['contact_methods'])) {
+                        $hasPrimary = false;
+                        foreach ($clientData['contact_methods'] as $contactIndex => $contactMethod) {
+                            $isPrimary = $contactMethod['is_primary'] ?? false;
+                            
+                            // Ensure only one primary contact
+                            if ($isPrimary && $hasPrimary) {
+                                $isPrimary = false;
+                            } elseif ($isPrimary) {
+                                $hasPrimary = true;
+                            }
+
+                            $client->contactMethods()->create([
+                                'type' => $contactMethod['type'],
+                                'value' => $contactMethod['value'],
+                                'is_primary' => $isPrimary,
+                            ]);
+                        }
+
+                        // If no primary was set, make the first one primary
+                        if (!$hasPrimary && $client->contactMethods()->count() > 0) {
+                            $client->contactMethods()->first()->update(['is_primary' => true]);
+                        }
+                    }
+
+                    $imported++;
+
+                } catch (\Exception $e) {
+                    $errors[] = "Row {$index}: " . $e->getMessage();
+                    $skipped++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Import completed. Imported: {$imported}, Skipped: {$skipped}",
+                'data' => [
+                    'imported' => $imported,
+                    'skipped' => $skipped,
+                    'total' => count($clients),
+                    'errors' => $errors
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Import failed',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
     }
 }
