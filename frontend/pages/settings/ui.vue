@@ -145,8 +145,26 @@ definePageMeta({
 import { TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 const settingsStore = useSettingsStore()
-const { showFootbar, sidebarMenuItems } = storeToRefs(settingsStore)
-const { toggleFootbar, updateMenuItems } = settingsStore
+const { sidebarMenuItems } = storeToRefs(settingsStore)
+const { updateMenuItems } = settingsStore
+
+// Use website settings store for footer
+const websiteSettingsStore = useWebsiteSettingsStore()
+const { showFooter } = storeToRefs(websiteSettingsStore)
+const { showSuccess } = useSweetAlert()
+
+// For backward compatibility
+const showFootbar = computed(() => showFooter.value)
+
+const toggleFootbar = async () => {
+  showFooter.value = !showFooter.value
+  await websiteSettingsStore.saveSettings()
+  
+  // Also update the old settings store for backward compatibility
+  settingsStore.showFootbar = showFooter.value
+  
+  showSuccess('頁尾顯示設定已更新', showFooter.value ? '已顯示頁尾' : '已隱藏頁尾')
+}
 
 // Local copy for editing
 const localMenuItems = ref(JSON.parse(JSON.stringify(sidebarMenuItems.value)))
@@ -178,8 +196,7 @@ const removeChildItem = (parentIndex, childIndex) => {
 
 const saveMenuItems = () => {
   updateMenuItems(localMenuItems.value)
-  // Show success message
-  console.log('選單設定已儲存')
+  showSuccess('選單設定已儲存', '側邊選單配置已成功更新')
 }
 
 const resetMenuItems = () => {
@@ -215,5 +232,6 @@ const resetMenuItems = () => {
   
   localMenuItems.value = JSON.parse(JSON.stringify(defaultItems))
   updateMenuItems(defaultItems)
+  showSuccess('選單已重置', '側邊選單已重置為預設配置')
 }
 </script>

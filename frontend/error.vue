@@ -165,8 +165,12 @@ const { t } = useI18n()
 const sidebarStore = useSidebarStore()
 const { sidebarCollapsed } = storeToRefs(sidebarStore)
 
-const settingsStore = useSettingsStore()
-const { showFootbar } = storeToRefs(settingsStore)
+// Use website settings store for footer display
+const websiteSettingsStore = useWebsiteSettingsStore()
+const { showFooter } = storeToRefs(websiteSettingsStore)
+
+// For backward compatibility
+const showFootbar = computed(() => showFooter.value)
 
 // Search functionality
 const searchQuery = ref('')

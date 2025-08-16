@@ -46,6 +46,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           themeMode.value = apiSettings.theme_mode || 'system'
           primaryColor.value = apiSettings.primary_color || '#6366f1'
           
+          
           // Save to localStorage as backup
           saveToLocalStorage()
           
@@ -201,14 +202,19 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   // Apply theme settings to DOM
   const applyThemeSettings = () => {
     if (process.client) {
-      // Apply theme mode
+      // Apply theme mode with proper class management
       const html = document.documentElement
+      const shouldBeDark = themeMode.value === 'dark' || 
+          (themeMode.value === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
       
-      if (themeMode.value === 'dark' || 
-          (themeMode.value === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      // Remove both classes first to ensure clean state
+      html.classList.remove('dark', 'light')
+      
+      // Add the appropriate class
+      if (shouldBeDark) {
         html.classList.add('dark')
       } else {
-        html.classList.remove('dark')
+        html.classList.add('light')
       }
       
       // Apply primary color
@@ -256,6 +262,9 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
         })
       }
       
+      // Sync with localStorage for Nuxt color mode consistency
+      localStorage.setItem('website-theme-mode', themeMode.value)
+      
       // Force a repaint
       document.body.offsetHeight
     }
@@ -282,6 +291,9 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       favicon.href = faviconUrl.value
     }
   }
+  
+  // Note: Synchronization with old settings store is handled in individual components
+  // that use both stores to maintain backward compatibility
   
   // Upload logo file
   const uploadLogo = async (file) => {

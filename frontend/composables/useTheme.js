@@ -26,31 +26,48 @@ export const useTheme = () => {
       return // Don't allow setting dark mode if disabled
     }
     
-    // Update Nuxt color mode
+    // Update Nuxt color mode first
     colorMode.preference = mode
     
     // Update website settings store and save to both API and localStorage
     websiteSettingsStore.themeMode = mode
-    websiteSettingsStore.saveSettings()
     
-    // Also manually save to the Nuxt color mode storage for immediate persistence
+    // Apply theme immediately with proper synchronization
     if (process.client) {
       localStorage.setItem('website-theme-mode', mode)
       
       // Add smooth transition
       document.documentElement.classList.add('theme-transition')
       
-      // Apply theme immediately
-      const html = document.documentElement
-      if (mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        html.classList.add('dark')
-      } else {
-        html.classList.remove('dark')
-      }
-      
-      setTimeout(() => {
-        document.documentElement.classList.remove('theme-transition')
-      }, 300)
+      // Apply theme immediately using nextTick for proper timing
+      nextTick(() => {
+        const html = document.documentElement
+        const shouldBeDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        
+        // Remove both classes first to ensure clean state
+        html.classList.remove('dark', 'light')
+        
+        // Apply the correct class
+        if (shouldBeDark) {
+          html.classList.add('dark')
+        } else {
+          html.classList.add('light')
+        }
+        
+        // Force style recalculation
+        document.body.offsetHeight
+        
+        // Remove transition class after transition completes
+        setTimeout(() => {
+          document.documentElement.classList.remove('theme-transition')
+          
+          // Save settings after visual changes are applied
+          websiteSettingsStore.saveSettings()
+        }, 300)
+      })
+    } else {
+      // Server-side: just save the settings
+      websiteSettingsStore.saveSettings()
     }
   }
 
@@ -86,19 +103,23 @@ export const useTheme = () => {
       nextTick(() => {
         const html = document.documentElement
         const currentTheme = colorMode.value
+        const shouldBeDark = currentTheme === 'dark' || (currentTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         
         // Remove both classes first
         html.classList.remove('dark', 'light')
         
-        // Add appropriate class
-        if (currentTheme === 'dark') {
+        // Add appropriate class based on actual computed theme
+        if (shouldBeDark) {
           html.classList.add('dark')
         } else {
           html.classList.add('light')
         }
         
-        // Apply website settings theme as well
+        // Apply website settings theme (this also handles primary color)
         websiteSettingsStore.applyThemeSettings()
+        
+        // Force style recalculation to ensure all styles are applied
+        document.body.offsetHeight
       })
     }
   }

@@ -81,6 +81,39 @@
 ## 重要提醒
 請不要在每次提交時都加上「Generated with Claude Code」的標記。
 
+## 版本控制指示
+
+### Point 20 - Git 提交規範
+關於 point 20：add commit push，記得不要加上「Generated with Claude Code」的標記
+
+**執行步驟**：
+1. `git add` - 添加變更檔案到暫存區
+2. `git commit` - 提交變更，使用有意義的提交訊息
+3. `git push` - 推送到遠端儲存庫
+
+**重要規則**：
+- **絕對不要**在提交訊息中添加「Generated with Claude Code」標記
+- 使用清晰、描述性的提交訊息
+- 遵循專案的提交訊息格式慣例
+
+**範例**：
+```bash
+git add .
+git commit -m "feat: add user management functionality"
+git push origin main
+```
+
+**禁止範例**：
+```bash
+# ❌ 錯誤：包含 Claude Code 標記
+git commit -m "feat: add user management functionality
+
+🤖 Generated with Claude Code"
+
+# ✅ 正確：清晰的提交訊息
+git commit -m "feat: add user management functionality"
+```
+
 ## CSS 樣式指示
 
 ### 側邊欄收縮樣式
@@ -254,3 +287,47 @@ global.useRuntimeConfig = vi.fn(() => ({
 - Composables 設計良好，易於測試
 - 測試隔離性佳，執行速度快
 - CI/CD 流程已整合前端測試
+
+## 工作流程規範
+
+### Point 131 - 自動提交規範
+關於 point 131：每次任務完成，如果有連結git repo，都幫我依據規則提交
+
+**執行原則**：
+- 每次完成功能或修復問題後，都應該進行git提交
+- 遵循一致的提交訊息格式
+- 確保變更內容完整且有意義
+
+**提交流程**：
+1. **檢查變更**：使用 `git status` 和 `git diff` 確認變更內容
+2. **暫存變更**：使用 `git add .` 或指定檔案路徑
+3. **提交變更**：使用有意義的提交訊息
+4. **推送變更**：使用 `git push` 推送到遠端儲存庫
+
+**提交訊息格式**：
+```
+<type>: <description>
+
+[optional body]
+```
+
+**類型說明**：
+- `feat`: 新功能
+- `fix`: 錯誤修復
+- `refactor`: 代碼重構
+- `style`: 樣式調整
+- `docs`: 文件更新
+- `test`: 測試相關
+- `chore`: 維護工作
+
+**範例**：
+```bash
+git add .
+git commit -m "feat: implement comprehensive settings and data import/export functionality"
+git push origin main
+```
+
+**重要提醒**：
+- **絕對不要**添加「Generated with Claude Code」標記
+- 確保提交訊息清晰描述變更內容
+- 每次任務完成都應執行此流程
