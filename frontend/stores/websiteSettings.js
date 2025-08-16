@@ -1,3 +1,18 @@
+// Helper function to convert various values to boolean
+const convertToBoolean = (value, defaultValue = false) => {
+  if (value === undefined || value === null) return defaultValue
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'string') {
+    const lowercaseValue = value.toLowerCase()
+    if (lowercaseValue === 'true' || lowercaseValue === '1') return true
+    if (lowercaseValue === 'false' || lowercaseValue === '0') return false
+  }
+  if (typeof value === 'number') {
+    return value !== 0
+  }
+  return Boolean(value)
+}
+
 export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   const { getSettings, updateSettings, resetDefaults: apiResetDefaults } = useWebsiteSettingsApi()
   // Website basic settings
@@ -42,6 +57,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
         const response = await getSettings()
         if (response.success) {
           const apiSettings = response.data
+          console.log('Raw API response data:', apiSettings)
           
           // Map API settings to store
           websiteName.value = apiSettings.website_primary_name || '專案管理系統'
@@ -51,13 +67,20 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           showLogo.value = !!apiSettings.logo_data
           faviconUrl.value = apiSettings.favicon_data || '/favicon.ico'
           
-          enableMultilingual.value = apiSettings.multilingual_enabled !== undefined ? apiSettings.multilingual_enabled : false
-          enableSearch.value = apiSettings.search_enabled !== undefined ? apiSettings.search_enabled : true
-          enableNotifications.value = apiSettings.notifications_enabled !== undefined ? apiSettings.notifications_enabled : true
-          showFooter.value = apiSettings.footer_enabled !== undefined ? apiSettings.footer_enabled : true
-          console.log('Loaded footer setting from API:', { footer_enabled: apiSettings.footer_enabled, showFooter: showFooter.value })
-          showTime.value = apiSettings.time_enabled !== undefined ? apiSettings.time_enabled : false
-          enableDarkMode.value = apiSettings.dark_mode_enabled !== undefined ? apiSettings.dark_mode_enabled : true
+          enableMultilingual.value = convertToBoolean(apiSettings.multilingual_enabled, false)
+          enableSearch.value = convertToBoolean(apiSettings.search_enabled, true)
+          enableNotifications.value = convertToBoolean(apiSettings.notifications_enabled, true)
+          showFooter.value = convertToBoolean(apiSettings.footer_enabled, true)
+          console.log('Loaded settings from API:', { 
+            footer_enabled: apiSettings.footer_enabled, 
+            showFooter: showFooter.value,
+            enableMultilingual: enableMultilingual.value,
+            enableSearch: enableSearch.value,
+            enableNotifications: enableNotifications.value,
+            enableDarkMode: enableDarkMode.value
+          })
+          showTime.value = convertToBoolean(apiSettings.time_enabled, false)
+          enableDarkMode.value = convertToBoolean(apiSettings.dark_mode_enabled, true)
           themeMode.value = apiSettings.theme_mode || 'system'
           primaryColor.value = apiSettings.primary_color || '#6366f1'
           
@@ -98,13 +121,20 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           logoUrl.value = settings.logoUrl || ''
           faviconUrl.value = settings.faviconUrl || '/favicon.ico'
           
-          enableMultilingual.value = settings.enableMultilingual !== undefined ? settings.enableMultilingual : false
-          enableSearch.value = settings.enableSearch !== undefined ? settings.enableSearch : true
-          enableNotifications.value = settings.enableNotifications !== undefined ? settings.enableNotifications : true
-          showFooter.value = settings.showFooter !== undefined ? settings.showFooter : true
-          console.log('Loaded footer setting from localStorage:', { showFooter: settings.showFooter, final: showFooter.value })
-          showTime.value = settings.showTime !== undefined ? settings.showTime : false
-          enableDarkMode.value = settings.enableDarkMode !== undefined ? settings.enableDarkMode : true
+          enableMultilingual.value = convertToBoolean(settings.enableMultilingual, false)
+          enableSearch.value = convertToBoolean(settings.enableSearch, true)
+          enableNotifications.value = convertToBoolean(settings.enableNotifications, true)
+          showFooter.value = convertToBoolean(settings.showFooter, true)
+          console.log('Loaded settings from localStorage:', { 
+            showFooter: settings.showFooter, 
+            final: showFooter.value,
+            enableMultilingual: enableMultilingual.value,
+            enableSearch: enableSearch.value,
+            enableNotifications: enableNotifications.value,
+            enableDarkMode: enableDarkMode.value
+          })
+          showTime.value = convertToBoolean(settings.showTime, false)
+          enableDarkMode.value = convertToBoolean(settings.enableDarkMode, true)
           
           // Prefer explicit theme mode storage over settings storage
           themeMode.value = savedThemeMode || settings.themeMode || 'system'

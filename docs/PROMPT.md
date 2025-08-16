@@ -438,3 +438,5 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
     - 幫我確認為甚麼都沒有正常提交
 134. 完成以下功能
     - 目前有正常套用了，但是變成網站設定的功能設定與套用不同，套用關閉頁尾了，但開關還是打開的
+135. 完成以下功能
+    - /settings/website這個頁面，他的button沒有跟拿到的資料匹配，checkbox的部分請確認是否有問題，如果要用button撰寫，請確認為甚麼false的資料會是打開的

@@ -452,6 +452,17 @@ const resetToDefaults = async () => {
   }
 }
 
+// Watch for toggle state changes for debugging purposes (can be removed in production)
+onMounted(() => {
+  console.log('Initial toggle states:', {
+    enableMultilingual: enableMultilingual.value,
+    enableSearch: enableSearch.value,
+    enableNotifications: enableNotifications.value,
+    showFooter: showFooter.value,
+    enableDarkMode: enableDarkMode.value
+  })
+})
+
 // Watch for changes in input fields and auto-save
 watch([websiteName, websiteSecondaryName, websiteTitle], () => {
   websiteSettingsStore.saveSettings()
