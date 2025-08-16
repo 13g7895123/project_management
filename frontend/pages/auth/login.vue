@@ -128,6 +128,7 @@ definePageMeta({
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const { showSuccess, showError, showLoading, close } = useSweetAlert()
 
 const form = ref({
   username: '',
@@ -144,16 +145,27 @@ const handleLogin = async () => {
     
     // Validate form data
     if (!form.value.username || !form.value.password) {
-      throw new Error('請輸入用戶名和密碼')
+      showError('表單驗證失敗', '請輸入用戶名和密碼')
+      return
     }
+    
+    showLoading('登入中...', '正在驗證您的身份')
     
     // Attempt login
     await authStore.login(form.value)
     
+    close()
+    showSuccess('登入成功', `歡迎回來，${authStore.user?.name || '用戶'}！`)
+    
     // 重定向到首頁
-    await navigateTo('/')
+    setTimeout(async () => {
+      await navigateTo('/')
+    }, 1000)
   } catch (err) {
-    error.value = err.message || '登入失敗，請檢查您的登入資訊'
+    close()
+    const errorMessage = err.message || '登入失敗，請檢查您的登入資訊'
+    showError('登入失敗', errorMessage)
+    error.value = errorMessage
     console.error('Login error:', err)
   } finally {
     loading.value = false

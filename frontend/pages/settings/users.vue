@@ -376,6 +376,7 @@ import {
 const { t } = useI18n()
 const authStore = useAuthStore()
 const { getUsers, updateUser, deleteUser, toggleUserStatus, createUser } = useUsers()
+const { showSuccess, showError, showDeleteConfirm, showLoading, close } = useSweetAlert()
 
 // Reactive data
 const searchQuery = ref('')
@@ -499,17 +500,21 @@ const formatDate = (date) => {
 const toggleStatus = async (user) => {
   if (!user?.id) return
   try {
+    showLoading('更新狀態中...', '正在處理用戶狀態變更')
     const newStatus = user.status === 'active' ? 'inactive' : 'active'
     const response = await toggleUserStatus(user.id, newStatus)
     
+    close()
     if (response.success) {
       await loadUsers() // Reload users to reflect changes
+      showSuccess('狀態更新成功', `用戶「${user.name}」的狀態已成功更新`)
     } else {
       throw new Error(response.message || 'Failed to toggle user status')
     }
   } catch (error) {
+    close()
     console.error('Failed to toggle user status:', error)
-    alert('Failed to toggle user status: ' + error.message)
+    showError('狀態更新失敗', error.message || '無法更新用戶狀態，請稍後再試')
   }
 }
 
@@ -524,6 +529,7 @@ const editUser = (user) => {
 const saveUser = async () => {
   if (!editForm.value?.id) return
   try {
+    showLoading('更新用戶中...', '正在儲存用戶資料')
     const response = await updateUser(editForm.value.id, {
       name: editForm.value.name,
       username: editForm.value.username,
@@ -537,23 +543,28 @@ const saveUser = async () => {
       website: editForm.value.website
     })
     
+    close()
     if (response.success) {
       showEditModal.value = false
       await loadUsers() // Reload users to reflect changes
+      showSuccess('用戶更新成功', `用戶「${editForm.value.name}」的資料已成功更新`)
     } else {
       throw new Error(response.message || 'Failed to update user')
     }
   } catch (error) {
+    close()
     console.error('Failed to update user:', error)
-    alert('Failed to update user: ' + error.message)
+    showError('用戶更新失敗', error.message || '無法更新用戶資料，請稍後再試')
   }
 }
 
 // Create new user
 const saveNewUser = async () => {
   try {
+    showLoading('建立用戶中...', '正在建立新用戶')
     const response = await createUser(createForm.value)
     
+    close()
     if (response.success) {
       showCreateModal.value = false
       // Reset form
@@ -567,12 +578,14 @@ const saveNewUser = async () => {
         status: 'active'
       }
       await loadUsers() // Reload users to reflect changes
+      showSuccess('用戶建立成功', `新用戶「${createForm.value.name}」已成功建立`)
     } else {
       throw new Error(response.message || 'Failed to create user')
     }
   } catch (error) {
+    close()
     console.error('Failed to create user:', error)
-    alert('Failed to create user: ' + error.message)
+    showError('用戶建立失敗', error.message || '無法建立新用戶，請稍後再試')
   }
 }
 
@@ -580,58 +593,68 @@ const saveNewUser = async () => {
 const handleDeleteUser = async (user) => {
   if (!user?.id) {
     console.error('No user ID provided for deletion')
-    alert('錯誤：無法刪除用戶，缺少用戶 ID')
+    showError('操作錯誤', '無法刪除用戶，缺少用戶 ID')
     return
   }
   
   // Check if user is trying to delete themselves (frontend validation)
   if (user.id === authStore.user?.id) {
-    alert('錯誤：無法刪除自己的帳號')
+    showError('操作錯誤', '無法刪除自己的帳號')
     return
   }
   
   // Check if this is the last admin user (frontend validation)
   const adminUsers = users.value.filter(u => u.role === 'admin')
   if (user.role === 'admin' && adminUsers.length <= 1) {
-    alert('錯誤：無法刪除最後一個管理員帳號')
+    showError('操作錯誤', '無法刪除最後一個管理員帳號')
     return
   }
   
-  if (confirm(`確定要刪除用戶「${user.name}」嗎？此操作無法復原。`)) {
+  const result = await showDeleteConfirm(
+    '確認刪除用戶',
+    `確定要刪除用戶「${user.name}」嗎？此操作無法復原。`,
+    '確認刪除',
+    '取消'
+  )
+  
+  if (result.isConfirmed) {
     try {
+      showLoading('刪除用戶中...', '正在處理刪除操作')
       console.log('Attempting to delete user:', user.id, user.name)
       const response = await deleteUser(user.id)
       console.log('Delete user response:', response)
       
+      close()
       if (response.success) {
         console.log('User deleted successfully')
-        alert('用戶刪除成功')
         await loadUsers() // Reload users to reflect changes
+        showSuccess('用戶刪除成功', `用戶「${user.name}」已成功刪除`)
       } else {
         console.error('Delete user failed:', response)
         const errorMessage = response.error?.message || response.message || response.error || 'Failed to delete user'
         throw new Error(errorMessage)
       }
     } catch (error) {
+      close()
       console.error('Failed to delete user:', error)
       
       // Provide more specific error messages
       let userMessage = '刪除用戶失敗'
       if (error.message) {
         if (error.message.includes('cannot delete your own account') || error.message.includes('自己')) {
-          userMessage = '錯誤：無法刪除自己的帳號'
+          userMessage = '無法刪除自己的帳號'
         } else if (error.message.includes('last admin') || error.message.includes('最後一個管理員')) {
-          userMessage = '錯誤：無法刪除最後一個管理員帳號'
+          userMessage = '無法刪除最後一個管理員帳號'
         } else if (error.message.includes('權限不足') || error.message.includes('403')) {
-          userMessage = '錯誤：權限不足'
+          userMessage = '權限不足'
         } else if (error.message.includes('登入已過期') || error.message.includes('401')) {
-          userMessage = '錯誤：登入已過期，請重新登入'
+          userMessage = '登入已過期，請重新登入'
         } else {
-          userMessage = `刪除用戶失敗：${error.message}`
+          userMessage = error.message
         }
       }
       
-      alert(userMessage)
+      showError('刪除用戶失敗', userMessage)
     }
   }
 }

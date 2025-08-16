@@ -357,6 +357,7 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 const { getProject, updateProject } = useProjects()
 const { getClients } = useClients()
 const route = useRoute()
+const { showSuccess, showError, showLoading, close } = useSweetAlert()
 
 // 取得專案 ID
 const projectId = computed(() => route.params.id)
@@ -470,21 +471,24 @@ const submitForm = async () => {
     errorMessage.value = ''
     successMessage.value = ''
     
+    showLoading('更新專案中...', '正在儲存專案變更')
+    
     // 呼叫 API 來更新專案
     const response = await updateProject(projectId.value, form.value)
     
+    close()
     if (response && response.data) {
-      successMessage.value = response.message || '專案更新成功'
+      await showSuccess('專案更新成功', `專案「${form.value.name}」已成功更新`)
       
-      // 成功後延遲導向專案列表
-      setTimeout(async () => {
-        await navigateTo('/projects')
-      }, 1500)
+      // 成功後導向專案列表
+      await navigateTo('/projects')
     } else {
       throw new Error('專案更新失敗')
     }
   } catch (error) {
+    close()
     console.error('更新專案失敗:', error)
+    showError('專案更新失敗', error.message || '無法更新專案，請稍後再試')
     errorMessage.value = error.message || '專案更新失敗，請稍後再試'
   } finally {
     isSubmitting.value = false

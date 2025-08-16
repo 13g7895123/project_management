@@ -199,6 +199,7 @@ import {
 
 const { getClient, updateClient } = useClients()
 const route = useRoute()
+const { showSuccess, showError, showLoading, close } = useSweetAlert()
 
 // Reactive data
 const loading = ref(true)
@@ -258,17 +259,22 @@ const submitForm = async () => {
   try {
     isSubmitting.value = true
     
+    showLoading('更新業主中...', '正在儲存業主變更')
+    
     const response = await updateClient(route.params.id, form.value)
     
+    close()
     if (response.success) {
+      await showSuccess('業主更新成功', `業主「${form.value.name}」已成功更新`)
       // 成功後返回列表頁
       await navigateTo('/clients')
     } else {
-      alert(response.error?.message || '更新業主資料失敗')
+      throw new Error(response.error?.message || '更新業主資料失敗')
     }
   } catch (error) {
+    close()
     console.error('Update client error:', error)
-    alert('更新業主資料時發生錯誤，請稍後再試')
+    showError('業主更新失敗', error.message || '無法更新業主資料，請稍後再試')
   } finally {
     isSubmitting.value = false
   }

@@ -232,6 +232,7 @@ const getContactPlaceholder = (type) => {
 }
 
 const { createClient } = useClients()
+const { showSuccess, showError, showLoading, close } = useSweetAlert()
 
 const submitForm = async () => {
   try {
@@ -239,22 +240,27 @@ const submitForm = async () => {
     
     // 驗證表單
     if (!form.name.trim()) {
-      alert('請輸入業主稱呼')
+      showError('表單驗證失敗', '請輸入業主稱呼')
       return
     }
+    
+    showLoading('建立業主中...', '正在儲存業主資料')
     
     // 呼叫 API 來儲存業主資料
     const response = await createClient(form)
     
+    close()
     if (response.success) {
+      await showSuccess('業主建立成功', `業主「${form.name}」已成功建立`)
       // 成功後導向業主列表
       await navigateTo('/clients')
     } else {
-      alert(response.error?.message || '儲存業主失敗')
+      throw new Error(response.error?.message || '儲存業主失敗')
     }
   } catch (error) {
+    close()
     console.error('儲存業主失敗:', error)
-    alert('儲存業主失敗，請稍後再試')
+    showError('業主建立失敗', error.message || '無法建立業主，請稍後再試')
   } finally {
     isSubmitting.value = false
   }

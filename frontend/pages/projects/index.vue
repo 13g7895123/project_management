@@ -199,6 +199,7 @@ import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 const { getProjects, deleteProject } = useProjects()
 const { getClients } = useClients()
 const { formatTWD } = useCurrency()
+const { showSuccess, showError, showDeleteConfirm, showLoading, close } = useSweetAlert()
 
 // Reactive data
 const projects = ref([])
@@ -283,15 +284,33 @@ const clearFilters = () => {
 }
 
 const handleDeleteProject = async (projectId) => {
-  if (!confirm('確定要刪除此專案嗎？')) return
+  const project = projects.value.find(p => p.id === projectId)
+  if (!project) return
   
-  const response = await deleteProject(projectId)
+  const result = await showDeleteConfirm(
+    '確認刪除專案',
+    `確定要刪除專案「${project.name}」嗎？此操作無法復原。`,
+    '確認刪除',
+    '取消'
+  )
   
-  if (response.success) {
-    // Remove from local array
-    projects.value = projects.value.filter(project => project.id !== projectId)
-  } else {
-    alert(response.error?.message || '刪除失敗')
+  if (result.isConfirmed) {
+    try {
+      showLoading('刪除專案中...', '正在處理刪除操作')
+      const response = await deleteProject(projectId)
+      
+      close()
+      if (response.success) {
+        // Remove from local array
+        projects.value = projects.value.filter(project => project.id !== projectId)
+        showSuccess('專案刪除成功', `專案「${project.name}」已成功刪除`)
+      } else {
+        throw new Error(response.error?.message || '刪除失敗')
+      }
+    } catch (error) {
+      close()
+      showError('專案刪除失敗', error.message || '無法刪除專案，請稍後再試')
+    }
   }
 }
 

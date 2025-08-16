@@ -356,6 +356,7 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 const { createProject } = useProjects()
 const { getClients } = useClients()
+const { showSuccess, showError, showLoading, close } = useSweetAlert()
 
 // 業主列表
 const clients = ref([])
@@ -426,21 +427,24 @@ const submitForm = async () => {
     errorMessage.value = ''
     successMessage.value = ''
     
+    showLoading('建立專案中...', '正在儲存專案資料')
+    
     // 呼叫 API 來儲存專案
     const response = await createProject(form.value)
     
+    close()
     if (response && response.data) {
-      successMessage.value = response.message || '專案建立成功'
+      await showSuccess('專案建立成功', `專案「${form.value.name}」已成功建立`)
       
-      // 成功後延遲導向專案列表
-      setTimeout(async () => {
-        await navigateTo('/projects')
-      }, 1500)
+      // 成功後導向專案列表
+      await navigateTo('/projects')
     } else {
       throw new Error('專案建立失敗')
     }
   } catch (error) {
+    close()
     console.error('儲存專案失敗:', error)
+    showError('專案建立失敗', error.message || '無法建立專案，請稍後再試')
     errorMessage.value = error.message || '專案建立失敗，請稍後再試'
   } finally {
     isSubmitting.value = false

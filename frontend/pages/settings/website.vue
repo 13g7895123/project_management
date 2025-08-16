@@ -332,6 +332,7 @@ definePageMeta({
 
 const websiteSettingsStore = useWebsiteSettingsStore()
 const settingsStore = useSettingsStore()
+const { showSuccess, showError, showInfo } = useSweetAlert()
 
 // Reactive refs for form inputs
 const {
@@ -354,38 +355,45 @@ const toggleShowLogo = () => {
   websiteSettingsStore.saveSettings()
 }
 
-const toggleMultilingual = () => {
+const toggleMultilingual = async () => {
   enableMultilingual.value = !enableMultilingual.value
-  websiteSettingsStore.saveSettings()
+  await websiteSettingsStore.saveSettings()
+  showSuccess('多語系設定已更新', enableMultilingual.value ? '已啟用多語系功能' : '已停用多語系功能')
 }
 
-const toggleDarkMode = () => {
+const toggleDarkMode = async () => {
   enableDarkMode.value = !enableDarkMode.value
-  websiteSettingsStore.saveSettings()
+  await websiteSettingsStore.saveSettings()
   
   // If dark mode is disabled, force light mode
   if (!enableDarkMode.value) {
     const { setTheme } = useTheme()
     setTheme('light')
   }
+  
+  showSuccess('深色模式設定已更新', enableDarkMode.value ? '已啟用深色模式' : '已停用深色模式')
 }
 
-const toggleSearch = () => {
+const toggleSearch = async () => {
   enableSearch.value = !enableSearch.value
-  websiteSettingsStore.saveSettings()
+  await websiteSettingsStore.saveSettings()
+  showSuccess('搜尋功能設定已更新', enableSearch.value ? '已啟用搜尋功能' : '已停用搜尋功能')
 }
 
-const toggleNotifications = () => {
+const toggleNotifications = async () => {
   enableNotifications.value = !enableNotifications.value
-  websiteSettingsStore.saveSettings()
+  await websiteSettingsStore.saveSettings()
+  showSuccess('通知功能設定已更新', enableNotifications.value ? '已啟用通知功能' : '已停用通知功能')
 }
 
-const toggleFooter = () => {
+const toggleFooter = async () => {
   showFooter.value = !showFooter.value
-  websiteSettingsStore.saveSettings()
+  await websiteSettingsStore.saveSettings()
   
   // Also update the settings store for backward compatibility
   settingsStore.showFootbar = showFooter.value
+  
+  showSuccess('頁尾顯示設定已更新', showFooter.value ? '已顯示頁尾' : '已隱藏頁尾')
 }
 
 
@@ -415,14 +423,22 @@ const handleFaviconUpload = async (event) => {
   }
 }
 
-const saveSettings = () => {
-  websiteSettingsStore.saveSettings()
-  console.log('網站設定已儲存')
+const saveSettings = async () => {
+  try {
+    await websiteSettingsStore.saveSettings()
+    showSuccess('網站設定已儲存', '所有設定變更已成功儲存')
+  } catch (error) {
+    showError('儲存失敗', '無法儲存網站設定，請稍後再試')
+  }
 }
 
-const resetToDefaults = () => {
-  websiteSettingsStore.resetToDefaults()
-  console.log('設定已重置為預設值')
+const resetToDefaults = async () => {
+  try {
+    await websiteSettingsStore.resetToDefaults()
+    showSuccess('設定已重置', '所有設定已重置為預設值')
+  } catch (error) {
+    showError('重置失敗', '無法重置設定，請稍後再試')
+  }
 }
 
 // Watch for changes in input fields and auto-save

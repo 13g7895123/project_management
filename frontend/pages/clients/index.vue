@@ -172,6 +172,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const { getClients, deleteClient } = useClients()
+const { showSuccess, showError, showDeleteConfirm, showLoading, close } = useSweetAlert()
 
 // Reactive data
 const clients = ref([])
@@ -239,29 +240,38 @@ const clearSearch = () => {
 
 const handleDeleteClient = async (clientId) => {
   if (!clientId) {
-    alert('無效的業主ID')
+    showError('操作錯誤', '無效的業主ID')
     return
   }
   
-  if (!confirm('確定要刪除此業主嗎？此操作無法復原。')) return
+  const client = clients.value.find(c => c.id === clientId)
+  if (!client) return
   
-  try {
-    const response = await deleteClient(clientId)
-    
-    if (response.success) {
-      // Remove from local array
-      clients.value = clients.value.filter(client => client.id !== clientId)
+  const result = await showDeleteConfirm(
+    '確認刪除業主',
+    `確定要刪除業主「${client.name}」嗎？此操作無法復原。`,
+    '確認刪除',
+    '取消'
+  )
+  
+  if (result.isConfirmed) {
+    try {
+      showLoading('刪除業主中...', '正在處理刪除操作')
+      const response = await deleteClient(clientId)
       
-      // Show success message
-      const successMessage = response.data?.message || '業主刪除成功'
-      alert(successMessage)
-    } else {
-      const errorMessage = response.error?.message || response.data?.message || '刪除失敗'
-      alert(errorMessage)
+      close()
+      if (response.success) {
+        // Remove from local array
+        clients.value = clients.value.filter(client => client.id !== clientId)
+        showSuccess('業主刪除成功', `業主「${client.name}」已成功刪除`)
+      } else {
+        throw new Error(response.error?.message || response.data?.message || '刪除失敗')
+      }
+    } catch (err) {
+      close()
+      console.error('Delete client error:', err)
+      showError('業主刪除失敗', err.message || '無法刪除業主，請稍後再試')
     }
-  } catch (err) {
-    console.error('Delete client error:', err)
-    alert('刪除業主時發生錯誤，請稍後再試')
   }
 }
 
