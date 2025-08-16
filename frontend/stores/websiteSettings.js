@@ -28,8 +28,8 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       const lastModified = localStorage.getItem('website-settings-modified')
       const now = Date.now()
       
-      // If localStorage was modified recently (within 30 seconds), prioritize it
-      const useLocalStorageFirst = lastModified && (now - parseInt(lastModified)) < 30000
+      // If localStorage was modified recently (within 60 seconds), prioritize it
+      const useLocalStorageFirst = lastModified && (now - parseInt(lastModified)) < 60000
       
       if (useLocalStorageFirst && savedSettings) {
         console.log('Using localStorage settings (recent changes detected)')
@@ -55,6 +55,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           enableSearch.value = apiSettings.search_enabled !== undefined ? apiSettings.search_enabled : true
           enableNotifications.value = apiSettings.notifications_enabled !== undefined ? apiSettings.notifications_enabled : true
           showFooter.value = apiSettings.footer_enabled !== undefined ? apiSettings.footer_enabled : true
+          console.log('Loaded footer setting from API:', { footer_enabled: apiSettings.footer_enabled, showFooter: showFooter.value })
           showTime.value = apiSettings.time_enabled !== undefined ? apiSettings.time_enabled : false
           enableDarkMode.value = apiSettings.dark_mode_enabled !== undefined ? apiSettings.dark_mode_enabled : true
           themeMode.value = apiSettings.theme_mode || 'system'
@@ -101,6 +102,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           enableSearch.value = settings.enableSearch !== undefined ? settings.enableSearch : true
           enableNotifications.value = settings.enableNotifications !== undefined ? settings.enableNotifications : true
           showFooter.value = settings.showFooter !== undefined ? settings.showFooter : true
+          console.log('Loaded footer setting from localStorage:', { showFooter: settings.showFooter, final: showFooter.value })
           showTime.value = settings.showTime !== undefined ? settings.showTime : false
           enableDarkMode.value = settings.enableDarkMode !== undefined ? settings.enableDarkMode : true
           
@@ -182,12 +184,13 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
         // Save to API
         const response = await updateSettings(apiPayload)
         if (response.success) {
-          console.log('Settings saved to API successfully')
+          console.log('Settings saved to API successfully', { footer_enabled: apiPayload.footer_enabled })
           
           // Apply theme changes immediately after successful save
           applyThemeSettings()
         } else {
           console.warn('Failed to save settings to API:', response.message)
+          throw new Error(response.message || 'API save failed')
         }
       } catch (error) {
         console.warn('API save failed, saving to localStorage only:', error)
@@ -195,6 +198,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
 
       // Always save to localStorage as backup and mark as recently modified
       saveToLocalStorage(true)
+      console.log('Saved settings to localStorage with timestamp:', Date.now())
       
       // Update document title
       updateDocumentTitle()

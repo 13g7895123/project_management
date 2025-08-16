@@ -151,19 +151,30 @@ const { updateMenuItems } = settingsStore
 // Use website settings store for footer
 const websiteSettingsStore = useWebsiteSettingsStore()
 const { showFooter } = storeToRefs(websiteSettingsStore)
-const { showSuccess } = useSweetAlert()
+const { showSuccess, showError } = useSweetAlert()
 
 // For backward compatibility
 const showFootbar = computed(() => showFooter.value)
 
 const toggleFootbar = async () => {
-  showFooter.value = !showFooter.value
-  await websiteSettingsStore.saveSettings()
+  const newValue = !showFooter.value
+  showFooter.value = newValue
   
-  // Also update the old settings store for backward compatibility
-  settingsStore.showFootbar = showFooter.value
-  
-  showSuccess('頁尾顯示設定已更新', showFooter.value ? '已顯示頁尾' : '已隱藏頁尾')
+  try {
+    await websiteSettingsStore.saveSettings()
+    
+    // Also update the old settings store for backward compatibility
+    settingsStore.showFootbar = newValue
+    
+    // Force a small delay to ensure state synchronization
+    await nextTick()
+    
+    showSuccess('頁尾顯示設定已更新', newValue ? '已顯示頁尾' : '已隱藏頁尾')
+  } catch (error) {
+    // If save fails, revert the state
+    showFooter.value = !newValue
+    showError('設定保存失敗', '無法更新頁尾顯示設定，請稍後再試')
+  }
 }
 
 // Local copy for editing
