@@ -63,6 +63,8 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
 
       // Fallback to localStorage
       const savedSettings = localStorage.getItem('website-settings')
+      const savedThemeMode = localStorage.getItem('website-theme-mode')
+      
       if (savedSettings) {
         try {
           const settings = JSON.parse(savedSettings)
@@ -80,7 +82,9 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           showFooter.value = settings.showFooter !== undefined ? settings.showFooter : true
           showTime.value = settings.showTime !== undefined ? settings.showTime : false
           enableDarkMode.value = settings.enableDarkMode !== undefined ? settings.enableDarkMode : true
-          themeMode.value = settings.themeMode || 'system'
+          
+          // Prefer explicit theme mode storage over settings storage
+          themeMode.value = savedThemeMode || settings.themeMode || 'system'
           primaryColor.value = settings.primaryColor || '#6366f1'
           
           // Update document title
@@ -88,9 +92,16 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           
           // Update favicon
           updateFavicon()
+          
+          // Apply theme settings immediately
+          applyThemeSettings()
         } catch (error) {
           console.error('Error loading website settings from localStorage:', error)
         }
+      } else if (savedThemeMode) {
+        // Even if no settings, apply saved theme mode
+        themeMode.value = savedThemeMode
+        applyThemeSettings()
       }
     }
   }
@@ -116,6 +127,9 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       }
       
       localStorage.setItem('website-settings', JSON.stringify(settings))
+      
+      // Also sync with Nuxt color mode storage for consistency
+      localStorage.setItem('website-theme-mode', themeMode.value)
     }
   }
 

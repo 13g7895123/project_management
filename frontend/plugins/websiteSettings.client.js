@@ -1,9 +1,35 @@
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin(async () => {
   // Initialize website settings on client side
   const websiteSettingsStore = useWebsiteSettingsStore()
+  const colorMode = useColorMode()
   
-  // Load settings from localStorage
-  websiteSettingsStore.loadSettings()
+  // Load settings from API/localStorage with await
+  await websiteSettingsStore.loadSettings()
+  
+  // Sync Nuxt color mode with website settings
+  if (process.client) {
+    const savedThemeMode = localStorage.getItem('website-theme-mode')
+    if (savedThemeMode) {
+      colorMode.preference = savedThemeMode
+    } else if (websiteSettingsStore.themeMode) {
+      colorMode.preference = websiteSettingsStore.themeMode
+      // Save to Nuxt storage
+      localStorage.setItem('website-theme-mode', websiteSettingsStore.themeMode)
+    }
+    
+    // Apply theme settings immediately after loading
+    websiteSettingsStore.applyThemeSettings()
+    
+    // Watch for color mode changes and sync with website settings
+    watch(() => colorMode.preference, (newMode) => {
+      if (newMode !== websiteSettingsStore.themeMode) {
+        websiteSettingsStore.themeMode = newMode
+        localStorage.setItem('website-theme-mode', newMode)
+        websiteSettingsStore.saveSettings()
+        websiteSettingsStore.applyThemeSettings()
+      }
+    }, { immediate: false })
+  }
   
   // Set up page title management
   const router = useRouter()

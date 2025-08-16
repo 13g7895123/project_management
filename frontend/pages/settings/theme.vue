@@ -139,18 +139,16 @@ const setThemeMode = async (mode) => {
   // Use the theme composable which properly saves to database
   setTheme(mode)
   
-  // Also update website settings store
-  websiteSettingsStore.themeMode = mode
-  await websiteSettingsStore.saveSettings()
+  // Force immediate UI update
+  await nextTick()
 }
 
 const setPrimaryColor = async (color) => {
   customColor.value = color
   setThemePrimaryColor(color)
   
-  // Ensure the color is saved to database
-  websiteSettingsStore.primaryColor = color
-  await websiteSettingsStore.saveSettings()
+  // Force immediate UI update
+  await nextTick()
 }
 
 // Watch for color mode changes to ensure reactivity
@@ -158,37 +156,17 @@ watch(() => colorMode.preference, async (newMode) => {
   // Force component re-render to reflect theme changes
   await nextTick()
   
-  // Ensure the change is persisted
+  // Force DOM update
   if (process.client) {
-    websiteSettingsStore.themeMode = newMode
-    await websiteSettingsStore.saveSettings()
-    
-    // Force DOM update
     document.body.offsetHeight
-    
-    // Trigger global theme change event
-    window.dispatchEvent(new CustomEvent('theme-changed', { 
-      detail: { mode: newMode } 
-    }))
   }
 })
 
 // Initialize theme on mount
 onMounted(async () => {
   if (process.client) {
-    // Load settings from API
-    await websiteSettingsStore.loadSettings()
-    
-    // Apply the saved theme
-    if (websiteSettingsStore.themeMode && websiteSettingsStore.themeMode !== colorMode.preference) {
-      colorMode.preference = websiteSettingsStore.themeMode
-    }
-    
-    // Apply the saved primary color
-    if (websiteSettingsStore.primaryColor) {
-      customColor.value = websiteSettingsStore.primaryColor
-      setThemePrimaryColor(websiteSettingsStore.primaryColor)
-    }
+    // Set custom color to match current primary color
+    customColor.value = websiteSettingsStore.primaryColor || primaryColor.value
   }
 })
 </script>

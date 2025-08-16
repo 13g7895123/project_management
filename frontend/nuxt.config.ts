@@ -36,14 +36,14 @@ export default defineNuxtConfig({
     })
   },
   colorMode: {
-    preference: 'light', // Default to light mode
+    preference: 'system', // Default to system preference
     fallback: 'light',
     hid: 'nuxt-color-mode-script',
     globalName: '__NUXT_COLOR_MODE__',
     componentName: 'ColorScheme',
     classPrefix: '',
     classSuffix: '',
-    storageKey: 'nuxt-color-mode',
+    storageKey: 'website-theme-mode', // Use custom storage key to sync with website settings
     dataValue: 'theme' // This sets data-theme attribute
   },
   // Build optimization - ensure apexcharts can be imported correctly
