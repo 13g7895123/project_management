@@ -436,3 +436,5 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
     - 主題設定的應用顏色，與顯示模式也是，都有更新但都沒有依據更新顯示
 133. 完成以下功能
     - 幫我確認為甚麼都沒有正常提交
+134. 完成以下功能
+    - 目前有正常套用了，但是變成設定的項目與套用不同，套用關閉頁尾了，但開關還是打開的

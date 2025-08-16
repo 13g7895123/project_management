@@ -139,16 +139,18 @@ const setThemeMode = async (mode) => {
   // Use the theme composable which properly saves to database
   setTheme(mode)
   
-  // Force immediate UI update
+  // Ensure visual changes are applied immediately
   await nextTick()
+  websiteSettingsStore.applyThemeSettings()
 }
 
 const setPrimaryColor = async (color) => {
   customColor.value = color
   setThemePrimaryColor(color)
   
-  // Force immediate UI update
+  // Ensure visual changes are applied immediately
   await nextTick()
+  websiteSettingsStore.applyThemeSettings()
 }
 
 // Watch for color mode changes to ensure reactivity

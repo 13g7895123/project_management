@@ -61,6 +61,9 @@ export const useTheme = () => {
         setTimeout(() => {
           document.documentElement.classList.remove('theme-transition')
           
+          // Apply full theme settings including primary color
+          websiteSettingsStore.applyThemeSettings()
+          
           // Save settings after visual changes are applied
           websiteSettingsStore.saveSettings()
         }, 300)
