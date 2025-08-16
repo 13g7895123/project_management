@@ -42,35 +42,9 @@ export const useThemeStore = defineStore('theme', () => {
   const setPrimaryColor = (color) => {
     // Update through website settings store to sync with API
     websiteSettingsStore.primaryColor = color
-    websiteSettingsStore.saveSettings()
     
-    // Only manipulate DOM on client side
-    if (process.client) {
-      // Add transition class temporarily
-      document.documentElement.classList.add('theme-transition')
-      
-      // Set the main primary color
-      document.documentElement.style.setProperty('--primary-color', color)
-      
-      // Generate and set color variations
-      const variations = generateColorVariations(color)
-      Object.entries(variations).forEach(([key, value]) => {
-        document.documentElement.style.setProperty(`--primary-${key}`, value)
-      })
-      
-      // Color is now stored via API through websiteSettingsStore
-      
-      // Force style recalculation and then remove transition class
-      setTimeout(() => {
-        document.body.offsetHeight // Force reflow
-        document.documentElement.classList.remove('theme-transition')
-      }, 200)
-      
-      // Trigger a custom event for other components to listen to
-      window.dispatchEvent(new CustomEvent('primary-color-changed', { 
-        detail: { color, variations } 
-      }))
-    }
+    // Let websiteSettingsStore handle all the DOM manipulation and saving
+    websiteSettingsStore.saveSettings()
   }
   
   // Initialize primary color on client side

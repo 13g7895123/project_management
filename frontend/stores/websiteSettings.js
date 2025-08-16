@@ -23,6 +23,20 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   // Load settings from API or localStorage fallback
   const loadSettings = async () => {
     if (process.client) {
+      // Check localStorage first for recent changes
+      const savedSettings = localStorage.getItem('website-settings')
+      const lastModified = localStorage.getItem('website-settings-modified')
+      const now = Date.now()
+      
+      // If localStorage was modified recently (within 30 seconds), prioritize it
+      const useLocalStorageFirst = lastModified && (now - parseInt(lastModified)) < 30000
+      
+      if (useLocalStorageFirst && savedSettings) {
+        console.log('Using localStorage settings (recent changes detected)')
+        loadFromLocalStorage()
+        return
+      }
+      
       try {
         // Try to load from API first
         const response = await getSettings()
@@ -46,8 +60,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
           themeMode.value = apiSettings.theme_mode || 'system'
           primaryColor.value = apiSettings.primary_color || '#6366f1'
           
-          
-          // Save to localStorage as backup
+          // Save to localStorage as backup (without timestamp to avoid overriding recent changes)
           saveToLocalStorage()
           
           // Update document elements
@@ -63,6 +76,13 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       }
 
       // Fallback to localStorage
+      loadFromLocalStorage()
+    }
+  }
+  
+  // Load settings from localStorage only
+  const loadFromLocalStorage = () => {
+    if (process.client) {
       const savedSettings = localStorage.getItem('website-settings')
       const savedThemeMode = localStorage.getItem('website-theme-mode')
       
@@ -108,7 +128,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   }
   
   // Save settings to localStorage only
-  const saveToLocalStorage = () => {
+  const saveToLocalStorage = (markAsModified = false) => {
     if (process.client) {
       const settings = {
         websiteName: websiteName.value,
@@ -128,6 +148,11 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       }
       
       localStorage.setItem('website-settings', JSON.stringify(settings))
+      
+      // Mark as recently modified when user makes changes
+      if (markAsModified) {
+        localStorage.setItem('website-settings-modified', Date.now().toString())
+      }
       
       // Also sync with Nuxt color mode storage for consistency
       localStorage.setItem('website-theme-mode', themeMode.value)
@@ -168,8 +193,8 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
         console.warn('API save failed, saving to localStorage only:', error)
       }
 
-      // Always save to localStorage as backup
-      saveToLocalStorage()
+      // Always save to localStorage as backup and mark as recently modified
+      saveToLocalStorage(true)
       
       // Update document title
       updateDocumentTitle()
@@ -202,8 +227,11 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
   // Apply theme settings to DOM
   const applyThemeSettings = () => {
     if (process.client) {
-      // Apply theme mode with proper class management
+      // Add smooth transition
       const html = document.documentElement
+      html.classList.add('theme-transition')
+      
+      // Apply theme mode with proper class management
       const shouldBeDark = themeMode.value === 'dark' || 
           (themeMode.value === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
       
@@ -265,8 +293,11 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
       // Sync with localStorage for Nuxt color mode consistency
       localStorage.setItem('website-theme-mode', themeMode.value)
       
-      // Force a repaint
-      document.body.offsetHeight
+      // Force a repaint and remove transition after animation
+      setTimeout(() => {
+        document.body.offsetHeight // Force reflow
+        html.classList.remove('theme-transition')
+      }, 300)
     }
   }
   
@@ -408,6 +439,7 @@ export const useWebsiteSettingsStore = defineStore('websiteSettings', () => {
     
     // Methods
     loadSettings,
+    loadFromLocalStorage,
     saveSettings,
     saveToLocalStorage,
     updateDocumentTitle,
