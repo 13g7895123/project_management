@@ -162,12 +162,12 @@ class ProjectController extends Controller
             'expected_completion_date' => 'nullable|date',
             'completion_date' => 'nullable|date',
             'payment_date' => 'nullable|date',
-            'status' => 'required|in:pending_evaluation,contacted,in_progress,completed,paid',
+            'status' => 'required|in:pending_evaluation,contacted,in_progress,completed,paid,no_follow_up',
             'priority' => 'nullable|in:low,medium,high',
         ]);
 
-        // Make amount required for all statuses except pending_evaluation
-        if ($validated['status'] !== 'pending_evaluation') {
+        // Make amount required for all statuses except pending_evaluation and no_follow_up
+        if (!in_array($validated['status'], ['pending_evaluation', 'no_follow_up'])) {
             $request->validate([
                 'amount' => 'required|numeric|min:0',
             ]);
@@ -217,16 +217,16 @@ class ProjectController extends Controller
             'expected_completion_date' => 'nullable|date',
             'completion_date' => 'nullable|date',
             'payment_date' => 'nullable|date',
-            'status' => 'sometimes|in:pending_evaluation,contacted,in_progress,completed,paid',
+            'status' => 'sometimes|in:pending_evaluation,contacted,in_progress,completed,paid,no_follow_up',
             'priority' => 'nullable|in:low,medium,high',
         ]);
 
-        // Make amount required for all statuses except pending_evaluation
-        if (isset($validated['status']) && $validated['status'] !== 'pending_evaluation') {
+        // Make amount required for all statuses except pending_evaluation and no_follow_up
+        if (isset($validated['status']) && !in_array($validated['status'], ['pending_evaluation', 'no_follow_up'])) {
             $request->validate([
                 'amount' => 'required|numeric|min:0',
             ]);
-        } elseif (!isset($validated['status']) && $project->status !== 'pending_evaluation') {
+        } elseif (!isset($validated['status']) && !in_array($project->status, ['pending_evaluation', 'no_follow_up'])) {
             // If status is not being updated but current status requires amount
             if (isset($validated['amount'])) {
                 $request->validate([
@@ -265,7 +265,7 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $validated = $request->validate([
-            'status' => 'required|in:pending_evaluation,contacted,in_progress,completed,paid'
+            'status' => 'required|in:pending_evaluation,contacted,in_progress,completed,paid,no_follow_up'
         ]);
 
         $project->update($validated);
@@ -511,7 +511,7 @@ class ProjectController extends Controller
                 'projects.*.name' => 'required|string|max:255',
                 'projects.*.description' => 'nullable|string',
                 'projects.*.category' => 'required|string|in:website,script,server,custom',
-                'projects.*.status' => 'required|string|in:pending,negotiating,in_progress,completed,paid,evaluation',
+                'projects.*.status' => 'required|string|in:pending_evaluation,contacted,in_progress,completed,paid,no_follow_up',
                 'projects.*.amount' => 'nullable|numeric|min:0',
                 'projects.*.contact_date' => 'required|date',
                 'projects.*.start_date' => 'nullable|date',
@@ -584,9 +584,9 @@ class ProjectController extends Controller
                         continue;
                     }
 
-                    // Validate amount is required unless status is evaluation
-                    if ($projectData['status'] !== 'evaluation' && empty($projectData['amount'])) {
-                        $errors[] = "Row {$index}: Amount is required for projects not in evaluation status";
+                    // Validate amount is required unless status is pending_evaluation or no_follow_up
+                    if (!in_array($projectData['status'], ['pending_evaluation', 'no_follow_up']) && empty($projectData['amount'])) {
+                        $errors[] = "Row {$index}: Amount is required for projects not in pending_evaluation or no_follow_up status";
                         $skipped++;
                         continue;
                     }
@@ -597,7 +597,7 @@ class ProjectController extends Controller
                         'description' => $projectData['description'] ?? null,
                         'category' => $projectData['category'],
                         'status' => $projectData['status'],
-                        'amount' => $projectData['status'] === 'evaluation' ? null : $projectData['amount'],
+                        'amount' => in_array($projectData['status'], ['pending_evaluation', 'no_follow_up']) ? null : $projectData['amount'],
                         'contact_date' => $projectData['contact_date'],
                         'start_date' => $projectData['start_date'] ?? null,
                         'completion_date' => $projectData['completion_date'] ?? null,

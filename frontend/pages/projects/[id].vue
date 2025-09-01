@@ -165,8 +165,8 @@
             </div>
             <div>
               <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                專案金額 <span v-if="form.status !== 'pending_evaluation'" class="text-red-500">*</span>
-                <span v-if="form.status === 'pending_evaluation'" class="text-gray-500 text-xs">(待評估狀態可選填)</span>
+                專案金額 <span v-if="!['pending_evaluation', 'no_follow_up'].includes(form.status)" class="text-red-500">*</span>
+                <span v-if="['pending_evaluation', 'no_follow_up'].includes(form.status)" class="text-gray-500 text-xs">({{ form.status === 'pending_evaluation' ? '待評估狀態可選填' : '無下文狀態可選填' }})</span>
               </label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
@@ -178,9 +178,9 @@
                   type="number"
                   min="0"
                   step="1"
-                  :required="form.status !== 'pending_evaluation'"
+                  :required="!['pending_evaluation', 'no_follow_up'].includes(form.status)"
                   class="w-full pl-12 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
-                  :placeholder="form.status === 'pending_evaluation' ? '待評估時可選填' : '0'"
+                  :placeholder="['pending_evaluation', 'no_follow_up'].includes(form.status) ? (form.status === 'pending_evaluation' ? '待評估時可選填' : '無下文時可選填') : '0'"
                 />
               </div>
             </div>
