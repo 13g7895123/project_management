@@ -16,7 +16,7 @@
     </div>
 
     <!-- Filter and Search -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">搜尋專案</label>
@@ -24,14 +24,14 @@
             v-model="searchQuery"
             type="text"
             placeholder="搜尋專案名稱..."
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
           />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">業主</label>
           <select
             v-model="filterClientId"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
           >
             <option value="">全部業主</option>
             <option v-for="client in clients" :key="client?.id || 'empty'" :value="client?.id">
@@ -43,7 +43,7 @@
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案類別</label>
           <select
             v-model="filterCategory"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
           >
             <option value="">全部類別</option>
             <option value="website">網站</option>
@@ -56,7 +56,7 @@
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案狀態</label>
           <select
             v-model="filterStatus"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
           >
             <option value="">全部狀態</option>
             <option value="pending_evaluation">待評估</option>
@@ -70,7 +70,7 @@
         <div class="flex items-end">
           <button
             @click="clearFilters"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
           >
             清除篩選
           </button>
@@ -104,85 +104,100 @@
     </div>
 
     <!-- Projects Table -->
-    <div v-else class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 rounded-lg-custom shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-900">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-72">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white w-72">
                 專案名稱
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                 業主
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                 類別
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                 金額
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                 狀態
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                 接洽日期
               </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-4 text-right text-sm font-semibold text-gray-900 dark:text-white">
                 操作
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody class="bg-white dark:bg-gray-800">
             <tr
               v-for="project in filteredProjects"
               :key="project?.id || 'empty'"
-              class="hover:bg-gray-50 dark:hover:bg-gray-700"
+              class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
             >
               <td class="px-6 py-4 w-72">
                 <div class="max-w-xs">
                   <div 
-                    class="text-base font-medium text-gray-900 dark:text-white truncate cursor-help" 
+                    class="text-base font-semibold text-gray-900 dark:text-white truncate cursor-help mb-1" 
                     :title="project?.name || '未知專案'"
                   >
                     {{ project?.name || '未知專案' }}
                   </div>
                   <div 
-                    class="text-base text-gray-500 dark:text-gray-400 truncate cursor-help" 
+                    class="text-sm text-gray-600 dark:text-gray-400 truncate cursor-help" 
                     :title="project?.description || '無描述'"
                   >
                     {{ project?.description || '無描述' }}
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 dark:text-white">
-                {{ project?.client?.name || '未知業主' }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-base font-medium text-gray-900 dark:text-white">
+                  {{ project?.client?.name || '未知業主' }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium"
+                <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium"
                   :class="getCategoryClass(project?.category)"
                 >
                   {{ getCategoryLabel(project?.category) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 dark:text-white">
-                {{ formatTWD(project?.amount || 0) }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-base font-semibold text-gray-900 dark:text-white">
+                  {{ formatTWD(project?.amount || 0) }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium"
+                <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium"
                   :class="getStatusClass(project?.status)"
                 >
                   {{ getStatusLabel(project?.status) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-base text-gray-500 dark:text-gray-400">
-                {{ formatDate(project?.contact_date) }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-base text-gray-600 dark:text-gray-400">
+                  {{ formatDate(project?.contact_date) }}
+                </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
-                <div class="flex justify-end space-x-2">
-                  <button @click="editProject(project)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                <div class="flex justify-end gap-2">
+                  <button 
+                    @click="editProject(project)" 
+                    class="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-900/20 rounded-lg transition-colors duration-200"
+                    title="編輯專案"
+                  >
                     <PencilIcon class="w-4 h-4" />
                   </button>
-                  <button @click="handleDeleteProject(project?.id)" class="text-red-600 hover:text-red-900 dark:text-red-400" :disabled="!project?.id">
+                  <button 
+                    @click="handleDeleteProject(project?.id)" 
+                    class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+                    :disabled="!project?.id"
+                    title="刪除專案"
+                  >
                     <TrashIcon class="w-4 h-4" />
                   </button>
                 </div>
@@ -193,30 +208,44 @@
       </div>
       
       <!-- Pagination Controls -->
-      <div v-if="totalPages > 1" class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-500 dark:text-gray-400">
-            顯示第 {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }} 筆，共 {{ totalItems }} 筆專案
+      <div v-if="totalPages > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="text-sm text-gray-700 dark:text-gray-300">
+              顯示第 {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }} 筆，共 {{ totalItems }} 筆專案
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-sm text-gray-700 dark:text-gray-300">每頁顯示:</label>
+              <select 
+                v-model="perPage" 
+                @change="handlePerPageChange(perPage)"
+                class="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option v-for="option in perPageOptions" :key="option" :value="option">
+                  {{ option }}
+                </option>
+              </select>
+            </div>
           </div>
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center gap-2">
             <button
               @click="previousPage"
               :disabled="currentPage === 1"
-              class="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              class="px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               上一頁
             </button>
             
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center gap-1">
               <button
                 v-for="page in Math.min(5, totalPages)"
                 :key="page"
                 @click="goToPage(page)"
                 :class="[
-                  'px-3 py-1 text-sm border rounded-md',
+                  'px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200',
                   currentPage === page
-                    ? 'bg-primary-600 text-white border-primary-600'
-                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
                 ]"
               >
                 {{ page }}
@@ -227,10 +256,7 @@
               <button
                 v-if="totalPages > 5 && currentPage < totalPages - 2"
                 @click="goToPage(totalPages)"
-                :class="[
-                  'px-3 py-1 text-sm border rounded-md',
-                  'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
-                ]"
+                class="px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
               >
                 {{ totalPages }}
               </button>
@@ -239,7 +265,7 @@
             <button
               @click="nextPage"
               :disabled="currentPage === totalPages"
-              class="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              class="px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               下一頁
             </button>
@@ -275,6 +301,7 @@ const error = ref(null)
 // Pagination state
 const currentPage = ref(1)
 const perPage = ref(5)
+const perPageOptions = [5, 10, 25, 50, 100]
 const totalItems = ref(0)
 const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value))
 
@@ -361,6 +388,12 @@ const clearFilters = () => {
   loadProjects()
 }
 
+// Handle per page change
+const handlePerPageChange = (newPerPage) => {
+  perPage.value = newPerPage
+  currentPage.value = 1  // Reset to first page when changing per page
+}
+
 // Pagination methods
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
@@ -423,12 +456,12 @@ const getCategoryLabel = (category) => {
 
 const getCategoryClass = (category) => {
   const classes = {
-    website: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    script: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    server: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    custom: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+    website: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+    script: 'bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+    server: 'bg-yellow-50 text-yellow-700 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700',
+    custom: 'bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700'
   }
-  return classes[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  return classes[category] || 'bg-gray-50 text-gray-700 border border-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700'
 }
 
 const getStatusLabel = (status) => {
@@ -445,14 +478,14 @@ const getStatusLabel = (status) => {
 
 const getStatusClass = (status) => {
   const classes = {
-    pending_evaluation: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-    contacted: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-    in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    paid: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
-    no_follow_up: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    pending_evaluation: 'bg-orange-50 text-orange-700 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+    contacted: 'bg-gray-50 text-gray-700 border border-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700',
+    in_progress: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+    completed: 'bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+    paid: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700',
+    no_follow_up: 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700'
   }
-  return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  return classes[status] || 'bg-gray-50 text-gray-700 border border-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700'
 }
 
 const formatDate = (dateString) => {
@@ -511,7 +544,7 @@ onMounted(async () => {
 })
 
 // Watch filters for real-time filtering and reset pagination
-watch([searchQuery, filterCategory, filterStatus, filterClientId], () => {
-  currentPage.value = 1  // Reset to first page when filters change
+watch([searchQuery, filterCategory, filterStatus, filterClientId, perPage], () => {
+  currentPage.value = 1  // Reset to first page when filters or per page changes
 })
 </script>
