@@ -321,6 +321,7 @@
             <option value="in_progress">進行中</option>
             <option value="completed">已完成</option>
             <option value="paid">已收款</option>
+            <option value="no_follow_up">無下文</option>
           </select>
         </div>
 

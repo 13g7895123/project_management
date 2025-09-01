@@ -86,6 +86,7 @@ class Project extends Model
             'in_progress' => '進行中',
             'completed' => '已完成',
             'paid' => '已收款',
+            'no_follow_up' => '無下文',
         ];
 
         return $labels[$this->status] ?? $this->status;
@@ -169,6 +170,8 @@ class Project extends Model
                 return 75;
             case 'paid':
                 return 100;
+            case 'no_follow_up':
+                return 0;
             default:
                 return 0;
         }

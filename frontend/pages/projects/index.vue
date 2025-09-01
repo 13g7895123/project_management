@@ -64,6 +64,7 @@
             <option value="in_progress">進行中</option>
             <option value="completed">已完成</option>
             <option value="paid">已收款</option>
+            <option value="no_follow_up">無下文</option>
           </select>
         </div>
         <div class="flex items-end">
@@ -108,7 +109,7 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-72">
                 專案名稱
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -137,40 +138,46 @@
               :key="project?.id || 'empty'"
               class="hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div>
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+              <td class="px-6 py-4 w-72">
+                <div class="max-w-xs">
+                  <div 
+                    class="text-base font-medium text-gray-900 dark:text-white truncate cursor-help" 
+                    :title="project?.name || '未知專案'"
+                  >
                     {{ project?.name || '未知專案' }}
                   </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                  <div 
+                    class="text-base text-gray-500 dark:text-gray-400 truncate cursor-help" 
+                    :title="project?.description || '無描述'"
+                  >
                     {{ project?.description || '無描述' }}
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 dark:text-white">
                 {{ project?.client?.name || '未知業主' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium"
                   :class="getCategoryClass(project?.category)"
                 >
                   {{ getCategoryLabel(project?.category) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 dark:text-white">
                 {{ formatTWD(project?.amount || 0) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium"
                   :class="getStatusClass(project?.status)"
                 >
                   {{ getStatusLabel(project?.status) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <td class="px-6 py-4 whitespace-nowrap text-base text-gray-500 dark:text-gray-400">
                 {{ formatDate(project?.contact_date) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td class="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
                 <div class="flex justify-end space-x-2">
                   <button @click="editProject(project)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
                     <PencilIcon class="w-4 h-4" />
@@ -183,6 +190,61 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <!-- Pagination Controls -->
+      <div v-if="totalPages > 1" class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            顯示第 {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }} 筆，共 {{ totalItems }} 筆專案
+          </div>
+          <div class="flex items-center space-x-2">
+            <button
+              @click="previousPage"
+              :disabled="currentPage === 1"
+              class="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+            >
+              上一頁
+            </button>
+            
+            <div class="flex items-center space-x-1">
+              <button
+                v-for="page in Math.min(5, totalPages)"
+                :key="page"
+                @click="goToPage(page)"
+                :class="[
+                  'px-3 py-1 text-sm border rounded-md',
+                  currentPage === page
+                    ? 'bg-primary-600 text-white border-primary-600'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                ]"
+              >
+                {{ page }}
+              </button>
+              
+              <span v-if="totalPages > 5" class="px-2 text-gray-500 dark:text-gray-400">...</span>
+              
+              <button
+                v-if="totalPages > 5 && currentPage < totalPages - 2"
+                @click="goToPage(totalPages)"
+                :class="[
+                  'px-3 py-1 text-sm border rounded-md',
+                  'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                ]"
+              >
+                {{ totalPages }}
+              </button>
+            </div>
+            
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+            >
+              下一頁
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -210,13 +272,19 @@ const filterClientId = ref('')
 const loading = ref(false)
 const error = ref(null)
 
+// Pagination state
+const currentPage = ref(1)
+const perPage = ref(5)
+const totalItems = ref(0)
+const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value))
+
 // Client data for filter dropdown
 const clients = ref([])
 const loadingClients = ref(false)
 
 // Computed properties
 const filteredProjects = computed(() => {
-  return projects.value.filter(project => {
+  const filtered = projects.value.filter(project => {
     const matchesSearch = project.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchQuery.value.toLowerCase())
     const matchesCategory = !filterCategory.value || project.category === filterCategory.value
@@ -225,6 +293,15 @@ const filteredProjects = computed(() => {
     
     return matchesSearch && matchesCategory && matchesStatus && matchesClient
   })
+  
+  // Update total items for pagination
+  totalItems.value = filtered.length
+  
+  // Apply pagination
+  const startIndex = (currentPage.value - 1) * perPage.value
+  const endIndex = startIndex + perPage.value
+  
+  return filtered.slice(startIndex, endIndex)
 })
 
 // Methods
@@ -280,7 +357,27 @@ const clearFilters = () => {
   filterCategory.value = ''
   filterStatus.value = ''
   filterClientId.value = ''
+  currentPage.value = 1  // Reset to first page
   loadProjects()
+}
+
+// Pagination methods
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
 }
 
 const handleDeleteProject = async (projectId) => {
@@ -340,7 +437,8 @@ const getStatusLabel = (status) => {
     contacted: '已接洽',
     in_progress: '進行中',
     completed: '已完成',
-    paid: '已收款'
+    paid: '已收款',
+    no_follow_up: '無下文'
   }
   return labels[status] || status
 }
@@ -351,7 +449,8 @@ const getStatusClass = (status) => {
     contacted: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
     in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    paid: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
+    paid: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+    no_follow_up: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
   }
   return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
 }
@@ -411,9 +510,8 @@ onMounted(async () => {
   loadProjects()
 })
 
-// Watch filters for real-time filtering
+// Watch filters for real-time filtering and reset pagination
 watch([searchQuery, filterCategory, filterStatus, filterClientId], () => {
-  // Debounce API calls if needed
-  // For now, just filter locally
+  currentPage.value = 1  // Reset to first page when filters change
 })
 </script>
