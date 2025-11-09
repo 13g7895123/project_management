@@ -42,6 +42,8 @@ class User extends Authenticatable
         'role',
         'status',
         'last_login_at',
+        'line_id',
+        'line_access_token',
     ];
 
     /**
@@ -52,6 +54,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'line_access_token',
     ];
 
     /**

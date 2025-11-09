@@ -25,7 +25,9 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('line', \SocialiteProviders\Line\Provider::class);
+        });
     }
 
     /**

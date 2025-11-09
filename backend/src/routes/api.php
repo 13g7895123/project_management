@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WebsiteSettingsController;
+use App\Http\Controllers\Api\LineAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,10 @@ use Illuminate\Support\Facades\Route;
 // Authentication routes (public)
 Route::post('auth/login', [AuthController::class, 'login']);
 
+// LINE authentication routes (public)
+Route::get('auth/line', [LineAuthController::class, 'redirectToLine']);
+Route::get('auth/line/callback', [LineAuthController::class, 'handleLineCallback']);
+
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
@@ -31,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
     Route::post('auth/refresh', [AuthController::class, 'refresh']);
     Route::put('auth/change-password', [AuthController::class, 'changePassword']);
+    Route::delete('auth/line/unlink', [LineAuthController::class, 'unlinkLine']);
     
     // Legacy user endpoint for compatibility
     Route::get('/user', function (Request $request) {

@@ -179,24 +179,82 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { post } = useApi()
       const response = await post('/auth/refresh')
-      
+
       if (!response.success) {
         throw new Error('Token refresh failed')
       }
-      
+
       const newToken = response.data.data.token
       token.value = newToken
-      
+
       // 更新 localStorage
       if (process.client) {
         localStorage.setItem(TOKEN_KEY, newToken)
       }
-      
+
       return newToken
     } catch (error) {
       console.error('Refresh token error:', error)
       await logout(true)
       throw error
+    }
+  }
+
+  // LINE 登入 - 獲取登入 URL
+  const getLineLoginUrl = () => {
+    const config = useRuntimeConfig()
+    const apiBaseUrl = config.public.apiBaseUrl
+    return `${apiBaseUrl}/auth/line`
+  }
+
+  // LINE 登入回調處理
+  const handleLineCallback = async (callbackData) => {
+    try {
+      isLoading.value = true
+
+      // callbackData 已經包含 API 返回的完整響應
+      if (!callbackData.success) {
+        throw new Error(callbackData.message || 'LINE 登入失敗')
+      }
+
+      const { user: userData, token: userToken } = callbackData.data
+
+      // 設定用戶資料和token
+      user.value = userData
+      token.value = userToken
+
+      // 儲存到 localStorage
+      if (process.client) {
+        localStorage.setItem(TOKEN_KEY, userToken)
+        localStorage.setItem(USER_KEY, JSON.stringify(userData))
+      }
+
+      return { success: true, user: userData, token: userToken }
+    } catch (error) {
+      console.error('LINE callback error:', error)
+      throw new Error(error.message || 'LINE 登入失敗')
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // 解除 LINE 綁定
+  const unlinkLine = async () => {
+    try {
+      const { del } = useApi()
+      const response = await del('/auth/line/unlink')
+
+      if (!response.success) {
+        throw new Error(response.message || '解除 LINE 綁定失敗')
+      }
+
+      // 更新用戶資料
+      await fetchUser()
+
+      return { success: true }
+    } catch (error) {
+      console.error('Unlink LINE error:', error)
+      throw new Error(error.message || '解除 LINE 綁定失敗')
     }
   }
 
@@ -207,16 +265,21 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     isAdmin,
     isLoading: readonly(isLoading),
-    
+
     // 認證方法
     login,
     logout,
     initializeAuth,
     fetchUser,
-    
+
     // 用戶管理
     updateProfile,
     changePassword,
-    refreshToken
+    refreshToken,
+
+    // LINE 登入
+    getLineLoginUrl,
+    handleLineCallback,
+    unlinkLine
   }
 })
